@@ -1,7 +1,0 @@
-{
-  "@type": "decision",
-  "title": "Identity forms — file vs folder",
-  "decision_number": 1,
-  "status": "LOCKED — two spellings of one identity; both-at-once is the one error",
-  "see_also": ["ref:format/naming"]
-}

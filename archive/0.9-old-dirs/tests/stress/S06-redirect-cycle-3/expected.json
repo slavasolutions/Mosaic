@@ -1,6 +1,0 @@
-{
-  "summary": { "structural": 1, "drift": 0, "warning": 0 },
-  "diagnostics": [
-    { "severity": "structural", "code": "mosaic.redirect.loop", "source": "mosaic.json" }
-  ]
-}

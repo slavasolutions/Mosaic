@@ -13,7 +13,9 @@ Any tool that follows the rules can read any folder that follows them. Switch to
 | [`spec/examples/`](./spec/examples/) | Four lightweight worked examples: identity, sidecars, cascade, and the web profile shape. |
 | [`spec/schemas/`](./spec/schemas/) | JSON Schema 2020-12 for `mosaic.json` manifests. |
 | [`spec/tools/`](./spec/tools/) | The reference validator (`validate.py`) — Python stdlib, ~280 lines, runs the spec rules against any folder. |
-| [`archive/`](./archive/) | Earlier drafts, alternate fixtures, and pre-0.9 example sites. Kept for history; not normative. |
+| `index.html` | A single-file visual explainer at the repo root, reusing the 0.8 showcase look. Open in any browser. |
+
+Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs, the 0.8.x monolithic spec, session artefacts, heavier 0.9.1 fixtures, and legal-protection drafts for the wider ecosystem — lives in a sibling folder at `../mosaic-archive/` (not part of this repository). Everything is also recoverable from git history.
 
 ## Status
 

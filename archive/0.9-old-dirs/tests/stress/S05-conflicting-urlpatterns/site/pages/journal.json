@@ -1,6 +1,0 @@
-{
-  "title": "Journal",
-  "sections": [
-    { "type": "collection-list", "from": "collections/notes", "urlPattern": "/journal/{slug}" }
-  ]
-}

@@ -1,9 +1,0 @@
-{
-  "nav": [
-    { "label": "All programs", "href": "/programs" },
-    { "label": "Rent stipends", "href": "/programs/rent" },
-    { "label": "Studio grants", "href": "/programs/studio" },
-    { "label": "Stories", "href": "/programs/stories" }
-  ],
-  "accent": "ref:tokens@color.warm"
-}

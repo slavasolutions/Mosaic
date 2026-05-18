@@ -1,6 +1,0 @@
-{
-  "title": "Contact",
-  "sections": [
-    { "type": "email", "value": "ref:site@contact.email" }
-  ]
-}

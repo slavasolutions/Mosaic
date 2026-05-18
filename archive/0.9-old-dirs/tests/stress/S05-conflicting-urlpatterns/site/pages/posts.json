@@ -1,6 +1,0 @@
-{
-  "title": "Posts",
-  "sections": [
-    { "type": "collection-list", "from": "collections/notes" }
-  ]
-}

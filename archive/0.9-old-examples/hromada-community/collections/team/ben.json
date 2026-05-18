@@ -1,6 +1,0 @@
-{
-  "title": "Ben Smith",
-  "role": "Program Coordinator",
-  "email": "ben@hromada.example.org",
-  "colleagues": ["ref:team/anna", "ref:team/maria"]
-}

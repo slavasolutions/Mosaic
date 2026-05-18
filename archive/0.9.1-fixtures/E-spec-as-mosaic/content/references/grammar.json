@@ -1,9 +1,0 @@
-{
-  "@type": "spec-section",
-  "title": "Identity grammar for references",
-  "section_number": "11.3",
-  "see_also": [
-    "ref:references/value",
-    "ref:cascade/what-was-cut"
-  ]
-}
