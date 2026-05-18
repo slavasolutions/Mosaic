@@ -1,83 +1,33 @@
 # Mosaic Spec Changelog
 
+## 0.9.2 (2026-05-18) — clean cut
+
+A subtractive release. Same rules as 0.9.1; smaller repository.
+
+### What changed
+
+- **Reorganised root.** Old session artefacts (`HANDOFF.md`, `STATE.md`, `STATE.html`, `VIEWER.html`, `REVIEW-BUNDLE.md`), pre-0.9 example sites (`examples/{astro-test, complex-site, hromada-community, minimal-site, v0.9}/`), and legacy top-level directories (`tools/`, `skills/`, `tests/`, `docs/`) moved into `archive/`.
+- **Reference validator renamed and repositioned.** Moved from `apps/folderdb/validate.py` to `spec/tools/validate.py`. It is now framed as the spec's executable companion, not as a seed for a separate product.
+- **Removed the `apps/` directory entirely.** Any browser / editor / packaged-binary work belongs in its own repository going forward.
+- **Lighter fixture set.** Spec examples shrunk from seven to four — `A-identity`, `B-sidecars`, `C-cascade`, `D-web`. The three heavier fixtures (`E-spec-as-mosaic`, `F-opaque-payloads`, `G-name-violations`) are preserved in `archive/0.9.1-fixtures/` and can be restored when a consumer needs them.
+- **Rolled back the 0.9.1 Phase 5 profile mechanism clauses.** §5.2 (profile extraction rule) and §7.2 (profile-visible directory carve-out) are NOT part of 0.9.2. They will return when the first concrete profile lands and demands them. The `profiles/claude-code.md` draft is preserved in the `0.9.1-spec` git branch history; it is not in 0.9.2.
+
+### What did NOT change
+
+- The base format rules — §§5, 6, 7, 7.1, 7.2 (the three-bullet hidden-name rule, no carve-out), 7.3, 8, 9.
+- The reference grammar (§11) and cascade (§12).
+- The five locked decisions in `format/DECISIONS-locked.md`.
+- The validator behaviour — same output, same fixtures pass/fail to the same counts.
+
+### Where to find earlier work
+
+The `0.9.1-spec` git branch has the full hardening pass (Phases 1–5), including the profile-mechanism additions, the spec-as-Mosaic dogfood, the Claude Code profile draft, and the opaque-payload / name-violation fixtures. Nothing is lost — just not loaded by default in 0.9.2.
+
+The `0.9.1-folderdb-app` git branch has the in-progress FolderDB browser app (web + PWA + partial Tauri wrap). Stays available as a starting point for a separate FolderDB repository if and when that work resumes.
+
 ## 0.9.1 (2026-05-17/18) — format lock + hardening pass
 
-Fresh, much tighter rewrite plus a four-phase hardening pass. Supersedes
-the 0.8.x spec and the 14 MIPs.
-
-### Hardening pass (Phases 1–4)
-
-The format is unchanged. Spec text only got clearer; the validator gained
-a rule-by-rule name parser; the example corpus gained three fixtures
-(opaque payloads, name violations, and the dogfood spec-as-Mosaic);
-nothing was added that the spec doesn't already require.
-
-| Phase | Commit | What changed |
-|---|---|---|
-| 1 | `3af28d3` | Cascade-scope contradiction resolved across §12, the README, CHANGELOG, and DECISIONS-locked.md — PRAGMATIC is consistent everywhere. |
-| 2 | `3f5a678` | Validator now implements §7 directly: extension required, base+modifier charset enforced inside `split_name()`. `\ref:` escape pinned down in §11.2 (single sentence). F-opaque-payloads + G-name-violations fixtures added. |
-| 3 | `2c1a26b` | `E-spec-as-mosaic` — the spec encoded as a Mosaic folder (~30 records, 4 chapters, one French sparse variant). Surfaces the §12.4 "collection-record sidecar participation in cascade" ambiguity as a finding to escalate, not a rule to add. |
-| 4 | (this commit) | README pain-first lead; identity pivot promoted to §1.1; resolution pipeline added as §1.2 forward reference; `profile` defined in terminology; `02-references.md` opening tightened (no more "promotes itself"); validator scope honest in both READMEs. |
-
-### Changed
-
-- **Restructured.** Spec collapsed to two short documents: `format/01-format.md` (the base) and `format/02-references.md` (refs + cascade). Three structural rules + consequences.
-- **Framing pivot.** A record is an **identity**; the JSON file *describes* it. This single sentence resolves the file-form vs folder-form discussion.
-- **Cascade reduced.** Only the base-blessed key `locale` and keys explicitly declared by a profile or schema cascade. `defaults` lives on collection records (`index.json`). Shallow key-level only — no deep merge, no array concat, no implicit "all fields cascade".
-- **References.** Two anchors only (absolute, relative); no cascade anchor. Grammar is `ref:<identity>[#<json-pointer>]`. Nothing else.
-- **Locale.** Base format blesses `locale` as the single inheritable key (PRAGMATIC choice over STRICT). Locale *syntax* (`name.fr.json`) is in the base; locale *resolution* is in the i18n/web profile.
-- **Variant sidecars are sparse.** Restate only the fields that differ from the canonical sidecar.
-
-### Cut
-
-- Cascade as a reference anchor (`ref:foo` walking ancestors)
-- Deep merge / array concatenation in cascade
-- Implicit "everything cascades" mode
-- Sidecar participation in cascade chain
-- Cascading into opaque content
-- Wildcards, predicates, content-queries in references (the "hard ceiling" — these will never be in scope)
-- The MIP-as-spec-source process; MIPs archived to `archive/0.9-old-mips/`
-- The monolithic `SPEC.md`; archived to `archive/0.9-old-spec.md`
-
-### Decisions (locked)
-
-See `format/DECISIONS-locked.md` for the full text of each decision and what was rejected.
-
-| # | Decision | Pick |
-|---|---|---|
-| 0 | Framing: record = identity, file = description | **confirmed** |
-| 1 | File-form vs folder-form coexistence | **two spellings of one identity; both-at-once = error** |
-| 2 | Cascade scope (STRICT vs PRAGMATIC) | **PRAGMATIC** |
-| 3 | Variant sidecars (sparse vs complete) | **sparse** |
-| 4 | Web profile routing root | **configurable, default `pages/`** |
-| 5 | Locale: base or profile? | **follows #2 — base blesses `locale`** |
-
-### Validator + reference app
-
-`apps/folderdb/validate.py` is the reference base-format validator (§§5–9).
-Stdlib Python, ~280 lines after Phase 2. Covers naming, identity, sidecar
-matching, file/folder collisions, frontmatter-as-inert. Does NOT yet
-implement reference resolution (§11.4) or cascade (§12) — those land in
-the browser/Node FolderDB app at `apps/folderdb-app/` on branch
-`0.9.1-folderdb-app`.
-
-The FolderDB app (built by a teammate session) is a 0-dependency single-page
-PWA that ports the validator to JavaScript and adds record browsing, tree
-view, refs/cascade visualisation, and PWA-install / Vercel-host capability.
-All 6 spec example fixtures (A through G excluding E) validate to identical
-counts in both the Python and JS implementations.
-
-### Example fixtures
-
-- `A-identity` — file/folder collision (intentional FAIL)
-- `B-sidecars` — orphan modifier sidecar warning
-- `C-cascade` — collection records with `defaults`
-- `D-web` — `pages/` routing shape (no base-format change)
-- `E-spec-as-mosaic` — the spec, encoded as a Mosaic folder; ~30 records,
-  4 chapters, one French sparse variant; the dogfood acceptance test
-- `F-opaque-payloads` — `.pdf` / `.png` / `.csv` + sidecars + multi-dot
-  names + `\ref:` escape demonstration
-- `G-name-violations` — §7 charset violations (intentional FAIL, 4 errors)
+See the `0.9.1-spec` git branch for full detail. Five-phase hardening: cascade-scope contradiction resolved, validator implemented §7 directly, `\ref:` escape pinned in §11.2, spec-as-Mosaic dogfood, README pain-first rewrite, profile-mechanism clauses (rolled back in 0.9.2).
 
 ## 0.9 (earlier 2026-05) — realignment
 

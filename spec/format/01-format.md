@@ -1,9 +1,9 @@
 # Mosaic Format Specification
 
-**Version:** 0.9 (draft)
+**Version:** 0.9.2 (draft)
 **Status:** Working Draft
-**Layer:** Base format (substrate). Profiles such as Mosaic Web are specified
-separately and MUST NOT alter the rules below.
+**Layer:** Base format (substrate). Profiles such as a future Mosaic Web
+specification are specified separately and MUST NOT alter the rules below.
 
 ---
 
