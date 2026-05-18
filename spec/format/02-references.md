@@ -2,9 +2,10 @@
 
 **Version:** 0.9 (draft) · companion to `01-format.md`
 **Status:** Working Draft
-**Layer:** Base format. This document promotes *content references* from
-out-of-scope (§10 of `01-format.md`) to a defined Section 11. *Structural*
-relationships remain implicit and undefined — they are free from layout.
+**Layer:** Base format. This document defines **content references** (§11)
+and the minimal **cascade** mechanism (§12). *Structural* relationships
+remain implicit in the directory tree and undefined here — they are free
+from layout.
 
 ---
 

@@ -18,6 +18,39 @@ parser.
 This document specifies the base format. It is deliberately small: three
 structural rules plus naming constraints.
 
+### 1.1 The framing pivot — a record is an identity
+
+A **record** is not a file; it is an *identity*. The JSON describes that
+identity; the content file is its body. This single distinction makes the
+file-form / folder-form question disappear:
+
+```
+about.json                  ─┐
+                              ├──→  identity:  about
+about/index.json            ─┘
+```
+
+`about.json` today; `about/index.json` tomorrow when `about` grows children.
+Same identity. No reference breaks. No rename. The full identity rules are
+in §7.1.
+
+### 1.2 The resolution pipeline (forward reference)
+
+The effective JSON of any record is computed in exactly this order, once:
+
+```
+content (.json) or empty       (§5)
+  → + sidecar merge             (§8, shallow; sidecar wins on collision)
+    → + cascade fill            (02-references.md §12.3, locale or declared)
+      → + references resolved   (02-references.md §11.4, against the above)
+```
+
+§5–§9 in this document define steps 1 and 2 plus the rules that govern
+them. Steps 3 and 4 are specified in the companion document
+`02-references.md`. The pipeline is fixed, single-pass, and never re-enters
+a step; this predictability is what keeps the format from growing an
+evaluator.
+
 ## 2. Notation
 
 The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**,
@@ -41,6 +74,9 @@ appear in all capitals.
 - **Identity** — the stable, path-derived name of a record (Section 7.1).
 - **Consumer** — any tool that reads a Mosaic folder.
 - **Writer** — any tool that produces or modifies a Mosaic folder.
+- **Profile** — a separate specification layered on the base (for example,
+  Mosaic Web). A profile defines additional domain-specific rules and keys;
+  it MAY add but MUST NOT contradict the base (§4).
 
 ## 4. Conformance
 

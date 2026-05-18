@@ -2,17 +2,37 @@
 
 **Version:** 0.9.1 (draft — format locked, not 1.0)
 **Status:** Working Draft
-**Scope:** the base format only. Web profile and other extensions are separate.
+**Scope:** the base format only. Mosaic Web and other separate specifications layer on top.
 
 ---
 
-## What Mosaic is in five sentences
+## Why Mosaic exists
 
-1. Mosaic is a convention for using a plain folder as a structured content store — files are records, folders are collections.
-2. The filesystem is the source of truth; no database engine, no daemon, no required runtime.
-3. The base format is small on purpose: three structural rules plus naming and sidecar follow-ons.
-4. Anything web-shaped (pages, routes, design tokens, redirects) lives in a **separate profile**, not in the base.
-5. Tools (validators, editors, renderers) consume the format; nothing in the format depends on a particular tool.
+Git-friendly content stores keep reinventing the same handful of folder,
+naming, and metadata rules — incompatibly. Every CMS that wants to "just be
+files" ends up improvising its own version of identity, sidecars, variants,
+inheritance, and cross-references. The decisions are usually reasonable
+in isolation and almost never the same. Tools written against one set don't
+work against another. Authors learn the local dialect, get locked in to
+it, and lose the very portability that "just files" was supposed to grant.
+
+**Mosaic is that rule set, frozen and specified.** Three structural rules,
+a naming grammar, a sidecar convention, and a small reference grammar —
+nothing more. Any tool that follows the rules can read any folder that
+follows them. The filesystem is the database; the spec is the contract.
+
+## What it actually is
+
+1. A convention for using a plain folder as a structured content store —
+   files are records, folders are collections.
+2. The filesystem is the source of truth; no database engine, no daemon,
+   no required runtime.
+3. The base format is small on purpose: three structural rules plus
+   naming, sidecar, and unknown-field follow-ons.
+4. Anything web-shaped (pages, routes, design tokens, redirects) lives in
+   a separate specification, not in the base.
+5. Tools (validators, editors, renderers) consume the format; nothing in
+   the format depends on a particular tool.
 
 ## What's in this folder
 
@@ -61,9 +81,26 @@ python3 ../apps/folderdb/validate.py spec/examples/A-identity/content
 python3 ../apps/folderdb/validate.py spec/examples/B-sidecars/content
 python3 ../apps/folderdb/validate.py spec/examples/C-cascade/content
 python3 ../apps/folderdb/validate.py spec/examples/D-web/content
+python3 ../apps/folderdb/validate.py spec/examples/E-spec-as-mosaic/content
+python3 ../apps/folderdb/validate.py spec/examples/F-opaque-payloads/content
+python3 ../apps/folderdb/validate.py spec/examples/G-name-violations/content
 ```
 
-`A-identity` is the only example that fails (intentionally — it contains the `collision/about` ambiguity that the spec forbids).
+`A-identity` and `G-name-violations` are the only examples that fail (both
+intentionally — `A` contains a `collision/about` ambiguity, `G` is a
+deliberate fixture of §7 name-rule violations).
+
+### What the validator does and does NOT cover
+
+The Python validator at `apps/folderdb/validate.py` is the executable
+companion to §§5–9 of the base format only: it enforces names, identity,
+sidecar matching, file-form/folder-form collisions, frontmatter-as-inert,
+and manifest preservation. It does **not** yet resolve references
+(`format/02-references.md` §11) or apply cascade (§12); those normative
+rules are documented in the spec and will land in the Node/TS FolderDB
+build at `apps/folderdb-app/`. The four examples that exercise refs and
+cascade pass structurally; runtime resolution is the next implementation
+beat, not a spec gap.
 
 ## What's next (not in this draft)
 
