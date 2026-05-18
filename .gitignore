@@ -1,0 +1,23 @@
+node_modules/
+.DS_Store
+*.log
+.env
+.env.*
+
+# Mosaic-generated artifacts
+.mosaic/
+index.json
+index.db
+
+# Renderer output
+out/
+dist/
+
+# Astro
+.astro/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+.omc/

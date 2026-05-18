@@ -1,0 +1,65 @@
+{
+  "name": "mosaic-astro",
+  "version": "0.1.0",
+  "description": "Astro Content Layer loader for Mosaic folders. Read your content from a folder; let Astro render it.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md",
+    "logo.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "mosaic",
+    "astro",
+    "content",
+    "loader",
+    "content-layer"
+  ],
+  "author": "Slava Solutions",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slavasolutions/mosaic.git",
+    "directory": "packages/astro"
+  },
+  "homepage": "https://github.com/slavasolutions/mosaic/tree/main/packages/astro",
+  "bugs": {
+    "url": "https://github.com/slavasolutions/mosaic/issues"
+  },
+  "dependencies": {
+    "mosaic-core": "*"
+  },
+  "peerDependencies": {
+    "astro": "^4.14.0 || ^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "astro": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.41",
+    "astro": "^5.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^1.6.1"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}
