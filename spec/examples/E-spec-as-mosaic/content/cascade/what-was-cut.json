@@ -1,0 +1,9 @@
+{
+  "@type": "spec-section",
+  "title": "What was cut (and why)",
+  "section_number": "12.4",
+  "see_also": [
+    "ref:references/grammar",
+    "ref:references/value"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "@type": "spec-section",
+  "title": "Records (Rule 1)",
+  "section_number": "5",
+  "rule": 1,
+  "see_also": [
+    "ref:format/sidecars",
+    "ref:format/naming"
+  ]
+}

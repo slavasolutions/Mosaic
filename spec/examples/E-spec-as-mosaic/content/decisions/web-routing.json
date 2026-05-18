@@ -1,0 +1,9 @@
+{
+  "@type": "decision",
+  "title": "Web profile routing",
+  "decision_number": 4,
+  "status": "LOCKED — root configurable, default `pages/`; base format stays web-ignorant",
+  "see_also": [
+    "ref:format/out-of-scope"
+  ]
+}

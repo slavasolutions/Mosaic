@@ -1,0 +1,10 @@
+{
+  "@type": "spec-section",
+  "title": "Reference value",
+  "section_number": "11.2",
+  "see_also": [
+    "ref:references/grammar",
+    "ref:references/resolution",
+    "ref:format/unknown-fields"
+  ]
+}

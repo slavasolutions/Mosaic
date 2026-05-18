@@ -1,0 +1,10 @@
+{
+  "@type": "spec-section",
+  "title": "Collections (Rule 2)",
+  "section_number": "6",
+  "rule": 2,
+  "see_also": [
+    "ref:format/records",
+    "ref:format/naming"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "@type": "spec-section",
+  "title": "Sidecars",
+  "section_number": "8",
+  "see_also": [
+    "ref:format/records",
+    "ref:format/naming"
+  ]
+}

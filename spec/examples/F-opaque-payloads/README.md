@@ -8,14 +8,19 @@ per §7, and that multi-dot names work end-to-end.
 
 ```
 RESOLVED RECORDS
-  brochure              <- brochure.json, brochure.pdf
-  data                  <- data.csv, data.json
+  brochure              <- brochure.pdf
+  data                  <- data.csv
   escape-demo           <- escape-demo.json
-  logo                  <- logo.json, logo.png
-  report                <- report.csv.notes.json, report.csv.notes.md
+  logo                  <- logo.png
+  report                <- report.csv.notes.md
 
 RESULT: PASS  (0 errors, 0 warnings)
 ```
+
+Each opaque payload is the record's content; its `.json` sidebar (same base
+and modifier set) merges onto its metadata per §8 and is not listed
+separately. `escape-demo.json` has no content sibling so it IS the content
+(the degenerate structured case per §5.1).
 
 ## What this fixture covers
 

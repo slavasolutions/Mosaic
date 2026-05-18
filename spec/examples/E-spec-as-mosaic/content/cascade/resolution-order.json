@@ -1,0 +1,11 @@
+{
+  "@type": "spec-section",
+  "title": "Resolution order (normative)",
+  "section_number": "12.5",
+  "pipeline_step_count": 4,
+  "see_also": [
+    "ref:format/sidecars",
+    "ref:cascade/minimal-definition",
+    "ref:references/resolution"
+  ]
+}

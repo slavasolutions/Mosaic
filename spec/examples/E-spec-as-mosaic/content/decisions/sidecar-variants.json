@@ -1,0 +1,10 @@
+{
+  "@type": "decision",
+  "title": "Sidecar variants — sparse",
+  "decision_number": 3,
+  "status": "LOCKED — variants are sparse overrides only",
+  "see_also": [
+    "ref:format/sidecars",
+    "ref:cascade/resolution-order"
+  ]
+}

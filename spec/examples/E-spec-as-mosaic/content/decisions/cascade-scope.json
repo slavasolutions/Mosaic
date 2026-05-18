@@ -1,0 +1,10 @@
+{
+  "@type": "decision",
+  "title": "Cascade scope — PRAGMATIC",
+  "decision_number": 2,
+  "status": "LOCKED — PRAGMATIC (base blesses `locale`; everything else profile-declared)",
+  "see_also": [
+    "ref:cascade/minimal-definition",
+    "ref:cascade/index"
+  ]
+}

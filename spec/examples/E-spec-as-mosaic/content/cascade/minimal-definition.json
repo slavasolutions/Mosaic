@@ -1,0 +1,9 @@
+{
+  "@type": "spec-section",
+  "title": "Minimal definition (rigid)",
+  "section_number": "12.3",
+  "see_also": [
+    "ref:format/collections",
+    "ref:cascade/resolution-order"
+  ]
+}

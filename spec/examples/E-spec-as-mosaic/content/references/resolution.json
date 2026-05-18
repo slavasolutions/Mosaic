@@ -1,0 +1,10 @@
+{
+  "@type": "spec-section",
+  "title": "Resolution",
+  "section_number": "11.4",
+  "see_also": [
+    "ref:format/naming",
+    "ref:format/sidecars",
+    "ref:cascade/resolution-order"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "@type": "spec-section",
+  "title": "Naming and Identity (Rule 3)",
+  "section_number": "7",
+  "rule": 3,
+  "see_also": [
+    "ref:format/records",
+    "ref:format/collections",
+    "ref:format/sidecars"
+  ]
+}
