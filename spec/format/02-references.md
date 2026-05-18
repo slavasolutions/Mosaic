@@ -114,6 +114,12 @@ This ceiling is the line that keeps Mosaic from re-deriving XPath.
 > This section is under deliberate scrutiny. Cascade is the single most likely
 > feature to over-grow the spec. What follows is the tightened proposal, the
 > reasoning, and what was cut.
+>
+> The base format blesses exactly one key as cascading by default: `locale`.
+> This single exception exists so every i18n-aware profile inherits the active
+> locale without having to re-declare it. All other cascading keys MUST be
+> declared by a profile or schema (§12.3 clause 5). There is no other
+> base-blessed key, and none will be added.
 
 ### 12.1 The problem cascade solves
 
@@ -147,9 +153,10 @@ Cascade is restricted to a **single, explicit, opt-in mechanism**:
 4. Cascade is **shallow and key-level only**. It selects a whole value by key.
    It MUST NOT deep-merge objects or concatenate arrays. A present key on the
    record fully shadows all ancestor defaults for that key.
-5. Cascade applies only to keys a profile or schema explicitly marks as
-   cascading. A key not declared cascading is never inherited. There is no
-   "cascade everything" mode.
+5. Cascade applies to (a) the single base-blessed key `locale`, and (b) any
+   additional keys a profile or schema explicitly declares cascading. No
+   other keys cascade. A key that is neither `locale` nor declared cascading
+   is never inherited. There is no "cascade everything" mode.
 6. References (§11) are resolved **after** cascade, against the effective
    record. A cascaded value MAY itself be a reference.
 
@@ -159,7 +166,7 @@ Cascade is restricted to a **single, explicit, opt-in mechanism**:
 |-----|--------|
 | Cascade as a reference *anchor* (`ref:foo` searching ancestors) | Two mechanisms doing one job. References are absolute/relative only (§11.3). Cascade is inheritance, not addressing. Keeping them separate is the rigidity win. |
 | Deep merge / array concat | That is a merge language. Shallow key-level only. |
-| Implicit "all fields cascade" | Action-at-a-distance with no opt-in. Must be schema-declared. |
+| Implicit "all fields cascade" | Action-at-a-distance with no opt-in. Only `locale` is base-blessed; all other cascading keys MUST be profile/schema-declared. |
 | Sidecar participation in cascade | Sidecars override locally (§8); mixing them into the chain creates a 2-axis resolution order. Sidecar first, then cascade — never interleaved. |
 | Cascading into opaque content | Cascade is JSON-only; opaque payloads have no keys to inherit. |
 
@@ -170,7 +177,7 @@ For any record, the effective JSON is computed in exactly this order, once:
 ```
 1. content (.json) or empty object for opaque records
 2. + sidecar merge            (01-format.md §8, shallow, sidecar wins)
-3. + cascade fill             (§12.3, only for declared keys, only if absent)
+3. + cascade fill             (§12.3, only for `locale` or declared keys, only if absent)
 4. references resolved        (§11.4, against the result of step 3)
 ```
 
@@ -275,6 +282,6 @@ selector respectively.
 | Anchors | absolute or relative — **no** cascade anchor |
 | Resolution | pure; folder contents only; same input → same output |
 | Integrity | dangling = warning, never error; format never enforces |
-| Cascade | opt-in `defaults` on collection records; shallow; declared keys only |
+| Cascade | opt-in `defaults` on collection records; shallow; base-blessed `locale` plus declared keys only |
 | Pipeline | content → sidecar → cascade → refs; fixed, single pass |
 | Ceiling | no expressions, no predicates, no content-queries — ever |

@@ -8,7 +8,7 @@ Fresh, much tighter rewrite. Supersedes the 0.8.x spec and the 14 MIPs.
 
 - **Restructured.** Spec collapsed to two short documents: `format/01-format.md` (the base) and `format/02-references.md` (refs + cascade). Three structural rules + consequences.
 - **Framing pivot.** A record is an **identity**; the JSON file *describes* it. This single sentence resolves the file-form vs folder-form discussion.
-- **Cascade reduced.** Only declared keys cascade. `defaults` lives on collection records (`index.json`). Shallow key-level only — no deep merge, no array concat, no implicit "all fields cascade".
+- **Cascade reduced.** Only the base-blessed key `locale` and keys explicitly declared by a profile or schema cascade. `defaults` lives on collection records (`index.json`). Shallow key-level only — no deep merge, no array concat, no implicit "all fields cascade".
 - **References.** Two anchors only (absolute, relative); no cascade anchor. Grammar is `ref:<identity>[#<json-pointer>]`. Nothing else.
 - **Locale.** Base format blesses `locale` as the single inheritable key (PRAGMATIC choice over STRICT). Locale *syntax* (`name.fr.json`) is in the base; locale *resolution* is in the i18n/web profile.
 - **Variant sidecars are sparse.** Restate only the fields that differ from the canonical sidecar.

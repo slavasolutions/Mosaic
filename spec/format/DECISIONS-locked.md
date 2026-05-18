@@ -1,11 +1,17 @@
 # Mosaic — settle the spec
 
-Five open forks. Each one below: the question in one line, what each option
-*looks like as files*, what it resolves to, my recommendation, and a line for
-your call. The matching folders are in `examples/`.
+> **LOCKED 2026-05-17.** All five decisions below were resolved **as
+> recommended**. The `[ ]` checkboxes are preserved as a historical artifact
+> of the decision moment; treat them as ticked. The normative consequence of
+> each lock is reflected in `01-format.md` and `02-references.md`.
 
-You can run `python3 validate.py examples/A-identity/content` etc. to see
-behaviour live.
+Five forks (now resolved). Each one below: the question in one line, what
+each option *looks like as files*, what it resolves to, the recommendation
+that was taken, and the original decision checkbox. The matching folders are
+in `examples/`.
+
+You can run `python3 ../../apps/folderdb/validate.py examples/A-identity/content`
+etc. to see behaviour live.
 
 ---
 
