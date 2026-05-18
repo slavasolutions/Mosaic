@@ -42,7 +42,11 @@ ref:<identity>[#<json-pointer>]
 
 A consumer MUST treat a string beginning with `ref:` as a reference. A literal
 string value that must begin with the characters `ref:` MUST be escaped as
-`\ref:`; a leading `\` is otherwise reserved.
+`\ref:`. A leading `\` is treated as an escape **only** when it immediately
+precedes the literal token `ref:` at the start of a string value, in which
+case the stored value is the string with that one backslash removed; in every
+other position `\` is an ordinary character and MUST be preserved verbatim
+(consistent with the §9 unknown-field round-trip guarantee).
 
 ### 11.3 Identity grammar for references
 

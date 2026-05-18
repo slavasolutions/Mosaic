@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Mosaic Format Validator (base format, spec v0.9 draft).
+Mosaic Format Validator (base format, spec v0.9.1 draft).
 
 Implements only the base format: records, collections, naming/identity,
 sidecars, hidden files, frontmatter (inert/warning), unknown-field preservation.
@@ -39,14 +39,42 @@ class Report:
 
 
 def split_name(filename):
-    """Return (base, modifiers, ext). 'about.fr.md' -> ('about', ['fr'], 'md')."""
+    """
+    Split filename per §7 of 01-format.md.
+
+    Returns (base, modifiers, ext, err). err is None when the name is valid;
+    otherwise a string describing the §7 violation. When err is not None the
+    returned (base, modifiers, ext) is best-effort and the file MUST be
+    treated as non-conforming.
+
+    Rules enforced (§7):
+    - The extension is the FINAL dot-segment. Names with no dot are rejected
+      because §7.3 requires .ext.
+    - The base name is the FIRST dot-segment.
+    - Modifiers are every dot-segment between base and ext.
+    - The base and every modifier MUST match the §7 charset
+      (lowercase a-z, digits, hyphen; not starting or ending with hyphen).
+    """
+    if "." not in filename:
+        return filename, [], "", (
+            f"missing extension; §7.3 requires .ext (got '{filename}')"
+        )
     parts = filename.split(".")
-    if len(parts) < 2:
-        return parts[0], [], ""
-    ext = parts[-1]
     base = parts[0]
+    ext = parts[-1]
     modifiers = parts[1:-1]
-    return base, modifiers, ext
+    if not NAME_RE.match(base):
+        return base, modifiers, ext, (
+            f"invalid record name '{base}' (§7: lowercase a-z 0-9 hyphen, "
+            f"no leading/trailing hyphen)"
+        )
+    for m in modifiers:
+        if not NAME_RE.match(m):
+            return base, modifiers, ext, (
+                f"invalid modifier '.{m}' in '{filename}' "
+                f"(§7: same charset as base name)"
+            )
+    return base, modifiers, ext, None
 
 
 def is_hidden(rel_parts):
@@ -60,7 +88,7 @@ def identity_of(rel_path):
     strip ext, strip modifiers, strip trailing /index.
     """
     parts = list(rel_path.parts)
-    base, _mods, _ext = split_name(parts[-1])
+    base, _mods, _ext, _err = split_name(parts[-1])
     parts[-1] = base
     if parts[-1] == "index":
         parts = parts[:-1]
@@ -93,20 +121,21 @@ def validate(root: Path):
             except Exception as e:
                 rep.error(rel, f"manifest mosaic.json is not valid JSON: {e}")
             continue
-        base, mods, ext = split_name(p.name)
-        files.append((rel, p, base, mods, ext))
+        base, mods, ext, name_err = split_name(p.name)
+        files.append((rel, p, base, mods, ext, name_err))
 
     # Pass 2: per-file checks (naming, encoding, json, frontmatter).
     by_dir = {}  # dir -> list of (rel,p,base,mods,ext)
-    for rel, p, base, mods, ext in files:
-        # UTF-8 + lowercase + name charset (spec §7)
+    conforming = []  # files that survived split_name
+    for rel, p, base, mods, ext, name_err in files:
+        if name_err:
+            rep.error(rel, name_err)
+            continue  # non-conforming filename: skip downstream checks
+
+        # Whole-name lowercase check (catches uppercase EXT, which split_name
+        # does not validate against the §7 charset — only base + modifiers do).
         if p.name != p.name.lower():
             rep.error(rel, f"name must be lowercase: '{p.name}'")
-        if not NAME_RE.match(base):
-            rep.error(rel, f"invalid record name '{base}' (lowercase a-z 0-9 - only)")
-        for m in mods:
-            if not NAME_RE.match(m):
-                rep.error(rel, f"invalid modifier '.{m}' in '{p.name}'")
 
         if ext == "json":
             try:
@@ -131,6 +160,7 @@ def validate(root: Path):
         # any other ext = opaque payload, no content check
 
         by_dir.setdefault(rel.parent, []).append((rel, p, base, mods, ext))
+        conforming.append((rel, p, base, mods, ext))
 
     # Pass 3: sidecar matching + orphan modifier sidecars (spec §8).
     sidecar_paths = set()
@@ -153,17 +183,15 @@ def validate(root: Path):
             # else: standalone .json record (the degenerate structured case)
 
     # Pass 4: identity resolution + collision (spec §7.1).
-    for rel, p, base, mods, ext in files:
+    for rel, p, base, mods, ext in conforming:
         if rel in sidecar_paths:
             continue  # sidecars don't define their own identity
         ident = identity_of(rel)
         rep.records.setdefault(ident, []).append(rel)
 
     for ident, srcs in sorted(rep.records.items()):
-        # Strip pure-variant duplicates (same identity via modifiers is allowed).
         forms = set()
         for s in srcs:
-            base, mods, ext = split_name(s.name)
             is_folder_form = s.name.startswith("index.")
             forms.add(("folder" if is_folder_form else "file", s.parent))
         # Collision = same identity reachable as BOTH a file form and a folder

@@ -1,0 +1,7 @@
+{
+  "title": "Escape demo (per 02-references.md §11.2)",
+  "real_ref": "ref:/brochure",
+  "literal_starts_with_ref": "\\ref:not-a-reference",
+  "literal_has_backslash_elsewhere": "this string \\ has a literal backslash in the middle",
+  "note": "Stored value of literal_starts_with_ref is the string 'ref:not-a-reference' — the leading backslash escape is consumed only when it immediately precedes the literal 'ref:' token at string start. Backslashes elsewhere are preserved verbatim."
+}
