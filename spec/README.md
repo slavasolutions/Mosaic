@@ -1,3 +1,5 @@
+<p align="center"><img src="../logo.svg" width="64" alt="Mosaic logo"></p>
+
 # Mosaic Specification
 
 **Version:** 0.9.2 (draft — format locked, not 1.0)

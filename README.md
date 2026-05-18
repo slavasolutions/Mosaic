@@ -1,3 +1,5 @@
+<p align="center"><img src="logo.svg" width="72" alt="Mosaic logo"></p>
+
 # Mosaic
 
 **A folder format for structured content.** Files are records, folders are collections, references link records. The filesystem is the database; the spec is the contract.
@@ -14,6 +16,8 @@ Any tool that follows the rules can read any folder that follows them. Switch to
 | [`spec/schemas/`](./spec/schemas/) | JSON Schema 2020-12 for `mosaic.json` manifests. |
 | [`spec/tools/`](./spec/tools/) | The reference validator (`validate.py`) — Python stdlib, ~280 lines, runs the spec rules against any folder. |
 | [`spec/profiles/`](./spec/profiles/) | Profile specifications that layer on the base format. First entry: `mosaic-web.md` (routing for websites). |
+| [`packages/core/`](./packages/core/) | Reference Node reader (`mosaic-core`). Zero-dep TypeScript implementation of §§5–12. Resolves a folder to its effective JSON. |
+| [`packages/astro/`](./packages/astro/) | Astro Content Layer loader (`mosaic-astro`). Lets an Astro site read a Mosaic folder as a content collection. |
 | `index.html` | A single-file visual explainer at the repo root, reusing the 0.8 showcase look. Open in any browser. |
 
 Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs, the 0.8.x monolithic spec, session artefacts, heavier 0.9.1 fixtures, and legal-protection drafts for the wider ecosystem — lives in a sibling folder at `../mosaic-archive/` (not part of this repository). Everything is also recoverable from git history.

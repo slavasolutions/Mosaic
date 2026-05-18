@@ -1,0 +1,7 @@
+test/
+tsconfig.json
+vitest.config.ts
+.gitignore
+node_modules/
+coverage/
+*.log

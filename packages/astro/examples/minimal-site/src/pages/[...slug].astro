@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('pages');
+  return entries
+    .filter((entry) => typeof entry.data.url === 'string')
+    .map((entry) => ({
+      // Strip the leading slash; Astro turns `slug: ""` into `/`.
+      params: { slug: entry.data.url.replace(/^\//, '') || undefined },
+      props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{entry.data.title ?? entry.id}</title>
+  </head>
+  <body>
+    <h1>{entry.data.title ?? entry.id}</h1>
+    {entry.body && <pre>{entry.body}</pre>}
+    <hr />
+    <p>id: <code>{entry.id}</code></p>
+    <p>url: <code>{entry.data.url}</code></p>
+  </body>
+</html>

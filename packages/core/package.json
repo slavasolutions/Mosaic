@@ -1,0 +1,54 @@
+{
+  "name": "mosaic-core",
+  "version": "0.1.0",
+  "description": "Reference Mosaic reader for Node. Zero deps. Implements §§5-12 of the spec.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md",
+    "logo.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "mosaic",
+    "content",
+    "folder",
+    "spec",
+    "cms"
+  ],
+  "author": "Slava Solutions",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slavasolutions/mosaic.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/slavasolutions/mosaic/issues"
+  },
+  "homepage": "https://github.com/slavasolutions/mosaic/tree/main/packages/core#readme",
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
