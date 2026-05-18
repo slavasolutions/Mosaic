@@ -13,6 +13,7 @@ Any tool that follows the rules can read any folder that follows them. Switch to
 | [`spec/examples/`](./spec/examples/) | Four lightweight worked examples: identity, sidecars, cascade, and the web profile shape. |
 | [`spec/schemas/`](./spec/schemas/) | JSON Schema 2020-12 for `mosaic.json` manifests. |
 | [`spec/tools/`](./spec/tools/) | The reference validator (`validate.py`) — Python stdlib, ~280 lines, runs the spec rules against any folder. |
+| [`spec/profiles/`](./spec/profiles/) | Profile specifications that layer on the base format. First entry: `mosaic-web.md` (routing for websites). |
 | `index.html` | A single-file visual explainer at the repo root, reusing the 0.8 showcase look. Open in any browser. |
 
 Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs, the 0.8.x monolithic spec, session artefacts, heavier 0.9.1 fixtures, and legal-protection drafts for the wider ecosystem — lives in a sibling folder at `../mosaic-archive/` (not part of this repository). Everything is also recoverable from git history.
@@ -25,10 +26,6 @@ Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs,
 
 - **Specification text** (`spec/format/`, `PRINCIPLES.md`, prose in `spec/schemas/mosaic.schema.json`) — [Creative Commons Attribution 4.0 International](./LICENSE-spec.md).
 - **Code** (`spec/tools/`, runnable examples) — [Apache License 2.0](./LICENSE-code), with explicit patent grant.
-
-## Trademark
-
-"Mosaic" is a trademark. The format is open; the name is not. See [`TRADEMARK.md`](./TRADEMARK.md) before shipping a "Mosaic-something" product.
 
 ## Reporting security issues
 

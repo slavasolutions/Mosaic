@@ -6,10 +6,10 @@ A subtractive release. Same rules as 0.9.1; smaller repository.
 
 ### What changed
 
-- **Reorganised root.** Old session artefacts (`HANDOFF.md`, `STATE.md`, `STATE.html`, `VIEWER.html`, `REVIEW-BUNDLE.md`), pre-0.9 example sites (`examples/{astro-test, complex-site, hromada-community, minimal-site, v0.9}/`), and legacy top-level directories (`tools/`, `skills/`, `tests/`, `docs/`) moved into `archive/`.
+- **Reorganised root.** Old session artefacts (`HANDOFF.md`, `STATE.md`, `STATE.html`, `VIEWER.html`, `REVIEW-BUNDLE.md`), pre-0.9 example sites (`examples/{astro-test, complex-site, hromada-community, minimal-site, v0.9}/`), and legacy top-level directories (`tools/`, `skills/`, `tests/`, `docs/`) moved into an archive that was then **relocated outside this repository** to the sibling folder `../mosaic-archive/`. The main worktree contains only forward-looking material; every relocated path is also recoverable from git history.
 - **Reference validator renamed and repositioned.** Moved from `apps/folderdb/validate.py` to `spec/tools/validate.py`. It is now framed as the spec's executable companion, not as a seed for a separate product.
 - **Removed the `apps/` directory entirely.** Any browser / editor / packaged-binary work belongs in its own repository going forward.
-- **Lighter fixture set.** Spec examples shrunk from seven to four — `A-identity`, `B-sidecars`, `C-cascade`, `D-web`. The three heavier fixtures (`E-spec-as-mosaic`, `F-opaque-payloads`, `G-name-violations`) are preserved in `archive/0.9.1-fixtures/` and can be restored when a consumer needs them.
+- **Lighter fixture set.** Spec examples shrunk from seven to four — `A-identity`, `B-sidecars`, `C-cascade`, `D-web`. The three heavier fixtures (`E-spec-as-mosaic`, `F-opaque-payloads`, `G-name-violations`) are preserved in the sibling `../mosaic-archive/0.9.1-fixtures/` folder and can be restored when a consumer needs them.
 - **Rolled back the 0.9.1 Phase 5 profile mechanism clauses.** §5.2 (profile extraction rule) and §7.2 (profile-visible directory carve-out) are NOT part of 0.9.2. They will return when the first concrete profile lands and demands them. The `profiles/claude-code.md` draft is preserved in the `0.9.1-spec` git branch history; it is not in 0.9.2.
 
 ### What did NOT change
@@ -31,8 +31,8 @@ See the `0.9.1-spec` git branch for full detail. Five-phase hardening: cascade-s
 
 ## 0.9 (earlier 2026-05) — realignment
 
-Pre-rewrite. See `archive/0.9-old-mips/` for the 14 MIPs and `archive/0.9-old-spec.md` for the 0.8.x-style monolithic spec that fed into the 0.9.1 lock.
+Pre-rewrite. See `../mosaic-archive/0.9-old-mips/` (sibling folder) for the 14 MIPs and `../mosaic-archive/0.9-old-spec.md` for the 0.8.x-style monolithic spec that fed into the 0.9.1 lock. Also recoverable from git history.
 
 ## 0.8.1 and earlier
 
-See `archive/0.8.1/` for snapshots.
+See `../mosaic-archive/0.8.1/` for snapshots.

@@ -164,12 +164,6 @@ package targets zero runtime dependencies.
 
 Adding a runtime dependency requires a MIP.
 
-## Trademark
-
-"Mosaic," the Mosaic logo, and "Mosaic Improvement Proposal" / "MIP"
-are trademarks. See `TRADEMARK.md`. Contributing code or spec text does
-NOT grant you any rights in the marks.
-
 ## Code of conduct
 
 Be civil. Disagree about ideas, not people. Reviewers are doing

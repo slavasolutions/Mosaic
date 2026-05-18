@@ -29,7 +29,8 @@ Git-friendly content stores keep reinventing the same handful of folder, naming,
 | `format/DECISIONS-locked.md` | The five decisions resolved during the 0.9.1 draft and what each one cut. |
 | `schemas/mosaic.schema.json` | JSON Schema 2020-12 for `mosaic.json` manifests. |
 | `tools/validate.py` | Reference validator — Python stdlib, runs the spec rules against any folder. |
-| `examples/` | Four worked examples (identity, sidecars, cascade, web-profile shape). |
+| `examples/` | Four worked examples (identity, sidecars, cascade, the Mosaic Web profile shape). |
+| `profiles/mosaic-web.md` | The first profile spec — routing, configurable root, URL derivation. Layers on the base; does not change it. |
 | `CHANGELOG.md` | What changed between drafts. |
 
 ## The three structural rules (headline)
@@ -77,8 +78,8 @@ The Python validator at `tools/validate.py` is the executable companion to §§5
 
 ## What's deferred to future versions
 
-- Mosaic Web profile — a separate spec doc covering routing, design tokens, redirects
+- **Mosaic Web profile** is in 0.9.2 (`profiles/mosaic-web.md`) — but covers only routing for now. Design tokens, redirects, sitemaps come in a later iteration.
 - Profile mechanism clauses in the base (§5.2 extraction rule, §7.2 profile-visible carve-out) — drafted in 0.9.1; rolled back here pending a real consumer
-- Heavier example fixtures (spec-as-Mosaic dogfood, opaque payloads, name-violation negative test) — preserved in `archive/0.9.1-fixtures/` for whoever needs them
+- Heavier example fixtures (spec-as-Mosaic dogfood, opaque payloads, name-violation negative test) — preserved in the sibling `../mosaic-archive/0.9.1-fixtures/` folder for whoever needs them
 
 This is **0.9.2**, not 1.0. The format is locked at the headline; details may still shift before 1.0 based on real-world consumer feedback.

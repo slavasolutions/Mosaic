@@ -73,7 +73,6 @@ in `SPEC.md` Appendix F.
   report those to their respective maintainers. We are happy to relay
   reports if you're not sure where to send them.
 - Vulnerabilities in your own product that consumes Mosaic — same.
-- Trademark / branding disputes — see `TRADEMARK.md`.
 
 ## Safe harbor
 

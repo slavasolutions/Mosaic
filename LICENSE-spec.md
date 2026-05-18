@@ -41,10 +41,6 @@ because:
 2. CC0 cannot be revoked, but new versions of the spec can be released
    under stricter terms. Prior CC0 releases (v0.1–v0.5) remain CC0
    forever; from v0.9 forward, CC BY 4.0 applies.
-3. The trademark "Mosaic" (as applied to this format and any
-   conformance program) is **not** licensed under CC BY 4.0. See
-   `TRADEMARK.md`.
-
 ## Patent grant
 
 CC BY 4.0 includes a limited patent license for the licensed material
