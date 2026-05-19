@@ -10,10 +10,11 @@ import { readMosaic } from '@ssolu/mosaic-next';
 import type { MosaicEntry, MosaicResolution } from '@ssolu/mosaic-next';
 import { join } from 'node:path';
 
-// `process.cwd()` during `next build` is the example site's root, so
-// `./content` resolves there. We compute it once so we don't depend on a
-// per-call cwd quirk.
-const CONTENT_ROOT = join(process.cwd(), 'content');
+// Canonical content lives at `<repo>/examples/content/` — shared between
+// the Astro twin and this Next site. `process.cwd()` during `next build`
+// is this example's root (packages/next/examples/minimal-next-site/), so
+// we hop up four levels to reach the repo root.
+const CONTENT_ROOT = join(process.cwd(), '..', '..', '..', '..', 'examples', 'content');
 
 let cached: Promise<MosaicResolution> | null = null;
 

@@ -1,5 +1,0 @@
-{
-  "@type": "Blog",
-  "title": "Journal",
-  "lede": "Notes from the shed. Each post is a JSON sidecar plus a markdown body — the framework lists them by querying the collection."
-}

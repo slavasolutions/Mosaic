@@ -97,7 +97,7 @@ npm install
 npm run dev
 ```
 
-It reads `examples/minimal-site/content/` (a small Mosaic folder mirroring the spec's D-web fixture) and serves the four expected routes:
+It reads the canonical `examples/content/` folder at the repo root (a small Mosaic folder mirroring the spec's D-web fixture, shared with the Next twin) and serves the expected routes:
 
 - `/` (from `pages/index.json`)
 - `/about` (from `pages/about.json`)

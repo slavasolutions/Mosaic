@@ -26,7 +26,7 @@ No database. No daemon. No engine. The filesystem is the database; the spec is t
 
 **[Try the example site →](https://slavasolutions.github.io/mosaic/example/)**
 
-The pages you see there are literally the JSON files in [`packages/astro/examples/minimal-site/content/`](./packages/astro/examples/minimal-site/content/). Edit a file, the site updates. Move the folder anywhere — the site moves with it.
+The pages you see there are literally the JSON files in [`examples/content/`](./examples/content/). Edit a file, the site updates. Move the folder anywhere — the site moves with it. Both the Astro and Next example apps read from this one folder — proof that the content is independent of the framework that renders it.
 
 ### About the "website" framing
 

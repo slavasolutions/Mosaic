@@ -77,10 +77,15 @@ Main HEAD when written: `be6c3d5`.
 cd /home/ms/active/mosaic-0.9.2
 git pull
 npm install
+npm run build --workspace=packages/core
+npm run build --workspace=packages/astro
+npm run build --workspace=packages/next
 npm test                                 # expect 151 passing
 GITHUB_PAGES_DEPLOY=1 npx --workspace=packages/astro/examples/minimal-site astro build
 GITHUB_PAGES_DEPLOY=1 npx --workspace=packages/next/examples/minimal-next-site next build
 ```
+
+The example sites read from a single canonical content folder at `examples/content/`. Astro reads it via `mosaicLoader({ root: '../../../../examples/content' })` (src/content.config.ts) and Next via `join(process.cwd(), '..', '..', '..', '..', 'examples', 'content')` (src/lib/mosaic.ts). Edit content once, both sites pick it up.
 
 The two live URLs should match what's in this file. If they don't, the Pages workflow at `.github/workflows/pages.yml` is the deploy mechanism — check Actions tab.
 

@@ -6,7 +6,7 @@ import { mosaicLoader } from '@ssolu/mosaic-astro';
 // `url`. Every other field comes from the Mosaic record verbatim — we don't
 // want the schema to strip them. .passthrough() preserves unknown keys.
 const pages = defineCollection({
-  loader: mosaicLoader({ root: './content' }),
+  loader: mosaicLoader({ root: '../../../../examples/content' }),
   schema: z
     .object({
       slug: z.string(),
