@@ -24,13 +24,51 @@ jobs:
       - name: Install workspaces
         run: npm install
 
-      - name: Build core + astro
-        run: |
-          npm run build --workspace=packages/core
-          npm run build --workspace=packages/astro
+      # --- Per-package builds (each one is its own check) -------------------
+      # core builds first so adapters that depend on its emitted types pick
+      # up a fresh `dist/` before they compile.
 
-      - name: Run all workspace tests
-        run: npm test
+      - name: Build core
+        run: npm run build --workspace=packages/core
+
+      - name: Build astro adapter
+        run: npm run build --workspace=packages/astro
+
+      - name: Build next adapter
+        run: npm run build --workspace=packages/next
+
+      - name: Build devtool
+        run: npm run build --workspace=packages/devtool
+
+      - name: Build validator-web
+        run: npm run build --workspace=packages/validator-web
+
+      - name: Build migrate
+        run: npm run build --workspace=packages/migrate
+
+      # --- Per-package tests (each one is its own check) --------------------
+      # `--reporter=verbose` surfaces individual test names + tracebacks in
+      # the GitHub Actions log so a red dot points to the exact case.
+
+      - name: Test core
+        run: npm test --workspace=packages/core -- --reporter=verbose
+
+      - name: Test astro adapter
+        run: npm test --workspace=packages/astro -- --reporter=verbose
+
+      - name: Test next adapter
+        run: npm test --workspace=packages/next -- --reporter=verbose
+
+      - name: Test devtool
+        run: npm test --workspace=packages/devtool -- --reporter=verbose
+
+      - name: Test validator-web
+        run: npm test --workspace=packages/validator-web -- --reporter=verbose
+
+      - name: Test migrate
+        run: npm test --workspace=packages/migrate -- --reporter=verbose
+
+      # --- Cross-language parity (Python validator against spec fixtures) ---
 
       - name: Run Python validator against spec examples (parity check)
         run: |
@@ -41,7 +79,14 @@ jobs:
           # A-identity is expected to fail (intentional collision fixture)
           python3 spec/tools/validate.py spec/examples/A-identity/content && exit 1 || exit 0
 
-      - name: Build example site (smoke test)
+      # --- Example-site build smokes (each adapter builds the same content) -
+
+      - name: Build Astro example site (smoke)
         env:
           GITHUB_PAGES_DEPLOY: '1'
         run: npx --workspace=packages/astro/examples/minimal-site astro build
+
+      - name: Build Next example site (smoke)
+        env:
+          GITHUB_PAGES_DEPLOY: '1'
+        run: npx --workspace=packages/next/examples/minimal-next-site next build
