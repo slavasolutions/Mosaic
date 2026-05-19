@@ -72,7 +72,10 @@
 /* ------------------------------------------------------------------ */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
 body {
   font-family: var(--f-sans);
   background: var(--c-bg);
@@ -92,7 +95,7 @@ p:last-child { margin-bottom: 0; }
 /*  Layout                                                             */
 /* ------------------------------------------------------------------ */
 .wrap {
-  max-width: 1100px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 0 var(--s-4);
 }
@@ -145,7 +148,7 @@ section:first-of-type { border-top: none; }
   align-items: center;
   justify-content: space-between;
   padding: var(--s-3) var(--s-4);
-  max-width: 1100px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 @media (min-width: 600px) { .topbar-inner { padding: var(--s-3) var(--s-5); } }
@@ -974,85 +977,56 @@ team/
 
 
 <!-- ================================================================ -->
-<!--  The pipeline                                                     -->
+<!--  Why                                                              -->
 <!-- ================================================================ -->
-<section id="pipeline">
+<section id="why">
   <div class="wrap">
-    <p class="eyebrow">How it works</p>
-    <h2 class="section-title">Reading a record is one pass.</h2>
+    <p class="eyebrow">Why Mosaic</p>
+    <h2 class="section-title">Three things you get from day one.</h2>
 
-    <div class="pipeline" role="list">
+    <div class="rules-grid">
 
-      <div class="pipe-step" role="listitem">
-        <div class="pipe-step-num">STEP 1</div>
-        <div class="pipe-step-name">Content</div>
-        <div class="pipe-step-desc"><code>.json</code> object, or empty for opaque files</div>
+      <div class="rule-card">
+        <div class="rule-num">OWN IT</div>
+        <h3 class="rule-title">Your content is plain files.</h3>
+        <p class="rule-body">Git tracks them. <code>cat</code> reads them. No proprietary database, no export script, no vendor. Move the folder — the site moves with it.</p>
       </div>
 
-      <div class="pipe-arrow-mobile" aria-hidden="true">↓</div>
-      <div class="pipe-arrow-desktop" aria-hidden="true">+</div>
-
-      <div class="pipe-step" role="listitem">
-        <div class="pipe-step-num">STEP 2</div>
-        <div class="pipe-step-name">Sidecar merge</div>
-        <div class="pipe-step-desc">Sidecar JSON merged on top. Sidecar wins. Shallow.</div>
+      <div class="rule-card">
+        <div class="rule-num">SWITCH FREELY</div>
+        <h3 class="rule-title">Frameworks are interchangeable.</h3>
+        <p class="rule-body">Today Astro. Tomorrow Next. Next year a Rust thing not invented yet. Same folder, different reader — the content stays.</p>
       </div>
 
-      <div class="pipe-arrow-mobile" aria-hidden="true">↓</div>
-      <div class="pipe-arrow-desktop" aria-hidden="true">+</div>
-
-      <div class="pipe-step" role="listitem">
-        <div class="pipe-step-num">STEP 3</div>
-        <div class="pipe-step-name">Cascade fill</div>
-        <div class="pipe-step-desc">Fills absent keys from ancestor <code>defaults</code>. <code>locale</code> by default; profiles declare more.</div>
-      </div>
-
-      <div class="pipe-arrow-mobile" aria-hidden="true">↓</div>
-      <div class="pipe-arrow-desktop" aria-hidden="true">→</div>
-
-      <div class="pipe-step" role="listitem">
-        <div class="pipe-step-num">STEP 4</div>
-        <div class="pipe-step-name">Refs resolved</div>
-        <div class="pipe-step-desc"><code>ref:</code> strings replaced with targets. Single-pass, deterministic.</div>
+      <div class="rule-card">
+        <div class="rule-num">FOUND BY MACHINES</div>
+        <h3 class="rule-title">SEO + AI ready, built in.</h3>
+        <p class="rule-body">JSON-LD via <code>@type</code>. OpenGraph + Twitter via <code>meta:</code>. Crawlers and LLMs read the same JSON your renderer does. No plugin layer.</p>
       </div>
 
     </div>
-
-    <div class="pipe-caption">Fixed order. No recursion. Same folder → same result, always.</div>
   </div>
 </section>
 
 
 <!-- ================================================================ -->
-<!--  References                                                       -->
+<!--  Adopt                                                            -->
 <!-- ================================================================ -->
-<section id="refs">
+<section id="adopt">
   <div class="wrap">
-    <p class="eyebrow">References</p>
-    <h2 class="section-title">Link records with <code>ref:</code></h2>
-    <p class="section-lede">A reference is a JSON string starting with <code>ref:</code>. Two anchor forms, one optional JSON Pointer.</p>
+    <p class="eyebrow">Adopt</p>
+    <h2 class="section-title">Four lines into Astro.</h2>
+    <p class="section-lede">Same shape in Next via <code>@ssolu/mosaic-next</code>. Same shape in any future adapter.</p>
 
-    <div class="refs-grid">
+    <div class="rule-code adopt-code"><span class="cm">// astro content.config.ts</span>
+<span class="ck">import</span> { defineCollection } <span class="ck">from</span> <span class="cs">'astro:content'</span>;
+<span class="ck">import</span> { mosaicLoader } <span class="ck">from</span> <span class="cs">'@ssolu/mosaic-astro'</span>;
 
-      <div class="ref-card">
-        <div class="ref-value">"ref:team/ada"</div>
-        <div class="ref-label">Absolute</div>
-        <div class="ref-desc">Resolved from the root. Recommended default.</div>
-      </div>
+<span class="ck">export const</span> collections = {
+  pages: defineCollection({ loader: mosaicLoader({ root: <span class="cs">'./content'</span> }) }),
+};</div>
 
-      <div class="ref-card">
-        <div class="ref-value">"ref:./other"</div>
-        <div class="ref-label">Relative</div>
-        <div class="ref-desc">Resolved from the referring record's folder. Survives folder moves.</div>
-      </div>
-
-      <div class="ref-card">
-        <div class="ref-value">"ref:team/ada#/email"</div>
-        <div class="ref-label">JSON Pointer</div>
-        <div class="ref-desc">RFC 6901 path after <code>#</code> selects a value inside the target.</div>
-      </div>
-
-    </div>
+    <p class="section-foot">Walks your folder, resolves sidecars + refs + cascade, hands Astro a Content Layer collection. Zero runtime deps.</p>
   </div>
 </section>
 
@@ -1074,56 +1048,34 @@ team/
 
 
 <!-- ================================================================ -->
-<!--  What it is NOT                                                   -->
-<!-- ================================================================ -->
-<section id="not">
-  <div class="wrap">
-    <p class="eyebrow">Scope</p>
-    <h2 class="section-title">What Mosaic is not.</h2>
-
-    <ul class="not-list">
-      <li><div class="not-icon" aria-hidden="true">✕</div> Not a CMS</li>
-      <li><div class="not-icon" aria-hidden="true">✕</div> Not a database</li>
-      <li><div class="not-icon" aria-hidden="true">✕</div> Not a build tool</li>
-      <li><div class="not-icon" aria-hidden="true">✕</div> Not a runtime</li>
-      <li><div class="not-icon" aria-hidden="true">✕</div> Not an opinion about templates</li>
-      <li><div class="not-icon" aria-hidden="true">✕</div> Not an opinion about design</li>
-    </ul>
-
-    <div class="not-footer">A folder shape. Tools layer on top. The spec is the contract between the folder and the tools.</div>
-  </div>
-</section>
-
-
-<!-- ================================================================ -->
 <!--  Get started                                                      -->
 <!-- ================================================================ -->
 <section id="start">
   <div class="wrap">
-    <p class="eyebrow">Get started</p>
-    <h2 class="section-title">Pick your path.</h2>
+    <p class="eyebrow">Explore</p>
+    <h2 class="section-title">Pick a path.</h2>
 
     <div class="cta-grid">
 
       <a class="cta-card" href="https://slavasolutions.github.io/mosaic/example/">
-        <div class="cta-card-label">Live demo</div>
-        <div class="cta-card-title">Example site</div>
-        <div class="cta-card-desc">A running Mosaic site. Browse it, then look at the folder it came from — same files, no magic.</div>
+        <div class="cta-card-label">Live</div>
+        <div class="cta-card-title">See it run</div>
+        <div class="cta-card-desc">A running Mosaic site. Same folder powers the Astro build and the Next build.</div>
         <div class="cta-card-link">Open example →</div>
       </a>
 
       <a class="cta-card" href="./spec/README.md">
-        <div class="cta-card-label">Reference</div>
-        <div class="cta-card-title">Read the spec</div>
-        <div class="cta-card-desc">Three rules, the naming grammar, sidecars, refs, cascade, and the Mosaic Web routing profile.</div>
+        <div class="cta-card-label">Spec</div>
+        <div class="cta-card-title">Read the rules</div>
+        <div class="cta-card-desc">Format, references, cascade, profiles. Small and frozen.</div>
         <div class="cta-card-link">Open spec →</div>
       </a>
 
-      <a class="cta-card" href="./packages/astro/">
-        <div class="cta-card-label">Integration</div>
-        <div class="cta-card-title">Use it in Astro</div>
-        <div class="cta-card-desc">One <code>mosaicLoader()</code> call wires a Mosaic folder into Astro's Content Layer.</div>
-        <div class="cta-card-link">Astro adapter →</div>
+      <a class="cta-card" href="./spec/profiles/mosaic-web-migration.md">
+        <div class="cta-card-label">Adopt</div>
+        <div class="cta-card-title">Move an existing site</div>
+        <div class="cta-card-desc">HTML bodies, R2/S3 assets, block composition. Migration explainer + the <code>mosaic-migrate</code> scanner.</div>
+        <div class="cta-card-link">Open migration guide →</div>
       </a>
 
     </div>

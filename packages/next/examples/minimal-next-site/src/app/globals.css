@@ -49,6 +49,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+html { scrollbar-gutter: stable; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   background: var(--bg);
@@ -60,7 +61,7 @@ body {
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* ----- Meta banner — thin single-line strip, scrolls horizontally if narrow ----- */
+/* ----- Meta banner — thin centred strip, scrolls horizontally if narrow ----- */
 .meta-banner {
   background: var(--banner-bg);
   color: var(--banner-ink);
@@ -72,6 +73,7 @@ a:hover { text-decoration: underline; }
   overflow-y: hidden;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
+  text-align: center;
 }
 .meta-banner-inner {
   display: inline-flex;
@@ -79,6 +81,8 @@ a:hover { text-decoration: underline; }
   align-items: center;
   padding: 8px 20px;
   white-space: nowrap;
+  max-width: 1240px;
+  margin: 0 auto;
 }
 .meta-banner-label {
   flex-shrink: 0;
@@ -105,7 +109,7 @@ header.site {
   border-bottom: 1px solid var(--line);
 }
 .nav-inner {
-  max-width: 720px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 18px 20px;
   display: flex;
@@ -137,12 +141,12 @@ nav.site-nav a.active { color: var(--ink); border-bottom: 2px solid var(--accent
 
 /* ----- Main + footer ----- */
 main {
-  max-width: 720px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 32px 20px 80px;
 }
 footer.site {
-  max-width: 720px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 28px 20px 80px;
   border-top: 1px solid var(--line);
@@ -172,11 +176,13 @@ footer.site code { background: var(--bg-sunk); padding: 2px 5px; border-radius: 
 .body-block li { margin: 0 0 0.35em; }
 .body-block blockquote {
   margin: 1em 0;
-  padding: 4px 14px;
-  border-left: 3px solid var(--line);
+  padding: 0 0 0 14px;
+  border-left: 3px solid var(--accent);
   color: var(--ink-mute);
   font-style: italic;
 }
+.body-block blockquote p { margin: 0 0 0.5em; }
+.body-block blockquote p:last-child { margin-bottom: 0; }
 .body-block code {
   font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
   font-size: 0.9em;
@@ -247,11 +253,18 @@ footer.site code { background: var(--bg-sunk); padding: 2px 5px; border-radius: 
 .page-lede { font-size: 17px; color: var(--ink-soft); margin: 0 0 28px; }
 
 .post-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--ink-mute);
   font-size: 14px;
   margin: 0 0 28px;
 }
+.post-meta .avatar { flex-shrink: 0; }
 .post-author-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
   margin-top: 36px;
   padding: 16px;
   background: var(--bg-sunk);
@@ -259,6 +272,8 @@ footer.site code { background: var(--bg-sunk); padding: 2px 5px; border-radius: 
   font-size: 14px;
   color: var(--ink-soft);
 }
+.post-author-card .avatar { flex-shrink: 0; }
+.post-author-card .body { flex: 1; min-width: 0; }
 .post-author-card strong { color: var(--ink); }
 .post-author-card .resolved-from {
   margin-top: 6px;
@@ -268,6 +283,10 @@ footer.site code { background: var(--bg-sunk); padding: 2px 5px; border-radius: 
 }
 
 .blog-list { list-style: none; padding: 0; margin: 24px 0 0; }
-.blog-list li { padding: 14px 0; border-top: 1px solid var(--line); }
+.blog-list li { padding: 14px 0; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
 .blog-list a { display: block; font-size: 17px; color: var(--ink); }
 .blog-list .meta { color: var(--ink-mute); font-size: 13px; margin-top: 4px; }
+.blog-list .avatar { flex-shrink: 0; }
+.blog-list .post-item-text { flex: 1; min-width: 0; }
+
+.avatar { display: block; border-radius: 50%; }

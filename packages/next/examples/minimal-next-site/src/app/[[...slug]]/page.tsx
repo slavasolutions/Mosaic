@@ -15,6 +15,7 @@ import { notFound } from 'next/navigation';
 import { renderBody } from '@ssolu/mosaic-next';
 import { getMosaic } from '../../lib/mosaic';
 import type { MosaicEntry } from '../../lib/mosaic';
+import { renderAvatar } from '../../lib/avatar';
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 const href = (p: string): string => BASE + p;
@@ -268,10 +269,18 @@ function BlogIndexBody({
       <ul className="blog-list">
         {posts.map((post) => (
           <li key={post.url}>
-            <a href={href(post.url)}>{post.title}</a>
-            <div className="meta">
-              {post.publishedAt}
-              {post.authorName ? ` · ${post.authorName}` : ''}
+            {post.authorName && (
+              <span
+                className="avatar"
+                dangerouslySetInnerHTML={{ __html: renderAvatar(post.authorName, 36) }}
+              />
+            )}
+            <div className="post-item-text">
+              <a href={href(post.url)}>{post.title}</a>
+              <div className="meta">
+                {post.publishedAt}
+                {post.authorName ? ` · ${post.authorName}` : ''}
+              </div>
             </div>
           </li>
         ))}
@@ -298,16 +307,30 @@ function PostBody({ entry }: { entry: MosaicEntry }) {
     <article>
       <h1 className="page-h1">{title}</h1>
       <div className="post-meta">
-        {publishedAt}
-        {authorName ? ` · by ${authorName}` : ''}
-        {authorRole ? ` (${authorRole})` : ''}
+        {authorName && (
+          <span
+            className="avatar"
+            dangerouslySetInnerHTML={{ __html: renderAvatar(authorName, 32) }}
+          />
+        )}
+        <span>
+          {publishedAt}
+          {authorName ? ` · by ${authorName}` : ''}
+          {authorRole ? ` (${authorRole})` : ''}
+        </span>
       </div>
       {bodyHtml && (
         <div className="body-block" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
       )}
       {authorBio && authorName && (
         <div className="post-author-card">
-          <strong>About {authorName}</strong> — {authorBio}
+          <span
+            className="avatar"
+            dangerouslySetInnerHTML={{ __html: renderAvatar(authorName, 48) }}
+          />
+          <div className="body">
+            <strong>About {authorName}</strong> — {authorBio}
+          </div>
         </div>
       )}
     </article>

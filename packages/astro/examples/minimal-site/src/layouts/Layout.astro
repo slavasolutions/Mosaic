@@ -144,6 +144,7 @@ if (schemaType) {
       }
       *, *::before, *::after { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
+      html { scrollbar-gutter: stable; }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
         background: var(--bg);
@@ -155,7 +156,7 @@ if (schemaType) {
       a { color: var(--accent); text-decoration: none; }
       a:hover { text-decoration: underline; }
 
-      /* ----- Meta banner — thin single-line strip, scrolls horizontally if narrow ----- */
+      /* ----- Meta banner — thin centred strip, scrolls horizontally if narrow ----- */
       .meta-banner {
         background: var(--banner-bg);
         color: var(--banner-ink);
@@ -167,6 +168,7 @@ if (schemaType) {
         overflow-y: hidden;
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
+        text-align: center;
       }
       .meta-banner-inner {
         display: inline-flex;
@@ -174,6 +176,8 @@ if (schemaType) {
         align-items: center;
         padding: 8px 20px;
         white-space: nowrap;
+        max-width: 1240px;
+        margin: 0 auto;
       }
       .meta-banner-label {
         flex-shrink: 0;
@@ -200,7 +204,7 @@ if (schemaType) {
         border-bottom: 1px solid var(--line);
       }
       .nav-inner {
-        max-width: 720px;
+        max-width: 1240px;
         margin: 0 auto;
         padding: 18px 20px;
         display: flex;
@@ -232,12 +236,12 @@ if (schemaType) {
 
       /* ----- Main + footer ----- */
       main {
-        max-width: 720px;
+        max-width: 1240px;
         margin: 0 auto;
         padding: 32px 20px 80px;
       }
       footer.site {
-        max-width: 720px;
+        max-width: 1240px;
         margin: 0 auto;
         padding: 28px 20px 80px;
         border-top: 1px solid var(--line);
@@ -267,11 +271,13 @@ if (schemaType) {
       .body-block li { margin: 0 0 0.35em; }
       .body-block blockquote {
         margin: 1em 0;
-        padding: 4px 14px;
-        border-left: 3px solid var(--line);
+        padding: 0 0 0 14px;
+        border-left: 3px solid var(--accent);
         color: var(--ink-mute);
         font-style: italic;
       }
+      .body-block blockquote p { margin: 0 0 0.5em; }
+      .body-block blockquote p:last-child { margin-bottom: 0; }
       .body-block code {
         font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
         font-size: 0.9em;
@@ -309,6 +315,77 @@ if (schemaType) {
       .body-block strong { color: var(--ink); }
       .body-block em { font-style: italic; }
       .body-block a { color: var(--accent); }
+
+      /* ----- Home / page / post helpers (parity with Next globals.css) ----- */
+      .home-h1 {
+        font-family: ui-serif, Georgia, serif;
+        font-size: clamp(28px, 4vw, 44px);
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        margin: 0 0 12px;
+      }
+      .home-tagline { font-size: 18px; color: var(--ink-soft); margin: 0 0 24px; }
+      .home-cards {
+        list-style: none;
+        padding: 0;
+        margin: 28px 0 0;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home-card-link {
+        display: inline-block;
+        padding: 9px 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--ink);
+      }
+      .page-h1 {
+        font-family: ui-serif, Georgia, serif;
+        font-size: clamp(26px, 3.5vw, 36px);
+        line-height: 1.2;
+        margin: 0 0 12px;
+      }
+      .page-lede { font-size: 17px; color: var(--ink-soft); margin: 0 0 28px; }
+
+      .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink-mute);
+        font-size: 14px;
+        margin: 0 0 28px;
+      }
+      .post-meta .avatar { flex-shrink: 0; }
+      .post-author-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-top: 36px;
+        padding: 16px;
+        background: var(--bg-sunk);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--ink-soft);
+      }
+      .post-author-card .avatar { flex-shrink: 0; }
+      .post-author-card .body { flex: 1; min-width: 0; }
+      .post-author-card strong { color: var(--ink); }
+      .post-author-card .resolved-from {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--ink-mute);
+        font-family: ui-monospace, monospace;
+      }
+
+      .blog-list { list-style: none; padding: 0; margin: 24px 0 0; }
+      .blog-list li { padding: 14px 0; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
+      .blog-list a { display: block; font-size: 17px; color: var(--ink); }
+      .blog-list .meta { color: var(--ink-mute); font-size: 13px; margin-top: 4px; }
+      .blog-list .avatar { flex-shrink: 0; }
+      .blog-list .post-item-text { flex: 1; min-width: 0; }
+
+      .avatar { display: block; border-radius: 50%; }
     </style>
     <style set:html={tokenCss}></style>
     {jsonLd && (

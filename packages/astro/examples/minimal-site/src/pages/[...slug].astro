@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { renderBody } from '@ssolu/mosaic-astro';
 import Layout from '../layouts/Layout.astro';
+import { renderAvatar } from '../lib/avatar';
 
 export async function getStaticPaths() {
   const entries = await getCollection('pages');
@@ -52,17 +53,14 @@ function href(p: string): string {
 <Layout title={data.title ?? entry.id} currentPath={currentPath} entry={entry}>
   {currentPath === '/' && (
     <section>
-      <h1 style="font-family: ui-serif, Georgia, serif; font-size: clamp(28px, 4vw, 44px); line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 12px;">{data.title}</h1>
-      {data.tagline && <p style="font-size: 18px; color: var(--ink-soft); margin: 0 0 24px;">{data.tagline}</p>}
+      <h1 class="home-h1">{data.title}</h1>
+      {data.tagline && <p class="home-tagline">{data.tagline}</p>}
       {data.intro && <p>{data.intro}</p>}
       {Array.isArray(data.homeLinks) && (
-        <ul style="list-style: none; padding: 0; margin: 28px 0 0; display: flex; gap: 12px; flex-wrap: wrap;">
+        <ul class="home-cards">
           {data.homeLinks.map((link: any) => (
             <li>
-              <a
-                href={href(link.url)}
-                style="display: inline-block; padding: 9px 16px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink);"
-              >{link.label} →</a>
+              <a class="home-card-link" href={href(link.url)}>{link.label} →</a>
             </li>
           ))}
         </ul>
@@ -72,18 +70,23 @@ function href(p: string): string {
 
   {currentPath !== '/' && !isPost && (
     <section>
-      <h1 style="font-family: ui-serif, Georgia, serif; font-size: clamp(26px, 3.5vw, 36px); line-height: 1.2; margin: 0 0 12px;">{data.title}</h1>
-      {data.lede && <p style="font-size: 17px; color: var(--ink-soft); margin: 0 0 28px;">{data.lede}</p>}
+      <h1 class="page-h1">{data.title}</h1>
+      {data.lede && <p class="page-lede">{data.lede}</p>}
 
       {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
 
       {isBlogIndex && (
-        <ul style="list-style: none; padding: 0; margin: 24px 0 0;">
+        <ul class="blog-list">
           {posts.map((post) => (
-            <li style="padding: 14px 0; border-top: 1px solid var(--line);">
-              <a href={href(post.url)} style="display: block; font-size: 17px; color: var(--ink);">{post.title}</a>
-              <div style="color: var(--ink-mute); font-size: 13px; margin-top: 4px;">
-                {post.publishedAt}{post.authorName ? ` · ${post.authorName}` : ''}
+            <li>
+              {post.authorName && (
+                <span class="avatar" set:html={renderAvatar(post.authorName, 36)}></span>
+              )}
+              <div class="post-item-text">
+                <a href={href(post.url)}>{post.title}</a>
+                <div class="meta">
+                  {post.publishedAt}{post.authorName ? ` · ${post.authorName}` : ''}
+                </div>
               </div>
             </li>
           ))}
@@ -94,15 +97,23 @@ function href(p: string): string {
 
   {isPost && (
     <article>
-      <h1 style="font-family: ui-serif, Georgia, serif; font-size: clamp(26px, 3.5vw, 36px); line-height: 1.2; margin: 0 0 10px;">{data.title}</h1>
-      <div style="color: var(--ink-mute); font-size: 14px; margin: 0 0 28px;">
-        {data.publishedAt}{authorObj ? ` · by ${authorObj.name}` : ''}
-        {authorObj?.role && ` (${authorObj.role})`}
+      <h1 class="page-h1">{data.title}</h1>
+      <div class="post-meta">
+        {authorObj && (
+          <span class="avatar" set:html={renderAvatar(authorObj.name, 32)}></span>
+        )}
+        <span>
+          {data.publishedAt}{authorObj ? ` · by ${authorObj.name}` : ''}
+          {authorObj?.role && ` (${authorObj.role})`}
+        </span>
       </div>
       {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
       {authorObj?.bio && (
-        <div style="margin-top: 36px; padding: 16px; background: var(--code-bg); border-radius: 8px; font-size: 14px; color: var(--ink-soft);">
-          <strong style="color: var(--ink);">About {authorObj.name}</strong> — {authorObj.bio}
+        <div class="post-author-card">
+          <span class="avatar" set:html={renderAvatar(authorObj.name, 48)}></span>
+          <div class="body">
+            <strong>About {authorObj.name}</strong> — {authorObj.bio}
+          </div>
         </div>
       )}
     </article>
