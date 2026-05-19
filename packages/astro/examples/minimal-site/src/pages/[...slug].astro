@@ -1,30 +1,117 @@
 ---
 import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const entries = await getCollection('pages');
   return entries
     .filter((entry) => typeof entry.data.url === 'string')
     .map((entry) => ({
-      // Strip the leading slash; Astro turns `slug: ""` into `/`.
       params: { slug: entry.data.url.replace(/^\//, '') || undefined },
       props: { entry },
     }));
 }
 
 const { entry } = Astro.props;
+const data = entry.data as Record<string, any>;
+const currentPath = data.url as string;
+
+// For the blog index, surface the list of sibling posts.
+const isBlogIndex = currentPath === '/blog';
+let posts: Array<{ url: string; title: string; publishedAt?: string; authorName?: string }> = [];
+if (isBlogIndex) {
+  const all = await getCollection('pages');
+  posts = all
+    .filter((e) => {
+      const u = (e.data as any).url;
+      return typeof u === 'string' && u.startsWith('/blog/') && u !== '/blog';
+    })
+    .map((e) => {
+      const d = e.data as Record<string, any>;
+      const authorObj = d.author && typeof d.author === 'object' ? d.author : null;
+      return {
+        url: d.url as string,
+        title: (d.title as string) ?? d.slug,
+        publishedAt: d.publishedAt as string | undefined,
+        authorName: authorObj?.name as string | undefined,
+      };
+    })
+    .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
+}
+
+const isPost = currentPath.startsWith('/blog/') && !isBlogIndex;
+const authorObj = data.author && typeof data.author === 'object' ? data.author : null;
+
+const base = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
+function href(p: string): string {
+  return base + p;
+}
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>{entry.data.title ?? entry.id}</title>
-  </head>
-  <body>
-    <h1>{entry.data.title ?? entry.id}</h1>
-    {entry.body && <pre>{entry.body}</pre>}
-    <hr />
-    <p>id: <code>{entry.id}</code></p>
-    <p>url: <code>{entry.data.url}</code></p>
-  </body>
-</html>
+<Layout title={data.title ?? entry.id} currentPath={currentPath}>
+  {currentPath === '/' && (
+    <section>
+      <h1 style="font-family: ui-serif, Georgia, serif; font-size: clamp(28px, 4vw, 44px); line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 12px;">{data.title}</h1>
+      {data.tagline && <p style="font-size: 18px; color: var(--ink-soft); margin: 0 0 24px;">{data.tagline}</p>}
+      {data.intro && <p>{data.intro}</p>}
+      {Array.isArray(data.homeLinks) && (
+        <ul style="list-style: none; padding: 0; margin: 28px 0 0; display: flex; gap: 12px; flex-wrap: wrap;">
+          {data.homeLinks.map((link: any) => (
+            <li>
+              <a
+                href={href(link.url)}
+                style="display: inline-block; padding: 9px 16px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink);"
+              >{link.label} →</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )}
+
+  {currentPath !== '/' && !isPost && (
+    <section>
+      <h1 style="font-family: ui-serif, Georgia, serif; font-size: clamp(26px, 3.5vw, 36px); line-height: 1.2; margin: 0 0 12px;">{data.title}</h1>
+      {data.lede && <p style="font-size: 17px; color: var(--ink-soft); margin: 0 0 28px;">{data.lede}</p>}
+
+      {entry.body && <div class="body-block">{entry.body.split('\n\n').map((p: string) => <p>{p}</p>)}</div>}
+
+      {isBlogIndex && (
+        <ul style="list-style: none; padding: 0; margin: 24px 0 0;">
+          {posts.map((post) => (
+            <li style="padding: 14px 0; border-top: 1px solid var(--line);">
+              <a href={href(post.url)} style="display: block; font-size: 17px; color: var(--ink);">{post.title}</a>
+              <div style="color: var(--ink-mute); font-size: 13px; margin-top: 4px;">
+                {post.publishedAt}{post.authorName ? ` · ${post.authorName}` : ''}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )}
+
+  {isPost && (
+    <article>
+      <h1 style="font-family: ui-serif, Georgia, serif; font-size: clamp(26px, 3.5vw, 36px); line-height: 1.2; margin: 0 0 10px;">{data.title}</h1>
+      <div style="color: var(--ink-mute); font-size: 14px; margin: 0 0 28px;">
+        {data.publishedAt}{authorObj ? ` · by ${authorObj.name}` : ''}
+        {authorObj?.role && ` (${authorObj.role})`}
+      </div>
+      {entry.body && <div class="body-block">{entry.body.split('\n\n').map((p: string) => <p>{p}</p>)}</div>}
+      {authorObj?.bio && (
+        <div style="margin-top: 36px; padding: 16px; background: var(--code-bg); border-radius: 8px; font-size: 14px; color: var(--ink-soft);">
+          <strong style="color: var(--ink);">About {authorObj.name}</strong> — {authorObj.bio}
+          <div style="margin-top: 6px; font-size: 12px; color: var(--ink-mute); font-family: ui-monospace, monospace;">
+            (Resolved from <code>ref:/team/ada</code> at build time.)
+          </div>
+        </div>
+      )}
+    </article>
+  )}
+
+  <details class="raw-details">
+    <summary>View the resolved JSON for this page</summary>
+    <pre>{JSON.stringify({ id: entry.id, url: data.url, data: entry.data, hasBody: !!entry.body }, null, 2)}</pre>
+  </details>
+</Layout>

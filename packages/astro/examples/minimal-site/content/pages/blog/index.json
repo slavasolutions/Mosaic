@@ -1,1 +1,4 @@
-{ "title": "Blog — URL /blog" }
+{
+  "title": "Blog",
+  "lede": "Notes from the shed. Posts are JSON files in this folder — Astro lists them by querying the collection."
+}
