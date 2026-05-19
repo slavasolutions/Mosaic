@@ -1,9 +1,22 @@
 ---
-const { title, currentPath } = Astro.props as { title: string; currentPath: string };
+import { getCollection } from 'astro:content';
+const { title, currentPath, entry } = Astro.props as {
+  title: string;
+  currentPath: string;
+  entry: { id: string; data: Record<string, unknown>; body?: string };
+};
 const base = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
 function href(p: string): string {
   return base + p;
 }
+// Banner content comes from a Mosaic record (content/banner.json) outside the
+// pages/ profile root — it has no URL but the loader still emits it. This
+// dogfoods the "non-route record" pattern from Mosaic Web §4.3.
+const all = await getCollection('pages');
+const banner = all.find((e) => e.id === 'banner')?.data as
+  | { text?: string; linkText?: string; linkUrl?: string }
+  | undefined;
+
 const nav = [
   { label: 'Home', url: '/' },
   { label: 'About', url: '/about' },
@@ -13,6 +26,18 @@ function isActive(linkUrl: string): boolean {
   if (linkUrl === '/') return currentPath === '/';
   return currentPath === linkUrl || currentPath.startsWith(linkUrl + '/');
 }
+
+// Serialize the resolved record for the floating JSON viewer.
+const resolvedJson = JSON.stringify(
+  {
+    id: entry.id,
+    url: entry.data.url,
+    data: entry.data,
+    hasBody: typeof entry.body === 'string' && entry.body.length > 0,
+  },
+  null,
+  2,
+);
 ---
 <!doctype html>
 <html lang="en">
@@ -20,29 +45,46 @@ function isActive(linkUrl: string): boolean {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} — Acme Foundry</title>
+    <link rel="icon" type="image/svg+xml" href={href('/logo.svg')} />
     <style>
       :root {
-        --bg: #fafaf7;
-        --ink: #15161a;
-        --ink-soft: #3a3c44;
-        --ink-mute: #6b6e78;
-        --line: #e4e2d8;
-        --accent: #2b56d4;
-        --accent-soft: #e7edff;
-        --accent-ink: #1b3aa0;
-        --code-bg: #f1f0ea;
+        --bg: #faf6ee;
+        --bg-elev: #ffffff;
+        --bg-sunk: #f2ede1;
+        --ink: #2a2620;
+        --ink-soft: #5a544a;
+        --ink-mute: #8a8278;
+        --line: #e8e0cc;
+        --accent: #4a9b7a;
+        --accent-soft: #d6ecdf;
+        --accent-ink: #2d6b54;
+        --warm-yellow: #f5d97c;
+        --warm-yellow-soft: #fbeec2;
+        --warm-peach: #f4c8a8;
+        --warm-blue-soft: #d6e5f2;
+        --banner-bg: #fbeec2;
+        --banner-ink: #6a4d10;
+        --banner-line: #e8d49a;
       }
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #0d0f13;
-          --ink: #ecedf0;
-          --ink-soft: #b8bbc4;
-          --ink-mute: #7d818d;
-          --line: #23262e;
-          --accent: #7da3ff;
-          --accent-soft: #182142;
-          --accent-ink: #b9cbff;
-          --code-bg: #14171c;
+          --bg: #15130f;
+          --bg-elev: #1e1b15;
+          --bg-sunk: #100e0b;
+          --ink: #ecead8;
+          --ink-soft: #b8b3a0;
+          --ink-mute: #7d7868;
+          --line: #2a261d;
+          --accent: #88c4a8;
+          --accent-soft: #1d3329;
+          --accent-ink: #b8e0cd;
+          --warm-yellow: #c4a652;
+          --warm-yellow-soft: #2b240f;
+          --warm-peach: #c89a78;
+          --warm-blue-soft: #1b2530;
+          --banner-bg: #2b240f;
+          --banner-ink: #e8d49a;
+          --banner-line: #524515;
         }
       }
       *, *::before, *::after { box-sizing: border-box; }
@@ -57,19 +99,51 @@ function isActive(linkUrl: string): boolean {
       }
       a { color: var(--accent); text-decoration: none; }
       a:hover { text-decoration: underline; }
-      .demo-banner {
-        background: var(--accent-soft);
-        color: var(--accent-ink);
-        padding: 10px 16px;
+
+      /* ----- Meta banner — clearly OFF the page chrome ----- */
+      .meta-banner {
+        background: var(--banner-bg);
+        color: var(--banner-ink);
+        border-bottom: 1px solid var(--banner-line);
+        padding: 10px 20px;
         font-size: 13px;
-        text-align: center;
-        border-bottom: 1px solid var(--line);
+        line-height: 1.5;
       }
-      .demo-banner code { background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+      .meta-banner-inner {
+        max-width: 720px;
+        margin: 0 auto;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .meta-banner-label {
+        flex-shrink: 0;
+        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 6px;
+        background: rgba(0,0,0,0.08);
+        border-radius: 3px;
+        line-height: 1.2;
+        white-space: nowrap;
+        margin-top: 1px;
+      }
       @media (prefers-color-scheme: dark) {
-        .demo-banner code { background: rgba(255,255,255,0.08); }
+        .meta-banner-label { background: rgba(255,255,255,0.08); }
       }
+      .meta-banner a {
+        color: var(--banner-ink);
+        text-decoration: underline;
+        white-space: nowrap;
+      }
+      @media (max-width: 540px) {
+        .meta-banner-inner { flex-direction: column; gap: 6px; }
+      }
+
+      /* ----- Site header (chrome) ----- */
       header.site {
+        background: var(--bg);
         border-bottom: 1px solid var(--line);
       }
       .nav-inner {
@@ -83,55 +157,156 @@ function isActive(linkUrl: string): boolean {
         gap: 12px;
       }
       .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         font-family: ui-serif, Georgia, "Times New Roman", serif;
         font-size: 18px;
         font-weight: 500;
         color: var(--ink);
       }
+      .brand img { width: 28px; height: 28px; display: block; }
       nav.site-nav { display: flex; gap: 18px; }
       nav.site-nav a {
         color: var(--ink-soft);
         font-size: 14px;
         padding: 6px 0;
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
       }
       nav.site-nav a.active { color: var(--ink); border-bottom: 2px solid var(--accent); }
+
+      /* ----- Main + footer ----- */
       main {
         max-width: 720px;
         margin: 0 auto;
-        padding: 32px 20px 60px;
+        padding: 32px 20px 80px;
       }
       footer.site {
         max-width: 720px;
         margin: 0 auto;
-        padding: 28px 20px 60px;
+        padding: 28px 20px 80px;
         border-top: 1px solid var(--line);
         color: var(--ink-mute);
         font-size: 13px;
       }
-      footer.site code { background: var(--code-bg); padding: 2px 5px; border-radius: 3px; font-size: 12px; }
-      .raw-details {
-        margin-top: 56px;
-        padding: 14px 16px;
-        background: var(--code-bg);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        font-size: 13px;
-      }
-      .raw-details summary {
-        cursor: pointer;
-        color: var(--ink-soft);
+      footer.site code { background: var(--bg-sunk); padding: 2px 5px; border-radius: 3px; font-size: 12px; }
+
+      /* ----- Floating "view JSON" button + modal panel ----- */
+      .raw-fab {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 90;
+        background: var(--ink);
+        color: var(--bg);
+        border: none;
+        border-radius: 999px;
+        padding: 10px 14px;
         font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
         font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 44px;
       }
-      .raw-details pre {
-        margin: 12px 0 0;
+      .raw-fab:hover { transform: translateY(-1px); }
+      .raw-fab svg { width: 14px; height: 14px; }
+
+      .raw-modal[hidden] { display: none !important; }
+      .raw-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .raw-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        cursor: pointer;
+      }
+      .raw-panel {
+        position: relative;
+        width: min(480px, 100vw);
+        height: 100vh;
+        background: var(--bg-elev);
+        border-left: 1px solid var(--line);
+        box-shadow: -8px 0 24px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        animation: slidein 200ms ease-out;
+      }
+      @keyframes slidein {
+        from { transform: translateX(100%); }
+        to   { transform: translateX(0); }
+      }
+      .raw-header {
+        flex-shrink: 0;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .raw-header h2 {
+        margin: 0;
+        font-family: ui-serif, Georgia, serif;
+        font-weight: 500;
+        font-size: 16px;
+        color: var(--ink);
+      }
+      .raw-close {
+        background: none;
+        border: none;
+        font-size: 22px;
+        line-height: 1;
+        color: var(--ink-mute);
+        cursor: pointer;
+        padding: 6px 10px;
+        min-height: 44px;
+        min-width: 44px;
+      }
+      .raw-close:hover { color: var(--ink); }
+      .raw-body {
+        flex: 1;
+        overflow: auto;
+        padding: 16px;
+      }
+      .raw-body pre {
+        margin: 0;
+        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--ink-soft);
         white-space: pre-wrap;
         word-break: break-word;
-        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
-        font-size: 12px;
-        line-height: 1.5;
-        color: var(--ink-soft);
       }
+      .raw-explain {
+        padding: 12px 16px;
+        background: var(--bg-sunk);
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+        color: var(--ink-mute);
+        line-height: 1.5;
+      }
+      .raw-explain code {
+        background: var(--bg);
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+
+      @media (max-width: 540px) {
+        .raw-panel { width: 100vw; border-left: none; }
+        .raw-fab { right: 12px; bottom: 12px; }
+      }
+
+      /* ----- Page content elements ----- */
       pre.body-block {
         white-space: pre-wrap;
         font-family: inherit;
@@ -142,12 +317,23 @@ function isActive(linkUrl: string): boolean {
     </style>
   </head>
   <body>
-    <div class="demo-banner">
-      Demo site — every page on this domain is a JSON file plus optional Markdown in a folder. Astro compiled it to static HTML. <a href="https://github.com/slavasolutions/mosaic">See the spec →</a>
-    </div>
+    {banner && (
+      <div class="meta-banner">
+        <div class="meta-banner-inner">
+          <span class="meta-banner-label">META</span>
+          <span>
+            {banner.text}{' '}
+            {banner.linkUrl && <a href={banner.linkUrl}>{banner.linkText ?? 'Learn more'}</a>}
+          </span>
+        </div>
+      </div>
+    )}
     <header class="site">
       <div class="nav-inner">
-        <a class="brand" href={href('/')}>Acme Foundry</a>
+        <a class="brand" href={href('/')}>
+          <img src={href('/logo.svg')} alt="" />
+          Acme Foundry
+        </a>
         <nav class="site-nav">
           {nav.map((item) => (
             <a
@@ -162,7 +348,48 @@ function isActive(linkUrl: string): boolean {
       <slot />
     </main>
     <footer class="site">
-      Built with <a href="https://astro.build">Astro</a> and the <a href="https://github.com/slavasolutions/mosaic"><code>@ssolu/mosaic-astro</code></a> loader. Each page above is a single static HTML file compiled from a folder of JSON. No runtime, no database, no engine.
+      Built with <a href="https://astro.build">Astro</a> and the <a href="https://github.com/slavasolutions/mosaic"><code>@ssolu/mosaic-astro</code></a> loader. Each page is a single static HTML file compiled from a folder of JSON. No runtime, no database, no engine.
     </footer>
+
+    <!-- Floating "view JSON" button (visible on every page) -->
+    <button id="raw-fab" class="raw-fab" type="button" aria-label="View the Mosaic-resolved JSON for this page">
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M5 2 H3 a1 1 0 0 0 -1 1 V13 a1 1 0 0 0 1 1 H5 M11 2 H13 a1 1 0 0 1 1 1 V13 a1 1 0 0 1 -1 1 H11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      JSON
+    </button>
+
+    <div id="raw-modal" class="raw-modal" hidden>
+      <div class="raw-backdrop" data-close></div>
+      <div class="raw-panel" role="dialog" aria-modal="true" aria-labelledby="raw-title">
+        <div class="raw-header">
+          <h2 id="raw-title">Resolved record</h2>
+          <button class="raw-close" type="button" data-close aria-label="Close">×</button>
+        </div>
+        <div class="raw-body">
+          <pre>{resolvedJson}</pre>
+        </div>
+        <div class="raw-explain">
+          What you see above is exactly what the Mosaic→Astro pipeline gave this page. Sidecars merged, <code>ref:</code> values resolved, cascade applied — per spec §§5–12.
+        </div>
+      </div>
+    </div>
+
+    <script is:inline>
+      (function () {
+        const fab = document.getElementById('raw-fab');
+        const modal = document.getElementById('raw-modal');
+        if (!fab || !modal) return;
+        function open() { modal.hidden = false; document.body.style.overflow = 'hidden'; }
+        function close() { modal.hidden = true; document.body.style.overflow = ''; }
+        fab.addEventListener('click', open);
+        modal.addEventListener('click', function (e) {
+          if (e.target && e.target.dataset && e.target.dataset.close !== undefined) close();
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !modal.hidden) close();
+        });
+      })();
+    </script>
   </body>
 </html>
