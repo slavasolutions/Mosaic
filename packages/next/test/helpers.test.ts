@@ -20,33 +20,49 @@ import {
 
 // --- D-web fixture mirroring spec/examples/D-web/content -----------------
 
+/**
+ * D-web fixture in Path A shape: each identity maps to an array of variants.
+ * Canonical-only fixtures wrap each record in a single-entry array.
+ */
 function dwebFixture() {
   return {
-    records: new Map<string, { data: Record<string, unknown>; body?: string; opaque?: boolean }>([
-      ['pages', { data: { title: 'Home' } }],
-      ['pages/about', { data: { title: 'About' } }],
-      ['pages/blog', { data: { title: 'Blog' } }],
+    records: new Map<
+      string,
+      Array<{ data: Record<string, unknown>; body?: string; opaque?: boolean; modifiers?: string[] }>
+    >([
+      ['pages', [{ data: { title: 'Home' }, modifiers: [] }]],
+      ['pages/about', [{ data: { title: 'About' }, modifiers: [] }]],
+      ['pages/blog', [{ data: { title: 'Blog' }, modifiers: [] }]],
       [
         'pages/blog/hello',
-        {
-          data: { title: 'Hello, world', publishedAt: '2026-05-14' },
-          body: '# Hello\n',
-          opaque: true,
-        },
+        [
+          {
+            data: { title: 'Hello, world', publishedAt: '2026-05-14' },
+            body: '# Hello\n',
+            opaque: true,
+            modifiers: [],
+          },
+        ],
       ],
       [
         'pages/blog/refs-explained',
-        {
-          data: { title: 'Refs in one screen', publishedAt: '2026-05-19' },
-          body: 'A reference is a string.',
-          opaque: true,
-        },
+        [
+          {
+            data: { title: 'Refs in one screen', publishedAt: '2026-05-19' },
+            body: 'A reference is a string.',
+            opaque: true,
+            modifiers: [],
+          },
+        ],
       ],
       [
         'team/ada',
-        { data: { name: 'Ada Lovelace', role: 'Pattern-maker' } },
+        [{ data: { name: 'Ada Lovelace', role: 'Pattern-maker' }, modifiers: [] }],
       ],
-      ['banner', { data: { text: 'Demo banner', linkUrl: 'https://example.com' } }],
+      [
+        'banner',
+        [{ data: { text: 'Demo banner', linkUrl: 'https://example.com' }, modifiers: [] }],
+      ],
     ]),
     manifest: { mosaic: '0.9', profiles: { web: { root: 'pages' } } },
   };
@@ -115,7 +131,7 @@ describe('readMosaic — splits routed / non-routed', () => {
 
   it('emits all entries with no url when manifest declares no web profile', async () => {
     mockReadFolder.mockResolvedValueOnce({
-      records: new Map([['foo', { data: { title: 'Foo' } }]]),
+      records: new Map([['foo', [{ data: { title: 'Foo' }, modifiers: [] }]]]),
       manifest: { mosaic: '0.9' },
     });
     const res = await readMosaic('./content');
@@ -126,12 +142,38 @@ describe('readMosaic — splits routed / non-routed', () => {
 
   it('handles mosaic-core `{raw}` manifest wrapper', async () => {
     mockReadFolder.mockResolvedValueOnce({
-      records: new Map([['pages/about', { data: { title: 'About' } }]]),
+      records: new Map([
+        ['pages/about', [{ data: { title: 'About' }, modifiers: [] }]],
+      ]),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       manifest: { raw: { profiles: { web: { root: 'pages' } } } } as any,
     });
     const res = await readMosaic('./content');
     expect(res.routedEntries[0]?.url).toBe('/about');
+  });
+
+  it('emits non-canonical variants as non-route entries (Path A)', async () => {
+    mockReadFolder.mockResolvedValueOnce({
+      records: new Map([
+        [
+          'pages/about',
+          [
+            { data: { title: 'About' }, modifiers: [] },
+            { data: { title: 'À propos' }, modifiers: ['fr'] },
+          ],
+        ],
+      ]),
+      manifest: { profiles: { web: { root: 'pages' } } },
+    });
+    const res = await readMosaic('./content');
+    expect(res.routedEntries.map((e) => e.id)).toEqual(['pages/about']);
+    expect(res.routedEntries[0]?.url).toBe('/about');
+    // The fr variant is in nonRouted with the modifier-suffix id.
+    const fr = res.nonRouted.find((e) => e.id === 'pages/about::fr');
+    expect(fr).toBeTruthy();
+    expect(fr?.slug).toBe('pages/about');
+    expect(fr?.modifiers).toEqual(['fr']);
+    expect(fr?.url).toBeUndefined();
   });
 });
 

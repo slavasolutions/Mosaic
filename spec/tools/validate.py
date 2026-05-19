@@ -183,25 +183,38 @@ def validate(root: Path):
             # else: standalone .json record (the degenerate structured case)
 
     # Pass 4: identity resolution + collision (spec §7.1).
+    #
+    # The §7.1 collision rule applies per (identity, modifier-set). Variants
+    # that share an identity but carry different modifier-sets are separate
+    # variants, not a collision. `about.json` + `about.fr/index.json` is two
+    # variants; `about.json` + `about/index.json` is the same canonical
+    # variant reached two ways → error.
+    by_variant = {}  # (identity, sorted-modifier-tuple) -> [sources]
     for rel, p, base, mods, ext in conforming:
         if rel in sidecar_paths:
             continue  # sidecars don't define their own identity
         ident = identity_of(rel)
         rep.records.setdefault(ident, []).append(rel)
+        mod_key = tuple(sorted(mods))
+        by_variant.setdefault((ident, mod_key), []).append(rel)
 
-    for ident, srcs in sorted(rep.records.items()):
+    for (ident, mod_key), srcs in sorted(
+        by_variant.items(), key=lambda kv: (kv[0][0], kv[0][1])
+    ):
         forms = set()
         for s in srcs:
             is_folder_form = s.name.startswith("index.")
             forms.add(("folder" if is_folder_form else "file", s.parent))
-        # Collision = same identity reachable as BOTH a file form and a folder
-        # form (e.g. about.json AND about/index.json).
+        # Collision = same (identity, modifier-set) reachable as BOTH a file
+        # form and a folder form (e.g. about.json AND about/index.json).
         kinds = {f[0] for f in forms}
         if "file" in kinds and "folder" in kinds:
+            variant_note = "" if not mod_key else f" (modifier-set '{'.'.join(mod_key)}')"
             rep.error(
                 srcs[0].parent,
-                f"ambiguous identity '{ident}': exists as both a file form and "
-                f"a folder (index.*) form. Pick one.",
+                f"ambiguous identity '{ident}'{variant_note}: exists as both a "
+                f"file form and a folder (index.*) form for the same "
+                f"modifier-set. Pick one.",
             )
 
     return rep

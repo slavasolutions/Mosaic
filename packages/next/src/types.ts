@@ -8,13 +8,19 @@
  * map.
  */
 
-/** A single resolved record exposed to a Next page. */
+/**
+ * A single resolved record exposed to a Next page.
+ *
+ * Path A: each (identity, modifier-set) variant becomes its own entry.
+ * Canonical variants have `modifiers === []`. Non-canonical variants carry
+ * a `<identity>::<modifiers.join('.')>` id while keeping `slug === identity`.
+ */
 export interface MosaicEntry {
-  /** Mosaic identity, e.g. `pages/about` or `team/ada`. Doubles as the id. */
+  /** `<identity>` for canonical, `<identity>::<modkey>` for non-canonical. */
   id: string;
-  /** Mosaic identity also serves as the slug. */
+  /** Mosaic identity (no modifier suffix), doubles as the slug. */
   slug: string;
-  /** Web profile URL, when the record sits under the configured profile root. */
+  /** Web profile URL — only set for the canonical variant under the profile root. */
   url?: string;
   /** Resolved JSON (post sidecar merge + cascade + refs) from mosaic-core. */
   data: Record<string, unknown>;
@@ -22,6 +28,8 @@ export interface MosaicEntry {
   body?: string;
   /** True when the source file is non-JSON (an opaque payload). */
   opaque: boolean;
+  /** Modifier-set for this variant; empty = canonical. */
+  modifiers: string[];
 }
 
 /** What {@link readMosaic} returns. */
@@ -75,10 +83,17 @@ export interface MosaicCoreRecord {
   body?: string;
   /** Whether the underlying source is non-JSON (opaque). */
   opaque?: boolean;
+  /** Modifier-set for this variant; empty = canonical. */
+  modifiers?: string[];
 }
 
+/**
+ * `records` is a Map<Identity, Variant[]> in current mosaic-core (Path A).
+ * The adapter also accepts a single-record value for backward compatibility
+ * with older test stubs / fixtures.
+ */
 export interface MosaicCoreReadResult {
-  records: Map<string, MosaicCoreRecord>;
+  records: Map<string, MosaicCoreRecord[] | MosaicCoreRecord>;
   manifest: MosaicManifest | { raw: MosaicManifest } | null;
 }
 

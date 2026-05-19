@@ -20,10 +20,23 @@ export type JsonObject = { [k: string]: Json };
 /**
  * A resolved record's effective JSON, the output of the 4-step pipeline
  * defined in `02-references.md §12.5`.
+ *
+ * A record represents a single (identity, modifier-set) variant. The
+ * canonical variant has `modifiers.length === 0`; any other variant carries
+ * one or more modifier segments (e.g. `["fr"]` for `about.fr.json`).
+ * Variants of the same identity surface as separate records in the
+ * resolution map keyed by identity (`Resolution.records: Map<Identity, Record[]>`).
  */
 export interface Record {
   /** Identity per §7.1 (root collection record uses `""`). */
   identity: string;
+  /**
+   * The parsed modifier set for this variant (§7.1). Empty array marks the
+   * canonical variant; otherwise the modifiers are sorted ascending and
+   * unique. Sorting is normalisation only — `about.fr.json` and a
+   * `about.fr.md` sidecar both produce `["fr"]` regardless of disk order.
+   */
+  modifiers: string[];
   /** Effective JSON after content + sidecar + cascade + refs. */
   data: Json;
   /** Source file paths (relative to root) that contributed to this record. */
@@ -79,13 +92,18 @@ export interface RefValue {
 /**
  * Result of {@link readFolder}.
  *
- * `records` maps identity → resolved record. `manifest` is the root manifest
- * (`mosaic.json`) if present.
+ * `records` maps identity → array of variant records (Path A — variants of
+ * an identity are first-class). Each array entry is one (identity,
+ * modifier-set) variant. The array is ordered: canonical variant first if
+ * present (`modifiers.length === 0`), then non-canonical variants sorted
+ * lexicographically by `modifiers.join('.')` ascending.
+ *
+ * `manifest` is the root manifest (`mosaic.json`) if present.
  */
 export interface Resolution {
   rootPath: string;
   manifest: Manifest | null;
-  records: globalThis.Map<string, Record>;
+  records: globalThis.Map<string, Record[]>;
   collections: globalThis.Map<string, Collection>;
   warnings: ValidationMessage[];
 }

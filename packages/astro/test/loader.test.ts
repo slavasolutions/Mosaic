@@ -72,32 +72,46 @@ function makeContext(collection = 'pages') {
 
 // --- Fixture mirroring spec/examples/D-web/content ----------------------
 
+/**
+ * D-web fixture in Path A shape: each identity maps to an array of one or
+ * more variants. Canonical-only fixtures wrap each record in a single-entry
+ * array.
+ */
 function dwebFixture() {
   return {
-    records: new Map<string, { data: Record<string, unknown>; body?: string; filePath?: string }>([
-      ['pages', { data: { title: 'Home' }, filePath: '/abs/pages/index.json' }],
+    records: new Map<
+      string,
+      Array<{ data: Record<string, unknown>; body?: string; filePath?: string; modifiers?: string[] }>
+    >([
+      ['pages', [{ data: { title: 'Home' }, filePath: '/abs/pages/index.json', modifiers: [] }]],
       [
         'pages/about',
-        { data: { title: 'About' }, filePath: '/abs/pages/about.json' },
+        [{ data: { title: 'About' }, filePath: '/abs/pages/about.json', modifiers: [] }],
       ],
       [
         'pages/blog',
-        { data: { title: 'Blog' }, filePath: '/abs/pages/blog/index.json' },
+        [{ data: { title: 'Blog' }, filePath: '/abs/pages/blog/index.json', modifiers: [] }],
       ],
       [
         'pages/blog/hello',
-        {
-          data: { title: 'Post -> URL /blog/hello' },
-          body: '# Hello\n',
-          filePath: '/abs/pages/blog/hello.md',
-        },
+        [
+          {
+            data: { title: 'Post -> URL /blog/hello' },
+            body: '# Hello\n',
+            filePath: '/abs/pages/blog/hello.md',
+            modifiers: [],
+          },
+        ],
       ],
       [
         'team/ada',
-        {
-          data: { name: 'Ada — a record, but NOT a web route (not under pages/).' },
-          filePath: '/abs/team/ada.json',
-        },
+        [
+          {
+            data: { name: 'Ada — a record, but NOT a web route (not under pages/).' },
+            filePath: '/abs/team/ada.json',
+            modifiers: [],
+          },
+        ],
       ],
     ]),
     manifest: { mosaic: '0.9', profiles: { web: { root: 'pages' } } },
@@ -184,7 +198,7 @@ describe('mosaicLoader — load() against D-web fixture', () => {
 
   it('emits entries without urls when the manifest declares no web profile', async () => {
     mockReadFolder.mockResolvedValueOnce({
-      records: new Map([['foo', { data: { title: 'Foo' } }]]),
+      records: new Map([['foo', [{ data: { title: 'Foo' }, modifiers: [] }]]]),
       manifest: { mosaic: '0.9' },
     });
     const loader = mosaicLoader({ root: './content' });
@@ -207,8 +221,8 @@ describe('mosaicLoader — load() against D-web fixture', () => {
 
     mockReadFolder.mockResolvedValueOnce({
       records: new Map([
-        ['pages/a', { data: {} }],
-        ['pages/b', { data: {} }],
+        ['pages/a', [{ data: {}, modifiers: [] }]],
+        ['pages/b', [{ data: {}, modifiers: [] }]],
       ]),
       manifest: { profiles: { web: { root: 'pages' } } },
     });
@@ -216,7 +230,7 @@ describe('mosaicLoader — load() against D-web fixture', () => {
     expect(ctx.store._all().map((e) => e.id).sort()).toEqual(['pages/a', 'pages/b']);
 
     mockReadFolder.mockResolvedValueOnce({
-      records: new Map([['pages/c', { data: {} }]]),
+      records: new Map([['pages/c', [{ data: {}, modifiers: [] }]]]),
       manifest: { profiles: { web: { root: 'pages' } } },
     });
     await loader.load(ctx);
@@ -226,8 +240,8 @@ describe('mosaicLoader — load() against D-web fixture', () => {
   it('surfaces a parseData failure as an error log without aborting the rest', async () => {
     mockReadFolder.mockResolvedValueOnce({
       records: new Map([
-        ['pages/good', { data: { title: 'ok' } }],
-        ['pages/bad', { data: { title: 'fail' } }],
+        ['pages/good', [{ data: { title: 'ok' }, modifiers: [] }]],
+        ['pages/bad', [{ data: { title: 'fail' }, modifiers: [] }]],
       ]),
       manifest: { profiles: { web: { root: 'pages' } } },
     });
@@ -244,5 +258,37 @@ describe('mosaicLoader — load() against D-web fixture', () => {
     const ids = ctx.store._all().map((e) => e.id);
     expect(ids).toEqual(['pages/good']);
     expect(ctx.logger.lines.some((l) => l.includes('parseData failed for "pages/bad"'))).toBe(true);
+  });
+
+  it('emits non-canonical variants as separate non-route entries (Path A)', async () => {
+    mockReadFolder.mockResolvedValueOnce({
+      records: new Map([
+        [
+          'pages/about',
+          [
+            { data: { title: 'About' }, modifiers: [] },
+            { data: { title: 'À propos' }, modifiers: ['fr'] },
+            { data: { title: 'Про нас' }, modifiers: ['uk'] },
+          ],
+        ],
+      ]),
+      manifest: { profiles: { web: { root: 'pages' } } },
+    });
+    const loader = mosaicLoader({ root: './content' });
+    const ctx = makeContext();
+
+    await loader.load(ctx);
+
+    const byId = new Map(ctx.store._all().map((e) => [e.id, e]));
+    // Canonical → identity id, has the route URL.
+    expect(byId.get('pages/about')?.data.url).toBe('/about');
+    expect(byId.get('pages/about')?.data.slug).toBe('pages/about');
+    // Non-canonical → `<id>::<mods>` id, NO route URL.
+    expect(byId.get('pages/about::fr')?.data.url).toBeUndefined();
+    expect(byId.get('pages/about::fr')?.data.slug).toBe('pages/about');
+    expect(byId.get('pages/about::uk')?.data.url).toBeUndefined();
+    expect(byId.get('pages/about::uk')?.data.slug).toBe('pages/about');
+    // The data carries the variant's modifiers for downstream selectors.
+    expect(byId.get('pages/about::fr')?.data.modifiers).toEqual(['fr']);
   });
 });

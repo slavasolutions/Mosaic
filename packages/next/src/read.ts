@@ -50,31 +50,52 @@ export async function readMosaic(
   const routedEntries: MosaicEntry[] = [];
   const nonRouted: MosaicEntry[] = [];
 
-  for (const [identity, record] of result.records) {
-    // mosaic-core's Record.data is typed as Json; for our purposes the top
-    // level is always an object (records are always merged with sidecar
-    // shape) — assert structurally.
-    const dataObj: Record<string, unknown> =
-      record.data && typeof record.data === 'object' && !Array.isArray(record.data)
-        ? (record.data as Record<string, unknown>)
-        : {};
-    const url = profileRoot ? deriveUrl(identity, profileRoot) : null;
-    const isRouted = url !== null;
+  for (const [identity, variantsOrRecord] of result.records) {
+    // Path A: mosaic-core returns Map<Identity, Record[]>; legacy test
+    // stubs still hand back a single Record. Normalise both forms.
+    const variants = Array.isArray(variantsOrRecord)
+      ? variantsOrRecord
+      : [variantsOrRecord];
 
-    if (!isRouted && !includeNonRouteRecords) continue;
+    for (const record of variants) {
+      const modifiers = Array.isArray(record.modifiers) ? record.modifiers : [];
+      const isCanonical = modifiers.length === 0;
 
-    const entry: MosaicEntry = {
-      id: identity,
-      slug: identity,
-      data: dataObj,
-      opaque: record.opaque ?? false,
-    };
-    if (record.body !== undefined) entry.body = record.body;
-    if (url !== null) entry.url = url;
+      // mosaic-core's Record.data is typed as Json; for our purposes the top
+      // level is always an object (records are always merged with sidecar
+      // shape) — assert structurally.
+      const dataObj: Record<string, unknown> =
+        record.data && typeof record.data === 'object' && !Array.isArray(record.data)
+          ? (record.data as Record<string, unknown>)
+          : {};
 
-    entries.push(entry);
-    if (isRouted) routedEntries.push(entry);
-    else nonRouted.push(entry);
+      // Only the canonical variant resolves to a route URL. Non-canonical
+      // variants are surfaced as non-route data entries; a future locale
+      // profile can promote them to localised URLs.
+      const url =
+        profileRoot && isCanonical ? deriveUrl(identity, profileRoot) : null;
+      const isRouted = url !== null;
+
+      if (!isRouted && !includeNonRouteRecords) continue;
+
+      const entryId = isCanonical
+        ? identity
+        : `${identity}::${modifiers.join('.')}`;
+
+      const entry: MosaicEntry = {
+        id: entryId,
+        slug: identity,
+        data: dataObj,
+        opaque: record.opaque ?? false,
+        modifiers,
+      };
+      if (record.body !== undefined) entry.body = record.body;
+      if (url !== null) entry.url = url;
+
+      entries.push(entry);
+      if (isRouted) routedEntries.push(entry);
+      else nonRouted.push(entry);
+    }
   }
 
   // Stable, identity-sorted output. Callers (e.g. generateStaticParams) get

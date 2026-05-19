@@ -217,56 +217,96 @@ async function loadOnce(args: LoadOnceArgs): Promise<void> {
   let emitted = 0;
   let skipped = 0;
 
-  for (const [identity, record] of records) {
-    const url = profileRoot ? deriveUrl(identity, profileRoot) : null;
+  for (const [identity, variantsOrRecord] of records) {
+    // Path A: mosaic-core returns Map<Identity, Record[]>; older shapes
+    // (used by some test stubs / legacy fixtures) hand back a single
+    // Record. Normalise either into the variant array form.
+    const variants: Array<{
+      data: Record<string, unknown>;
+      body?: string;
+      filePath?: string;
+      modifiers?: string[];
+    }> = Array.isArray(variantsOrRecord)
+      ? (variantsOrRecord as Array<{
+          data: Record<string, unknown>;
+          body?: string;
+          filePath?: string;
+          modifiers?: string[];
+        }>)
+      : [variantsOrRecord as {
+          data: Record<string, unknown>;
+          body?: string;
+          filePath?: string;
+          modifiers?: string[];
+        }];
 
-    if (url === null && !includeNonRouteRecords) {
-      skipped++;
-      continue;
+    for (const record of variants) {
+      const modifiers = Array.isArray(record.modifiers) ? record.modifiers : [];
+      const isCanonical = modifiers.length === 0;
+
+      // Each variant emits ONE Astro entry. Canonical variant uses the
+      // identity itself as the id; non-canonical variants get a
+      // `<identity>::<modifiers.join('.')>` id so they don't collide.
+      const entryId = isCanonical
+        ? identity
+        : `${identity}::${modifiers.join('.')}`;
+
+      // §11 / Mosaic Web §3: only the canonical variant gets the route URL.
+      // Non-canonical variants are surfaced as non-route data entries; a
+      // future locale profile can promote them to localised URLs.
+      const url =
+        profileRoot && isCanonical ? deriveUrl(identity, profileRoot) : null;
+
+      if (url === null && !includeNonRouteRecords) {
+        skipped++;
+        continue;
+      }
+
+      const baseData: Record<string, unknown> = {
+        ...record.data,
+        // The slug + identity are part of the addressable shape we hand
+        // Astro. They live alongside user data; downstream Zod schemas can
+        // pick them up if declared. `slug` stays identity-only so adapters
+        // can group variants by identity.
+        slug: identity,
+        modifiers,
+      };
+      if (url !== null) baseData.url = url;
+
+      let validated: Record<string, unknown>;
+      try {
+        validated = await parseData({
+          id: entryId,
+          data: baseData,
+          filePath: record.filePath,
+        });
+      } catch (err) {
+        logger.error(
+          `mosaic-astro: parseData failed for "${entryId}": ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        );
+        continue;
+      }
+
+      const digestSource = record.body
+        ? JSON.stringify(validated) + '\n' + record.body
+        : JSON.stringify(validated);
+      const digest = generateDigest(digestSource);
+
+      const entry: MosaicEntry = {
+        id: entryId,
+        slug: identity,
+        data: validated,
+        digest,
+      };
+      if (record.body !== undefined) entry.body = record.body;
+      if (record.filePath) entry.filePath = record.filePath;
+      if (url !== null) entry.url = url;
+
+      store.set(entry);
+      emitted++;
     }
-
-    const baseData: Record<string, unknown> = {
-      ...record.data,
-      // The slug + identity are part of the addressable shape we hand
-      // Astro. They live alongside user data; downstream Zod schemas can
-      // pick them up if declared.
-      slug: identity,
-    };
-    if (url !== null) baseData.url = url;
-
-    let validated: Record<string, unknown>;
-    try {
-      validated = await parseData({
-        id: identity,
-        data: baseData,
-        filePath: record.filePath,
-      });
-    } catch (err) {
-      logger.error(
-        `mosaic-astro: parseData failed for "${identity}": ${
-          err instanceof Error ? err.message : String(err)
-        }`,
-      );
-      continue;
-    }
-
-    const digestSource = record.body
-      ? JSON.stringify(validated) + '\n' + record.body
-      : JSON.stringify(validated);
-    const digest = generateDigest(digestSource);
-
-    const entry: MosaicEntry = {
-      id: identity,
-      slug: identity,
-      data: validated,
-      digest,
-    };
-    if (record.body !== undefined) entry.body = record.body;
-    if (record.filePath) entry.filePath = record.filePath;
-    if (url !== null) entry.url = url;
-
-    store.set(entry);
-    emitted++;
   }
 
   logger.info(

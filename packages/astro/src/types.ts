@@ -38,17 +38,23 @@ export interface MosaicLoaderOptions {
 /**
  * An entry as we hand it to Astro's `store.set`. Astro accepts an open
  * object shape; these are the fields we actually populate.
+ *
+ * Path A: each (identity, modifier-set) variant becomes its own entry.
+ * For the canonical variant, `id === slug === identity`. For non-canonical
+ * variants, `id` is suffixed with `::<modifiers.join('.')>` so the store
+ * keeps them addressable separately, while `slug` stays identity-only so
+ * Layouts can group variants by identity.
  */
 export interface MosaicEntry {
-  /** Mosaic identity, e.g. `pages/about` or `team/ada`. Doubles as the Astro id. */
+  /** Mosaic Astro store id — `<identity>` for canonical, `<identity>::<modkey>` otherwise. */
   id: string;
   /** Resolved JSON (post sidecar merge + cascade + refs) from mosaic-core. */
   data: Record<string, unknown>;
   /** Opaque content body, if any (e.g. the bytes of a `.md` file). */
   body?: string;
-  /** Mosaic identity also serves as the slug. */
+  /** Mosaic identity (always — no modifier suffix), doubles as the slug. */
   slug: string;
-  /** Web profile URL, when the record sits under the configured profile root. */
+  /** Web profile URL — only set for the canonical variant under the profile root. */
   url?: string;
   /** Content digest for change detection — Astro consumes this. */
   digest?: string;
@@ -82,10 +88,17 @@ export interface MosaicCoreRecord {
   body?: string;
   /** Absolute (or root-relative) path of the source file. Used for watch. */
   filePath?: string;
+  /** Modifier-set for this variant; empty = canonical. */
+  modifiers?: string[];
 }
 
+/**
+ * `records` is a Map<Identity, Variant[]> in current mosaic-core (Path A).
+ * The adapter also accepts a single-record value for backward compatibility
+ * with older test stubs / loaders.
+ */
 export interface MosaicCoreReadResult {
-  records: Map<string, MosaicCoreRecord>;
+  records: Map<string, MosaicCoreRecord[] | MosaicCoreRecord>;
   manifest: MosaicManifest;
 }
 
