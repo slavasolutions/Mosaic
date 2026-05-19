@@ -2,7 +2,7 @@
 
 # Mosaic Specification
 
-**Version:** 0.9.2 (draft — format locked, not 1.0)
+**Version:** 0.9.4 (draft — format locked, not 1.0)
 **Status:** Working Draft
 **Scope:** the base format. Profiles (e.g. the `mosaic-web` profile for routing) layer on top in separate documents and never modify the base.
 
@@ -12,17 +12,18 @@ The spec is organised in **two layers** so each consumer pays only for what it n
 
 ```
    ┌──────────────────────────────────────────────────────┐
-   │  Profiles   →  mosaic-web (routing), future feed,    │
-   │                future archive…                        │
+   │  Profiles   →  mosaic-web (routing, meta tags),       │
+   │                mosaic-design-tokens                   │
    ├──────────────────────────────────────────────────────┤
    │  Base       →  records, collections, identity,        │
-   │                sidecars, refs, cascade (§§5–12)       │
+   │                sidecars, refs, cascade, adapters      │
+   │                (§§5–12)                               │
    └──────────────────────────────────────────────────────┘
 ```
 
-A folder MUST conform to the base. Profiles are OPTIONAL — they add per-domain rules (URL derivation, feed-shape, etc.) that domain-specific consumers care about. The base spec never mentions URLs; that talk lives entirely in the web profile.
+A folder MUST conform to the base. Profiles are OPTIONAL — they add per-domain rules (URL derivation, design-token shape, etc.) that domain-specific consumers care about. The base spec never mentions URLs; that talk lives entirely in the web profile.
 
-Concrete: an RSS reader, an AI ingest tool, or an archive index only needs the base. An Astro/Next/static-site-generator engine needs the base plus `mosaic-web`.
+Today there are two profiles shipped: **mosaic-web** (routing + HTML meta + JSON-LD) and **mosaic-design-tokens** (theme cascade). New profiles are added through the MIP process when a concrete consumer needs one — the spec doesn't speculate.
 
 ---
 
@@ -100,8 +101,8 @@ The Python validator at `tools/validate.py` is the executable companion to §§5
 
 ## What's deferred to future versions
 
-- **Mosaic Web profile** is in 0.9.2 (`profiles/mosaic-web.md`) — but covers only routing for now. Design tokens, redirects, sitemaps come in a later iteration.
+- **Mosaic Web profile** is in 0.9.4 (`profiles/mosaic-web.md`) — covers routing + HTML meta tags + JSON-LD. Redirects, sitemaps, locale-as-folder URLs come in a later iteration.
 - Profile mechanism clauses in the base (§5.2 extraction rule, §7.2 profile-visible carve-out) — drafted in 0.9.1; rolled back here pending a real consumer
 - Heavier example fixtures (spec-as-Mosaic dogfood, opaque payloads, name-violation negative test) — preserved in the sibling `../mosaic-archive/0.9.1-fixtures/` folder for whoever needs them
 
-This is **0.9.2**, not 1.0. The format is locked at the headline; details may still shift before 1.0 based on real-world consumer feedback.
+This is **0.9.4**, not 1.0. The format is locked at the headline; details may still shift before 1.0 based on real-world consumer feedback.

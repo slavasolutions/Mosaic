@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+### README + repo presentation
+
+- Version sprawl reconciled — every file now reads **0.9.4** (root README,
+  spec README, spec headers, index.html topbar + footer, packages/core
+  README, root package.json). Previous mix of 0.9.2 / 0.9.4 across files
+  was the biggest credibility leak.
+- README "About the website framing" rewritten — drops the foreshadowed
+  "feeds, future archives" profiles that don't exist. Says only what ships
+  today (mosaic-web + mosaic-design-tokens).
+- README gains a **Compared to other content tools** section — honest
+  table vs Astro Content Collections, Contentlayer, Keystatic, Notion-as-CMS,
+  with "pick Mosaic if / don't pick yet if / not necessarily either-or"
+  guidance.
+- README gains a **pre-release notice** above the Status section — explicit
+  that `@ssolu/*` packages aren't on npm yet, install snippets describe the
+  future-published shape.
+- README gains a **Roadmap** section — 1.0 stability lock criteria, npm
+  publish coordination, React adapter ([#12]), Studio ([#11]), git
+  adapter, profile-by-demand policy.
+- Removed `docs/STATE.md` — it was internal session-handoff working notes,
+  not fit for outside visitors. Recovered via git history if needed; future
+  state goes in PR descriptions, the CHANGELOG, and roadmap.
+- Removed the "Historic and superseded material lives in `../mosaic-archive/`"
+  pointer from the repo guide — that sibling folder is outside the repo
+  and shouldn't be advertised here.
+- Repo renamed back to lowercase `mosaic` (GitHub had been serving it as
+  `Mosaic`, breaking case-sensitive Pages URLs).
+
 ### Root cleanup
 
 - `PRINCIPLES.md` removed — its content (three foundational claims, plain

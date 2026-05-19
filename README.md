@@ -30,13 +30,9 @@ Each demo on that page is a real Mosaic folder at the repo root — [`examples/c
 
 ### About the "website" framing
 
-Mosaic is a folder format for **content**. Websites are the headline use case — there's a small `mosaic-web` profile that adds URL routing for that case — but the base format is **web-agnostic**. The base spec never mentions URLs. A Mosaic folder is just as valid as a feed source, an AI ingest, or an archive; other profiles (feeds, archives) can layer on later.
+Mosaic is a folder format for **content**. Websites are the headline use case — the `mosaic-web` profile adds URL routing + HTML meta + JSON-LD on top of the base format. The base spec itself never mentions URLs. A reader that just wants the records (RSS index, AI ingest, static archive) doesn't need the web profile at all.
 
-Who needs the `mosaic-web` profile:
-
-- ✅ Engines that turn a folder into a rendered site (Astro adapter, Next adapter, static-site generators)
-- ✅ Validators that want to assert "this folder produces clean URLs"
-- ❌ Anything that just reads records (RSS, indexers, AI tools) — they only need the base
+Today two profiles ship: **mosaic-web** (routing + meta + JSON-LD) and **mosaic-design-tokens** (theme cascade). New profiles get drafted through the MIP process when a real consumer needs one — we don't speculate.
 
 ---
 
@@ -155,11 +151,64 @@ The Astro loader accepts either form — `{ root: './content' }` for filesystem,
 | [`packages/devtool/`](./packages/devtool/) | Astro dev-toolbar app for inspecting Mosaic records at edit time. |
 | [`index.html`](./index.html) | Visual explainer (hosted at the [explainer link above](https://slavasolutions.github.io/mosaic/)). |
 
-Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs, the 0.8.x monolithic spec, session artefacts, heavier 0.9.1 fixtures — lives in a sibling folder at `../mosaic-archive/` (not part of this repository).
+## Compared to other content tools
+
+Mosaic is a **format**, not a CMS. Honest comparison vs the tools you might otherwise reach for:
+
+| | Mosaic | Astro Content Collections | Contentlayer | Keystatic | Notion-as-CMS |
+|---|---|---|---|---|---|
+| What it is | Spec + reader libs | Astro feature | Library | CMS application | SaaS database |
+| Content lives in | Any folder — FS, S3/R2, git (next) | Local FS | Local FS | GitHub repo | Notion |
+| Editor UI | Not yet — Studio planned ([#11](https://github.com/slavasolutions/mosaic/issues/11)) | None | None | Yes, in-repo | Yes, Notion app |
+| Framework | Any (adapter pattern) | Astro only | Astro / Next / Solid | Astro / Next | Any (via API) |
+| Schema validation | Spec-defined, optional | Zod, required | Zod, required | Schema, required | None |
+| Lock-in | None — files are yours | Tied to Astro | Tied to your build | Tied to GitHub | Tied to Notion |
+| Switch frameworks | Yes — same folder, swap adapter | Migration job | Library swap | Re-platform | API rewrite |
+| Open spec | Yes — `spec/` | No (impl-defined) | No | No | No |
+| Reference impls | TS + Python (agree on §§5–9) | One (Astro) | One | One | Notion API client |
+| AI / SEO baked in | JSON-LD + `meta:` per spec | DIY | DIY | DIY | DIY |
+| License | Apache 2.0 (code) + CC BY 4.0 (spec) | MIT (Astro) | MIT | MIT | proprietary |
+| Maturity | 0.9.4 working draft, pre-1.0 | Stable | Maintenance mode | Stable | Stable |
+
+### Pick Mosaic if
+
+- You're deciding *where content lives* — filesystem, git, S3/R2, or all three over time
+- You want framework portability built-in (today: Astro + Next adapters; the same folder works in both, byte-identical)
+- You want an open spec, not a library lock-in
+- You want JSON-LD + OG meta out of the box
+- You want the audit trail of git more than a slick editor
+
+### Don't pick Mosaic (yet) if
+
+- You need a polished WYSIWYG editor today — use Keystatic or wait for [Mosaic Studio](https://github.com/slavasolutions/mosaic/issues/11)
+- You're happy in Astro forever and never plan to leave — Astro Content Collections gives you Zod schemas Mosaic doesn't
+- You want a hosted service — Mosaic is plain files
+- You're building multi-tenant user-generated content — Mosaic is for owned content, not user streams
+
+### Not necessarily either/or
+
+- **Mosaic + Astro Content Collections** — already paired in this repo. The Astro adapter plugs Mosaic into Astro's Content Layer API. You get Mosaic portability + Astro's collection-aware queries.
+- **Mosaic + Keystatic / Decap** — both could read/write a Mosaic folder. Adapter is a future PR ([#11](https://github.com/slavasolutions/mosaic/issues/11)).
+- **Mosaic + Notion** — export Notion to a Mosaic folder once, then never need the Notion API.
+
+---
 
 ## Status
 
-**Version 0.9.4** — working draft. The headline format is locked; details may still shift before 1.0. Packages aren't on npm yet; clone and `npm install` to use them. See [`spec/CHANGELOG.md`](./spec/CHANGELOG.md) for what changed since 0.9.2.
+**Version 0.9.4** — working draft. The headline format is locked; details may still shift before 1.0. See [`spec/CHANGELOG.md`](./spec/CHANGELOG.md) for what changed since 0.9.2.
+
+> **Pre-release notice.** Packages aren't on npm yet. The install snippets above use `@ssolu/*` names that will publish at 1.0. To evaluate today: visit the [live explainer](https://slavasolutions.github.io/mosaic/) or clone this repo + `npm install`.
+
+## Roadmap
+
+What's already shipped lives in the [CHANGELOG](./CHANGELOG.md). What's next:
+
+- **1.0 stability lock** — once a real downstream adopter validates the §§5–12 surface for ~3 months without spec changes
+- **npm publish** — coordinated `@ssolu/mosaic-*` 1.0 release; spec freezes at the same time
+- **React adapter + non-web profile** — interactive editor use case ([#12](https://github.com/slavasolutions/mosaic/issues/12)). Surfaces write-back contract.
+- **Mosaic Studio** — visual editor for the design-tokens profile ([#11](https://github.com/slavasolutions/mosaic/issues/11))
+- **`@ssolu/mosaic-git`** — read content from any git branch/ref; adapter ecosystem expansion
+- **More profiles** — when a real consumer demands one (feeds, archives, etc are NOT on the roadmap until a downstream project asks)
 
 ## License
 

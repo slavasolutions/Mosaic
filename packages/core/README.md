@@ -96,7 +96,7 @@ Fixtures live under `test/fixtures/`. They mirror the four worked examples in th
 
 ## Spec
 
-This library tracks the Mosaic spec at version **0.9.2** (working draft). See <https://github.com/slavasolutions/mosaic>.
+This library tracks the Mosaic spec at version **0.9.4** (working draft). See <https://github.com/slavasolutions/mosaic>.
 
 ## License
 
