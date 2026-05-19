@@ -6,7 +6,8 @@
  */
 
 export { readFolder, TEXT_BODY_EXTENSIONS } from './reader.js';
-export { validate } from './validate.js';
+export { validate, validateFiles } from './validate.js';
+export type { ValidateFilesInput } from './validate.js';
 export {
   parseRef,
   evaluatePointer,

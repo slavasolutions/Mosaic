@@ -28,10 +28,11 @@ jobs:
       - name: Install workspaces
         run: npm install
 
-      - name: Build core + devtool + framework adapter packages
+      - name: Build core + devtool + validator-web + framework adapter packages
         run: |
           npm run build --workspace=packages/core
           npm run build --workspace=packages/devtool
+          npm run build --workspace=packages/validator-web
           npm run build --workspace=packages/astro
           npm run build --workspace=packages/next
 
@@ -58,6 +59,11 @@ jobs:
           # so both sites share one copy.
           mkdir -p _site/_mosaic-devtool
           cp packages/devtool/dist/mosaic-devtool.js _site/_mosaic-devtool/
+          # Browser validator bundle — loaded by the explainer's
+          # "Validate a folder" section. Sits alongside _mosaic-devtool/
+          # so paths are stable across deployments.
+          mkdir -p _site/_mosaic-validator
+          cp packages/validator-web/dist/mosaic-validator-web.js _site/_mosaic-validator/
 
       - uses: actions/upload-pages-artifact@v5
         with:

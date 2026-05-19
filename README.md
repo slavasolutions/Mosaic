@@ -60,7 +60,7 @@ Three ways to check a folder against the spec. Same answer from each — errors,
 |---|---|---|
 | **Node CLI** | `node packages/core/dist/cli.js validate <path>` | Once on npm: `npx @ssolu/mosaic-core validate <path>`. Covers §§5–9; also `mosaic read <path>` for the full pipeline (refs §11 + cascade §12). |
 | **Python** | `python3 spec/tools/validate.py <path>` | Stdlib only. No install. Base §§5–9 only. |
-| **Browser** | _coming_ | Drag a folder onto the live explainer. Same logic, no terminal. |
+| **Browser** | Drop a folder on the [live explainer](https://slavasolutions.github.io/mosaic/#validate) | Pure-client `@ssolu/mosaic-validator-web` (about 9 kB). Same rules, no terminal, nothing leaves the browser. |
 
 Try it against the four spec examples:
 

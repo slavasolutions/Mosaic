@@ -624,6 +624,142 @@ footer {
 .footer-links { display: flex; gap: var(--s-4); flex-wrap: wrap; }
 .footer-links a { color: var(--c-ink-mute); font-size: 13px; }
 .footer-links a:hover { color: var(--c-ink); }
+
+/* ------------------------------------------------------------------ */
+/*  #validate — browser-side validator (mosaic-validator-web)          */
+/* ------------------------------------------------------------------ */
+.validator-shell {
+  margin-top: var(--s-6);
+}
+.mosaic-validator-web-host {
+  display: grid;
+  gap: var(--s-4);
+}
+.mosaic-validator-web-dropzone {
+  border: 2px dashed var(--c-line);
+  border-radius: var(--r-lg);
+  background: var(--c-bg-elev);
+  padding: var(--s-7) var(--s-5);
+  text-align: center;
+  color: var(--c-ink-soft);
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.mosaic-validator-web-dropzone:hover,
+.mosaic-validator-web-dropzone:focus-visible {
+  border-color: var(--c-accent);
+  outline: none;
+}
+.mosaic-validator-web-dropzone.is-over {
+  border-color: var(--c-accent);
+  background: var(--c-accent-soft);
+}
+.mosaic-validator-web-dropzone .prompt {
+  margin: 0 0 var(--s-2) 0;
+  font: 500 17px/1.3 var(--f-display);
+  color: var(--c-ink);
+}
+.mosaic-validator-web-dropzone .hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--c-ink-mute);
+}
+.mosaic-validator-web-pick {
+  justify-self: start;
+  background: var(--c-ink);
+  color: var(--c-bg);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font: 500 13px/1.2 var(--f-mono);
+  cursor: pointer;
+}
+.mosaic-validator-web-pick:hover {
+  background: var(--c-accent);
+}
+.mosaic-validator-web-results .status {
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  background: var(--c-bg-sunk);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  color: var(--c-ink-mute);
+}
+.mosaic-validator-web .summary {
+  margin: 0 0 var(--s-3) 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-sm);
+  font: 500 14px/1.3 var(--f-mono);
+}
+.mosaic-validator-web .summary.ok {
+  background: #d6ecdf;
+  color: #2d6b54;
+}
+.mosaic-validator-web .summary.fail {
+  background: #fae2dd;
+  color: #8a2c1c;
+}
+@media (prefers-color-scheme: dark) {
+  .mosaic-validator-web .summary.ok   { background: #1d3329; color: #b8e0cd; }
+  .mosaic-validator-web .summary.fail { background: #3a1410; color: #f0b8aa; }
+}
+.mosaic-validator-web .all-good {
+  margin: 0;
+  color: var(--c-ink-mute);
+  font-size: 13px;
+}
+.mosaic-validator-web .findings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.mosaic-validator-web .finding {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px var(--s-3);
+  align-items: baseline;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-sm);
+  background: var(--c-bg-elev);
+  font-size: 13px;
+}
+.mosaic-validator-web .finding .sev {
+  grid-column: 1;
+  font: 500 10px/1 var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border-radius: 3px;
+  align-self: center;
+}
+.mosaic-validator-web .finding.error .sev   { background: #fae2dd; color: #8a2c1c; }
+.mosaic-validator-web .finding.warning .sev { background: #fbeec2; color: #6a4d10; }
+@media (prefers-color-scheme: dark) {
+  .mosaic-validator-web .finding.error .sev   { background: #3a1410; color: #f0b8aa; }
+  .mosaic-validator-web .finding.warning .sev { background: #2b240f; color: #e8d49a; }
+}
+.mosaic-validator-web .finding .path {
+  grid-column: 2;
+  font: 12px/1.3 var(--f-mono);
+  color: var(--c-ink);
+}
+.mosaic-validator-web .finding .msg {
+  grid-column: 2;
+  color: var(--c-ink-soft);
+}
+.mosaic-validator-web .meta {
+  margin: var(--s-3) 0 0 0;
+  font-size: 12px;
+  color: var(--c-ink-mute);
+}
+.section-foot {
+  margin-top: var(--s-5);
+  font-size: 13px;
+  color: var(--c-ink-mute);
+}
 </style>
 </head>
 <body>
@@ -922,6 +1058,22 @@ team/
 
 
 <!-- ================================================================ -->
+<!--  Validate a folder — client-side, in this page                    -->
+<!-- ================================================================ -->
+<section id="validate">
+  <div class="wrap">
+    <p class="eyebrow">Validate</p>
+    <h2 class="section-title">Drop a folder. Get the verdict.</h2>
+    <p class="section-lede">Runs <code>@ssolu/mosaic-validator-web</code> right here in the page — same §§5–9 rules as the Node CLI and the Python validator. Nothing leaves the browser.</p>
+
+    <div class="validator-shell" data-mosaic-validator></div>
+
+    <p class="section-foot">Don't have a folder handy? Clone <a href="https://github.com/slavasolutions/mosaic">the repo</a> and drop any of <code>spec/examples/{A,B,C,D,E}/content/</code>.</p>
+  </div>
+</section>
+
+
+<!-- ================================================================ -->
 <!--  What it is NOT                                                   -->
 <!-- ================================================================ -->
 <section id="not">
@@ -995,6 +1147,9 @@ team/
     </div>
   </div>
 </footer>
+
+<!-- Browser validator (under 10 kB, no upload, mounts on [data-mosaic-validator]) -->
+<script src="_mosaic-validator/mosaic-validator-web.js" defer></script>
 
 </body>
 </html>
