@@ -136,9 +136,123 @@ nested schema.org graph in one JSON-LD block.
 Field-name mapping (Mosaic record fields → schema.org properties) is
 consumer-defined; profiles MAY codify common mappings. Consumers SHOULD
 strip Mosaic-internal fields (`slug`, `url`, `modifiers`, etc.) from
-the emitted JSON-LD.
+the emitted JSON-LD. The `meta` field (see §7) is HTML metadata, not
+schema.org data, and MUST be stripped from JSON-LD output likewise.
 
-## 7. What this profile does NOT define
+Schema.org structured data (this section) and HTML meta tags (§7) are
+complementary, not alternatives. A page MAY emit both; one carries
+machine-readable type information for search/social knowledge graphs,
+the other carries the legacy `<meta>` / OpenGraph / Twitter Card surface
+that crawlers and unfurlers still consume directly.
+
+## 7. HTML meta tags (RECOMMENDED)
+
+A consumer that supports this profile SHOULD emit HTML `<meta>` tags in
+the `<head>` of every rendered page when the corresponding record
+declares a `meta` field. The field name `meta` is reserved on records
+when this profile is active; it carries page-level HTML metadata
+(description, OpenGraph, Twitter Card, robots, canonical).
+
+The `meta` field is an object with the following recognised sub-fields.
+All are OPTIONAL. Unknown sub-fields MUST be preserved per base §9 and
+MAY be emitted by consumers that understand them.
+
+| Sub-field | Type | Emitted as |
+|---|---|---|
+| `meta.description` | string | `<meta name="description" content="…">` |
+| `meta.robots` | string | `<meta name="robots" content="…">` |
+| `meta.canonical` | string | `<link rel="canonical" href="…">` |
+| `meta.og.title` | string | `<meta property="og:title" content="…">` |
+| `meta.og.description` | string | `<meta property="og:description" content="…">` |
+| `meta.og.image` | string | `<meta property="og:image" content="…">` |
+| `meta.og.type` | string | `<meta property="og:type" content="…">` |
+| `meta.og.url` | string | `<meta property="og:url" content="…">` |
+| `meta.og.locale` | string | `<meta property="og:locale" content="…">` |
+| `meta.og.siteName` | string | `<meta property="og:site_name" content="…">` |
+| `meta.twitter.card` | string | `<meta name="twitter:card" content="…">` |
+| `meta.twitter.title` | string | `<meta name="twitter:title" content="…">` |
+| `meta.twitter.description` | string | `<meta name="twitter:description" content="…">` |
+| `meta.twitter.image` | string | `<meta name="twitter:image" content="…">` |
+| `meta.twitter.creator` | string | `<meta name="twitter:creator" content="…">` |
+| `meta.twitter.site` | string | `<meta name="twitter:site" content="…">` |
+
+This profile RECOMMENDS but does not REQUIRE meta-tag emission. A
+renderer that emits valid `<meta>` tags when `meta` is present
+conforms; one that omits them also conforms. Records without a `meta`
+field MUST NOT trigger meta-tag emission for that record.
+
+### 7.1 Sensible defaults (informative)
+
+Consumers MAY derive omitted values from sibling fields when natural:
+
+- `meta.og.title` MAY default to the record's `title` field.
+- `meta.twitter.title` MAY default to `meta.og.title` (then to `title`).
+- `meta.description` MAY default to `meta.og.description`, or vice
+  versa.
+- `meta.twitter.description` MAY default to `meta.og.description`, then
+  to `meta.description`.
+- `meta.twitter.card` MAY default to `"summary_large_image"` when
+  `meta.og.image` (or `meta.twitter.image`) is present, otherwise to
+  `"summary"`.
+- `meta.og.url` MAY default to the page's computed URL per §3.
+
+These defaults are consumer-defined. The profile does not require any
+specific fallback chain; a consumer that emits only what the record
+literally declares is conforming.
+
+### 7.2 Worked example
+
+A blog post record at `pages/blog/hello.json`:
+
+```json
+{
+  "@type": "BlogPosting",
+  "title": "Hello",
+  "meta": {
+    "description": "First post on the new site.",
+    "og": {
+      "image": "/blog/hello-hero.png",
+      "type": "article"
+    },
+    "twitter": {
+      "card": "summary_large_image",
+      "creator": "@ada"
+    }
+  }
+}
+```
+
+A conforming renderer emits (in `<head>`):
+
+```html
+<meta name="description" content="First post on the new site.">
+<meta property="og:title" content="Hello">
+<meta property="og:description" content="First post on the new site.">
+<meta property="og:image" content="/blog/hello-hero.png">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://example.com/blog/hello">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hello">
+<meta name="twitter:description" content="First post on the new site.">
+<meta name="twitter:image" content="/blog/hello-hero.png">
+<meta name="twitter:creator" content="@ada">
+```
+
+The `og:title`, `og:description`, `og:url`, `twitter:title`,
+`twitter:description`, and `twitter:image` lines are the consumer's
+sensible-default derivations per §7.1; an equally conforming renderer
+that emits only the literally-declared sub-fields is also valid.
+
+### 7.3 Relationship to §6
+
+`meta` is HTML metadata for crawlers and unfurlers. `@type` and the
+JSON-LD output of §6 are schema.org structured data for knowledge
+graphs. A page MAY carry both, neither, or either. Consumers MUST NOT
+copy `meta` sub-fields into the JSON-LD block; consumers MUST NOT copy
+`@type` / `@context` into `<meta>` tags. The two surfaces serve
+different audiences and remain independent.
+
+## 8. What this profile does NOT define
 
 Out of scope for 0.9.2 of this profile. Each MAY return in a later draft:
 
@@ -157,7 +271,7 @@ Out of scope for 0.9.2 of this profile. Each MAY return in a later draft:
   surface images at predictable URLs (e.g. `pages/images/hero.png` at
   `/images/hero.png`) but this profile does not normatively require it.
 
-## 8. Relationship to the base format
+## 9. Relationship to the base format
 
 This profile **layers**. It adds the identity → URL map; it does not change
 any base rule. The base format's three structural rules — file is record,
@@ -168,11 +282,11 @@ unchanged.
 If a folder fails base-format validation, this profile considers it
 non-conforming. There is no looser "web-compatible" mode.
 
-## 9. Status
+## 10. Status
 
 This is a 0.9.2 working draft. It deliberately covers the bare minimum
 required for a consumer (an editor, a renderer, a static-site generator)
-to produce predictable URLs from a Mosaic folder. The deferred items in §7
+to produce predictable URLs from a Mosaic folder. The deferred items in §8
 will return as the profile matures.
 
 The example fixture at `../examples/D-web/content/` exercises this profile

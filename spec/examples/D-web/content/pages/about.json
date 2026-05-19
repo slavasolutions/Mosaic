@@ -1,1 +1,10 @@
-{ "title": "About  ->  URL  /about   (file form, no folder needed)" }
+{
+  "@type": "AboutPage",
+  "title": "About  ->  URL  /about   (file form, no folder needed)",
+  "meta": {
+    "description": "About page — file-form record, no folder needed.",
+    "og": {
+      "type": "website"
+    }
+  }
+}

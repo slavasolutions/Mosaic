@@ -1,0 +1,16 @@
+{
+  "@type": "BlogPosting",
+  "title": "Bonjour  ->  URL  /blog/hello   (variante fr)",
+  "meta": {
+    "description": "Premier billet — démontre l'émission de meta tags localisés par variante.",
+    "og": {
+      "type": "article",
+      "image": "/blog/hello-hero.png",
+      "locale": "fr_FR"
+    },
+    "twitter": {
+      "card": "summary_large_image",
+      "creator": "@ada"
+    }
+  }
+}

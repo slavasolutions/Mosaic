@@ -1,1 +1,16 @@
-{ "title": "Post  ->  URL  /blog/hello" }
+{
+  "@type": "BlogPosting",
+  "title": "Post  ->  URL  /blog/hello",
+  "meta": {
+    "description": "First post on the new site — demonstrates per-record meta tag emission.",
+    "og": {
+      "type": "article",
+      "image": "/blog/hello-hero.png"
+    },
+    "twitter": {
+      "card": "summary_large_image",
+      "creator": "@ada"
+    },
+    "canonical": "https://example.com/blog/hello"
+  }
+}

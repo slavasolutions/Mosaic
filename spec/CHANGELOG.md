@@ -1,5 +1,16 @@
 # Mosaic Spec Changelog
 
+## Unreleased
+
+### Added
+
+- **mosaic-web §7 — HTML meta tags (RECOMMENDED).** New normative clause covering page-level `<meta>` / OpenGraph / Twitter Card emission. Reserves the record field name `meta` with sub-fields `description`, `robots`, `canonical`, and nested `og.*` / `twitter.*` groups. Same RECOMMENDED posture as §6 Schema.org: consumers MAY emit or omit and still conform. Includes sensible-defaults guidance (§7.1, informative), a worked `BlogPosting` example (§7.2), and an explicit independence rule against §6 JSON-LD (§7.3).
+- **D-web fixture exercises §7 end-to-end.** `pages/index.json` (new home record), `pages/about.json`, `pages/blog/hello.json`, plus a new French sidecar variant `pages/blog/hello.fr.json` now carry `meta` blocks demonstrating OpenGraph, Twitter Card, canonical, robots, and per-variant locale switching.
+
+### Changed
+
+- **mosaic-web profile renumbered.** Old §7 (out of scope) → §8. Old §8 (relationship to base) → §9. Old §9 (status) → §10. Internal §10 cross-ref to deferred-items section updated. §6 gains a forward-pointer to §7 noting the two surfaces are complementary, plus an explicit rule that the `meta` field MUST be stripped from JSON-LD output.
+
 ## 0.9.2 (2026-05-18) — clean cut
 
 A subtractive release. Same rules as 0.9.1; smaller repository.

@@ -1,0 +1,18 @@
+{
+  "@type": "WebSite",
+  "title": "D-web demo",
+  "meta": {
+    "description": "Canonical mosaic-web profile fixture: pages, blog, sidecars, JSON-LD, meta tags.",
+    "og": {
+      "type": "website",
+      "image": "/og-cover.png",
+      "siteName": "D-web demo",
+      "locale": "en_US"
+    },
+    "twitter": {
+      "card": "summary_large_image",
+      "site": "@mosaicspec"
+    },
+    "robots": "index,follow"
+  }
+}
