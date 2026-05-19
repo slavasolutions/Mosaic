@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "astro": "^5.0.0",
-    "mosaic-astro": "file:../..",
-    "mosaic-core": "file:../../../mosaic-core"
+    "mosaic-astro": "*",
+    "mosaic-core": "*"
   }
 }

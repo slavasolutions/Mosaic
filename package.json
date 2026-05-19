@@ -10,7 +10,8 @@
     "url": "https://github.com/slavasolutions/mosaic.git"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/astro/examples/minimal-site"
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",

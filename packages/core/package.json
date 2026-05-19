@@ -12,6 +12,9 @@
       "import": "./dist/index.js"
     }
   },
+  "bin": {
+    "mosaic": "./dist/cli.js"
+  },
   "files": [
     "dist",
     "src",
