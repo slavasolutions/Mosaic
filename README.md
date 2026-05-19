@@ -50,7 +50,7 @@ That's the base. [`spec/`](./spec/) extends these with refs (`ref:team/ada` and 
 
 ```ts
 import { defineCollection } from 'astro:content';
-import { mosaicLoader } from 'mosaic-astro';
+import { mosaicLoader } from '@ssolu/mosaic-astro';
 
 export const collections = {
   pages: defineCollection({ loader: mosaicLoader({ root: './content' }) }),
@@ -72,7 +72,7 @@ The `mosaic` binary will be the install once the packages are on npm; for now th
 **From any Node program:**
 
 ```ts
-import { readFolder } from 'mosaic-core';
+import { readFolder } from '@ssolu/mosaic-core';
 const { records, manifest } = await readFolder('./content');
 ```
 

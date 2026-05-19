@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { mosaicLoader } from 'mosaic-astro';
+import { mosaicLoader } from '@ssolu/mosaic-astro';
 
 // Astro 5 picks this file up automatically as `src/content.config.ts`.
 // On Astro 4.14+ the same content lives at `src/content/config.ts`.

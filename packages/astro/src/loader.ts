@@ -30,7 +30,7 @@
  */
 
 import { resolve as pathResolve } from 'node:path';
-import { readFolder } from 'mosaic-core';
+import { readFolder } from '@ssolu/mosaic-core';
 import { deriveUrl, getWebProfileRoot } from './url.js';
 import type {
   MosaicCoreReadFolder,
@@ -102,7 +102,7 @@ interface AstroLoader {
  * @example
  * ```ts
  * import { defineCollection } from 'astro:content';
- * import { mosaicLoader } from 'mosaic-astro';
+ * import { mosaicLoader } from '@ssolu/mosaic-astro';
  *
  * export const collections = {
  *   pages: defineCollection({ loader: mosaicLoader({ root: './content' }) }),

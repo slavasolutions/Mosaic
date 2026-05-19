@@ -1,5 +1,5 @@
 {
-  "name": "mosaic-core",
+  "name": "@ssolu/mosaic-core",
   "version": "0.1.0",
   "description": "Reference Mosaic reader for Node. Zero deps. Implements §§5-12 of the spec.",
   "type": "module",
