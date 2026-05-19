@@ -139,6 +139,35 @@ nav.site-nav a {
 }
 nav.site-nav a.active { color: var(--ink); border-bottom: 2px solid var(--accent); }
 
+/* ----- Variant pill (framework selector) ----- */
+.variant-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-elev);
+  font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.variant-pill a {
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--ink-mute);
+  text-decoration: none;
+  white-space: nowrap;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+}
+.variant-pill a:hover { color: var(--ink); background: var(--bg-sunk); text-decoration: none; }
+.variant-pill a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); cursor: default; }
+@media (max-width: 720px) {
+  .variant-pill a.dim { display: none; }
+}
+
 /* ----- Main + footer ----- */
 main {
   max-width: 1240px;

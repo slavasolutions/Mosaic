@@ -69,6 +69,24 @@ function isActive(linkUrl: string, currentPath: string): boolean {
   return currentPath === linkUrl || currentPath.startsWith(linkUrl + '/');
 }
 
+// === Variant pill (framework selector) =======================================
+// Mirrors the Astro twin. Renders Astro / Astro · dark / Astro · minimal /
+// Next links in the top bar; the current slot is `next`. Pill collapses
+// the "dim" entries on narrow viewports via CSS.
+const VARIANTS: Array<{ slot: string; label: string }> = [
+  { slot: 'astro',         label: 'Astro' },
+  { slot: 'astro-dark',    label: 'Astro · dark' },
+  { slot: 'astro-minimal', label: 'Astro · minimal' },
+  { slot: 'next',          label: 'Next' },
+];
+const CURRENT_VARIANT = 'next';
+const isDeploy = !!BASE;
+function variantHref(slot: string, currentPath: string): string {
+  const root = isDeploy ? `/mosaic/${slot}` : '';
+  if (currentPath === '/') return root + '/';
+  return root + currentPath;
+}
+
 export async function generateStaticParams(): Promise<Array<{ slug: string[] }>> {
   const { routedEntries } = await getMosaic();
   return routedEntries.map((e) => ({
@@ -165,6 +183,26 @@ export default async function Page({ params }: PageProps) {
               </a>
             ))}
           </nav>
+          <div
+            className="variant-pill"
+            role="group"
+            aria-label="Switch framework variant"
+          >
+            {VARIANTS.map((v) => {
+              const isCurrent = v.slot === CURRENT_VARIANT;
+              const dim = !isCurrent && v.slot !== 'astro' && v.slot !== 'next';
+              return (
+                <a
+                  key={v.slot}
+                  href={variantHref(v.slot, currentPath)}
+                  className={dim ? 'dim' : ''}
+                  aria-current={isCurrent ? 'page' : undefined}
+                >
+                  {v.label}
+                </a>
+              );
+            })}
+          </div>
         </div>
       </header>
       <main>

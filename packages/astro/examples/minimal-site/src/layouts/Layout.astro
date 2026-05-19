@@ -30,6 +30,29 @@ function isActive(linkUrl: string): boolean {
   return currentPath === linkUrl || currentPath.startsWith(linkUrl + '/');
 }
 
+// === Variant pill (framework selector) =======================================
+// Renders Astro / Next / future-variant links in the top bar. Each pill href
+// rewrites the current path under the other variant's GH-Pages prefix. On
+// local dev (no base) the pill still renders but the links point at sibling
+// paths that won't resolve — fine, the pill is intended for the deploy.
+interface Variant { slot: string; label: string; }
+const VARIANTS: Variant[] = [
+  { slot: 'astro',         label: 'Astro' },
+  { slot: 'astro-dark',    label: 'Astro · dark' },
+  { slot: 'astro-minimal', label: 'Astro · minimal' },
+  { slot: 'next',          label: 'Next' },
+];
+const currentVariant = process.env.MOSAIC_VARIANT ?? 'astro';
+function variantHref(slot: string): string {
+  // currentPath is like '/about' or '/blog/hello' (no base prefix); rebuild
+  // with the target variant's base. Trailing slash on home to match the
+  // deploy structure (`/mosaic/<slot>/`).
+  const isDeploy = process.env.GITHUB_PAGES_DEPLOY === '1';
+  const root = isDeploy ? `/mosaic/${slot}` : '';
+  if (currentPath === '/') return root + '/';
+  return root + currentPath;
+}
+
 // Serialise the resolved record so @ssolu/mosaic-devtool can find it in the
 // page when the inspector mounts. The devtool reads
 // `<script type="application/json" id="mosaic-record">` from <head>.
@@ -251,6 +274,35 @@ if (schemaType) {
       }
       nav.site-nav a.active { color: var(--ink); border-bottom: 2px solid var(--accent); }
 
+      /* ----- Variant pill (framework selector) ----- */
+      .variant-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        padding: 3px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--bg-elev);
+        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-size: 11px;
+        line-height: 1.2;
+      }
+      .variant-pill a {
+        padding: 4px 10px;
+        border-radius: 999px;
+        color: var(--ink-mute);
+        text-decoration: none;
+        white-space: nowrap;
+        min-height: 24px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .variant-pill a:hover { color: var(--ink); background: var(--bg-sunk); text-decoration: none; }
+      .variant-pill a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); cursor: default; }
+      @media (max-width: 720px) {
+        .variant-pill a.dim { display: none; }
+      }
+
       /* ----- Main + footer ----- */
       main {
         max-width: 1240px;
@@ -437,6 +489,15 @@ if (schemaType) {
             >{item.label}</a>
           ))}
         </nav>
+        <div class="variant-pill" role="group" aria-label="Switch framework variant">
+          {VARIANTS.map((v) => (
+            <a
+              href={variantHref(v.slot)}
+              class={v.slot !== currentVariant && v.slot !== 'astro' && v.slot !== 'next' ? 'dim' : ''}
+              aria-current={v.slot === currentVariant ? 'page' : undefined}
+            >{v.label}</a>
+          ))}
+        </div>
       </div>
     </header>
     <main>
