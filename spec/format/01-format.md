@@ -162,11 +162,20 @@ A record's **identity** is its path from the root, normalized in order:
 Therefore `about.json`, `about.fr.json`, and `about/index.json` all resolve to
 the same identity `about`.
 
+The matching key for a record is the pair **(identity, modifier-set)**, not
+identity alone. `about.json` and `about.fr.json` share identity `about` but
+have different modifier-sets (`[]` vs `["fr"]`); they are two distinct
+**variants** of that identity. The base format surfaces variants as separate
+records and assigns no preference among them. A profile or consumer MAY
+define how to select among variants — for example, a locale-aware web
+profile picking `about.fr` over `about` when the active locale is `fr`. A
+record whose modifier-set is empty is the **canonical** variant.
+
 A writer MAY convert a record between file form (`about.json`) and folder form
 (`about/index.json`). This MUST NOT change identity and MUST NOT be treated as
 a rename. Folder form is REQUIRED only when the record must contain nested
-members. A single identity reachable as **both** a file form and a folder form
-is an error.
+members. A single **(identity, modifier-set)** reachable as both a file form
+and a folder form is an error.
 
 ### 7.2 Reserved Names
 

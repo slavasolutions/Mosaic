@@ -69,8 +69,13 @@ To resolve a reference:
 
 1. Compute the target identity (absolute, or relative to the referrer's
    collection).
-2. Locate the record with that identity per `01-format.md` §7.1, applying
-   sidecar merge (§8) to obtain the **resolved target**: a single JSON object.
+2. Locate the record with that identity per `01-format.md` §7.1. If the
+   identity has multiple variants (per the §7.1 variant rule), select the
+   **canonical** variant — the one whose modifier-set is empty. If no
+   canonical variant exists, a profile or consumer MUST define the variant
+   selection rule for this reference; otherwise the reference is dangling
+   per §11.6. Apply sidecar merge (§8) to the selected variant to obtain
+   the **resolved target**: a single JSON object.
 3. If a JSON Pointer is present, evaluate it against the resolved target and
    yield that value. Otherwise yield the whole resolved target.
 
