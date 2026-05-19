@@ -1,0 +1,47 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install workspaces
+        run: npm install
+
+      - name: Build core + astro
+        run: |
+          npm run build --workspace=packages/core
+          npm run build --workspace=packages/astro
+
+      - name: Run all workspace tests
+        run: npm test
+
+      - name: Run Python validator against spec examples (parity check)
+        run: |
+          set -e
+          python3 spec/tools/validate.py spec/examples/B-sidecars/content
+          python3 spec/tools/validate.py spec/examples/C-cascade/content
+          python3 spec/tools/validate.py spec/examples/D-web/content
+          # A-identity is expected to fail (intentional collision fixture)
+          python3 spec/tools/validate.py spec/examples/A-identity/content && exit 1 || exit 0
+
+      - name: Build example site (smoke test)
+        env:
+          GITHUB_PAGES_DEPLOY: '1'
+        run: npx --workspace=packages/astro/examples/minimal-site astro build

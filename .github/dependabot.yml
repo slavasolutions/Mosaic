@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # npm dependencies across all workspaces — runs the Test workflow against
+  # each PR. If tests fail, the failing-check signal lives on the PR; no
+  # silent merges. If they pass, you can review + merge.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
+    groups:
+      # Bundle the dev tooling so updates aren't a flood of small PRs.
+      dev-tooling:
+        patterns:
+          - "typescript"
+          - "vitest"
+          - "@types/*"
+      # Astro updates land as their own PR — the loader uses Astro's API
+      # surface so each major bump deserves an isolated review.
+      astro:
+        patterns:
+          - "astro"
+
+  # GitHub Actions used in workflows (actions/checkout, setup-node, etc.).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
