@@ -170,6 +170,75 @@ describe('readFolder — Path A variants (E-variants fixture)', () => {
   });
 });
 
+describe('readFolder — record.body extraction (F-bodies fixture)', () => {
+  it('exposes .md sidecar bytes verbatim as record.body', async () => {
+    const r = await readFolder(fx('F-bodies'));
+    const about = getPrimary(r.records.get('about')!);
+    expect(about!.body).toBe('# About\n\nLorem ipsum dolor sit amet.\n');
+  });
+
+  it('leaves body undefined for pure-JSON records (no content sibling)', async () => {
+    const r = await readFolder(fx('F-bodies'));
+    const pj = getPrimary(r.records.get('pure-json')!);
+    expect(pj!.body).toBeUndefined();
+  });
+
+  it('exposes a pure .md record body (no JSON sidecar)', async () => {
+    const r = await readFolder(fx('F-bodies'));
+    const pm = getPrimary(r.records.get('pure-md')!);
+    expect(pm!.body).toBe('# Pure markdown\n\nNo sidecar. Body is whatever this file says.\n');
+    expect(pm!.opaque).toBe(true);
+  });
+
+  it('exposes .html sibling bytes as record.body', async () => {
+    const r = await readFolder(fx('F-bodies'));
+    const n = getPrimary(r.records.get('notice')!);
+    expect(n!.body).toBe('<p>Inline <strong>HTML</strong> body.</p>\n');
+  });
+
+  it('does NOT extract body for binary siblings (.png)', async () => {
+    const r = await readFolder(fx('F-bodies'));
+    const c = getPrimary(r.records.get('cover')!);
+    expect(c).toBeTruthy();
+    expect(c!.body).toBeUndefined();
+    expect((c!.data as JsonObject).title).toBe('Cover');
+  });
+
+  it('handles folder-form records (team/index.json + team/index.md)', async () => {
+    const r = await readFolder(fx('F-bodies'));
+    const t = getPrimary(r.records.get('team')!);
+    expect(t!.body).toBe('Folder-form team page body.\n');
+    expect((t!.data as JsonObject).title).toBe('Team');
+  });
+
+  it('sidecar `body` literal wins over the .md file content', async () => {
+    const r = await readFolder(fx('F-bodies'));
+    const o = getPrimary(r.records.get('override')!);
+    expect(o!.body).toBe('sidecar wins');
+    // The override should also strip `body` from data so it isn't double-surfaced.
+    expect((o!.data as JsonObject).body).toBeUndefined();
+  });
+
+  it('variants get their own body — fr variant uses .fr.md', async () => {
+    const r = await readFolder(fx('F-bodies'));
+    const variants = r.records.get('variants')!;
+    expect(variants).toHaveLength(2);
+    expect(variants[0]!.modifiers).toEqual([]);
+    expect(variants[0]!.body).toBe('English body.\n');
+    expect(variants[1]!.modifiers).toEqual(['fr']);
+    expect(variants[1]!.body).toBe('Corps français.\n');
+  });
+});
+
+describe('readFolder — body extraction on existing fixtures', () => {
+  it('B-sidecars team record exposes its .md body alongside merged JSON', async () => {
+    const r = await readFolder(fx('B-sidecars'));
+    const team = getPrimary(r.records.get('team')!);
+    expect(team!.body).toContain('# Our Team');
+    expect((team!.data as JsonObject).title).toBe('Our Team');
+  });
+});
+
 describe('readFolder — Path A: refs without a canonical variant are dangling', () => {
   it('warns when target identity has only non-canonical variants', async () => {
     // Synthesise the scenario by using the variants example and adding a

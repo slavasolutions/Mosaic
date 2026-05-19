@@ -43,6 +43,15 @@ export interface Record {
   sources: string[];
   /** True if the record's content file is non-`.json` (opaque, §5.2). */
   opaque: boolean;
+  /**
+   * Raw bytes of the paired *text* content file (`.md`, `.txt`, `.html`,
+   * `.adoc`), decoded as UTF-8. Absent when the record has no content
+   * sibling, or when the sibling is binary (e.g. `.png`, `.pdf`).
+   *
+   * A JSON sidecar that carries its own `body` field literal overrides
+   * the content file's bytes (sidecar wins, per §8 precedence).
+   */
+  body?: string;
 }
 
 /**

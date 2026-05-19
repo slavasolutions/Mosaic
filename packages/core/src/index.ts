@@ -5,7 +5,7 @@
  * Zero third-party runtime dependencies.
  */
 
-export { readFolder } from './reader.js';
+export { readFolder, TEXT_BODY_EXTENSIONS } from './reader.js';
 export { validate } from './validate.js';
 export {
   parseRef,
