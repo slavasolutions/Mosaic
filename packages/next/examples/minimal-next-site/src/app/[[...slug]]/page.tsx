@@ -12,6 +12,7 @@
  */
 
 import { notFound } from 'next/navigation';
+import { renderBody } from '@ssolu/mosaic-next';
 import { getMosaic } from '../../lib/mosaic';
 import type { MosaicEntry } from '../../lib/mosaic';
 
@@ -231,18 +232,14 @@ function GenericPageBody({ entry }: { entry: MosaicEntry }) {
   const data = entry.data as Record<string, unknown>;
   const title = String(data.title ?? entry.id);
   const lede = typeof data.lede === 'string' ? data.lede : null;
-  const paragraphs = entry.body ? entry.body.split('\n\n').filter((p) => p.trim()) : [];
+  const bodyHtml = renderBody(entry.body);
 
   return (
     <section>
       <h1 className="page-h1">{title}</h1>
       {lede && <p className="page-lede">{lede}</p>}
-      {paragraphs.length > 0 && (
-        <div className="body-block">
-          {paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
-        </div>
+      {bodyHtml && (
+        <div className="body-block" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
       )}
     </section>
   );
@@ -266,7 +263,7 @@ function BlogIndexBody({
 }) {
   const title = String(data.title ?? entry.id);
   const lede = typeof data.lede === 'string' ? data.lede : null;
-  const paragraphs = entry.body ? entry.body.split('\n\n').filter((p) => p.trim()) : [];
+  const bodyHtml = renderBody(entry.body);
 
   const posts: PostListItem[] = routedEntries
     .filter((e) => typeof e.url === 'string' && e.url.startsWith('/blog/') && e.url !== '/blog')
@@ -287,12 +284,8 @@ function BlogIndexBody({
     <section>
       <h1 className="page-h1">{title}</h1>
       {lede && <p className="page-lede">{lede}</p>}
-      {paragraphs.length > 0 && (
-        <div className="body-block">
-          {paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
-        </div>
+      {bodyHtml && (
+        <div className="body-block" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
       )}
       <ul className="blog-list">
         {posts.map((post) => (
@@ -321,7 +314,7 @@ function PostBody({ entry }: { entry: MosaicEntry }) {
   const authorRole = typeof authorObj?.role === 'string' ? (authorObj.role as string) : null;
   const authorBio = typeof authorObj?.bio === 'string' ? (authorObj.bio as string) : null;
 
-  const paragraphs = entry.body ? entry.body.split('\n\n').filter((p) => p.trim()) : [];
+  const bodyHtml = renderBody(entry.body);
 
   return (
     <article>
@@ -331,12 +324,8 @@ function PostBody({ entry }: { entry: MosaicEntry }) {
         {authorName ? ` · by ${authorName}` : ''}
         {authorRole ? ` (${authorRole})` : ''}
       </div>
-      {paragraphs.length > 0 && (
-        <div className="body-block">
-          {paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
-        </div>
+      {bodyHtml && (
+        <div className="body-block" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
       )}
       {authorBio && authorName && (
         <div className="post-author-card">

@@ -18,6 +18,7 @@ export {
   urlToSlugArray,
   slugArrayToUrl,
 } from './url.js';
+export { renderBody } from './markdown.js';
 
 export type {
   MosaicEntry,

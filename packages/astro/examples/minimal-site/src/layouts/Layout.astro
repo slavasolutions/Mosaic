@@ -348,14 +348,69 @@ if (schemaType) {
         .raw-fab { right: 12px; bottom: 12px; }
       }
 
-      /* ----- Page content elements ----- */
-      pre.body-block {
-        white-space: pre-wrap;
-        font-family: inherit;
-        color: var(--ink-soft);
-        margin: 0;
-      }
+      /* ----- Page content elements (rendered markdown) ----- */
+      .body-block { color: var(--ink-soft); }
       .body-block p { margin: 0 0 1em; }
+      .body-block h2 {
+        font-family: ui-serif, Georgia, "Times New Roman", serif;
+        font-size: 22px;
+        color: var(--ink);
+        margin: 32px 0 12px;
+        line-height: 1.25;
+      }
+      .body-block h3 {
+        font-family: ui-serif, Georgia, "Times New Roman", serif;
+        font-size: 18px;
+        color: var(--ink);
+        margin: 24px 0 10px;
+        line-height: 1.3;
+      }
+      .body-block ul, .body-block ol { margin: 0 0 1em 1.25em; padding: 0; }
+      .body-block li { margin: 0 0 0.35em; }
+      .body-block blockquote {
+        margin: 1em 0;
+        padding: 4px 14px;
+        border-left: 3px solid var(--line);
+        color: var(--ink-mute);
+        font-style: italic;
+      }
+      .body-block code {
+        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-size: 0.9em;
+        background: var(--bg-sunk);
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+      .body-block pre {
+        margin: 1em 0;
+        padding: 14px 16px;
+        background: var(--bg-sunk);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .body-block pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      .body-block table {
+        border-collapse: collapse;
+        margin: 1em 0;
+        font-size: 14px;
+        width: 100%;
+      }
+      .body-block th, .body-block td {
+        text-align: left;
+        padding: 6px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .body-block th { color: var(--ink); font-weight: 600; }
+      .body-block strong { color: var(--ink); }
+      .body-block em { font-style: italic; }
+      .body-block a { color: var(--accent); }
     </style>
     <style set:html={tokenCss}></style>
     {jsonLd && (

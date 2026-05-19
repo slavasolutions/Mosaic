@@ -7,6 +7,7 @@
 
 export { mosaicLoader } from './loader.js';
 export { deriveUrl, getWebProfileRoot } from './url.js';
+export { renderBody } from './markdown.js';
 export type {
   MosaicLoaderOptions,
   MosaicEntry,
