@@ -19,6 +19,13 @@ import type { MosaicEntry } from '../../lib/mosaic';
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 const href = (p: string): string => BASE + p;
 
+// Devtool URL — sibling to /example/ and /next-example/ at the Pages root.
+// In deploy mode that's `/mosaic/_mosaic-devtool/mosaic-devtool.js`; in dev
+// (no basePath) it's `/_mosaic-devtool/mosaic-devtool.js`.
+const devtoolSrc = BASE
+  ? `${BASE.replace(/\/[^/]+$/, '')}/_mosaic-devtool/mosaic-devtool.js`
+  : '/_mosaic-devtool/mosaic-devtool.js';
+
 const NAV: Array<{ label: string; url: string }> = [
   { label: 'Home', url: '/' },
   { label: 'About', url: '/about' },
@@ -132,48 +139,18 @@ export default async function Page({ params }: PageProps) {
         <PageBody entry={entry} currentPath={currentPath} routedEntries={routedEntries} />
       </main>
 
-      <button
-        id="raw-fab"
-        className="raw-fab"
-        type="button"
-        aria-label="View the Mosaic-resolved JSON for this page"
-      >
-        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path
-            d="M5 2 H3 a1 1 0 0 0 -1 1 V13 a1 1 0 0 0 1 1 H5 M11 2 H13 a1 1 0 0 1 1 1 V13 a1 1 0 0 1 -1 1 H11"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-        </svg>
-        JSON
-      </button>
-
-      <div id="raw-modal" className="raw-modal" hidden>
-        <div className="raw-backdrop" data-close />
-        <div className="raw-panel" role="dialog" aria-modal="true" aria-labelledby="raw-title">
-          <div className="raw-header">
-            <h2 id="raw-title">Resolved record</h2>
-            <button className="raw-close" type="button" data-close aria-label="Close">
-              ×
-            </button>
-          </div>
-          <div className="raw-body">
-            <pre>{resolvedJson}</pre>
-          </div>
-          <div className="raw-explain">
-            What you see above is exactly what the Mosaic→Next pipeline gave this page.
-            Sidecars merged, <code>ref:</code> values resolved, cascade applied — per spec
-            §§5–12.
-          </div>
-        </div>
-      </div>
-
-      {/* Plain script — kept inline so it survives static export without
-          a client component boundary. */}
+      {/* Devtool data + gate. The JSON payload is always emitted (a few KB,
+          cached with the page). The actual devtool UI script is only fetched
+          when `?debug=1` is in the URL — kept opt-in to avoid shipping the
+          inspector to every visitor. */}
+      <script
+        type="application/json"
+        id="mosaic-record"
+        dangerouslySetInnerHTML={{ __html: resolvedJson }}
+      />
       <script
         dangerouslySetInnerHTML={{
-          __html: `(function(){var fab=document.getElementById('raw-fab');var modal=document.getElementById('raw-modal');if(!fab||!modal)return;function open(){modal.hidden=false;document.body.style.overflow='hidden';}function close(){modal.hidden=true;document.body.style.overflow='';}fab.addEventListener('click',open);modal.addEventListener('click',function(e){if(e.target&&e.target.dataset&&e.target.dataset.close!==undefined)close();});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close();});})();`,
+          __html: `(function(){if(location.search.indexOf('debug=1')===-1)return;var s=document.createElement('script');s.src=${JSON.stringify(devtoolSrc)};s.defer=true;document.head.appendChild(s);})();`,
         }}
       />
     </>

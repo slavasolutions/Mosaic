@@ -53,6 +53,11 @@ jobs:
           cp -r packages/astro/examples/minimal-site/dist/* _site/example/
           mkdir -p _site/next-example
           cp -r packages/next/examples/minimal-next-site/out/* _site/next-example/
+          # Devtool — opt-in inspector loaded by example pages when ?debug=1
+          # is in the URL. Lives one level above /example/ and /next-example/
+          # so both sites share one copy.
+          mkdir -p _site/_mosaic-devtool
+          cp packages/devtool/dist/mosaic-devtool.js _site/_mosaic-devtool/
 
       - uses: actions/upload-pages-artifact@v5
         with:
