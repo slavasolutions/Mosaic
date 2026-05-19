@@ -30,6 +30,7 @@
  */
 
 import { resolve as pathResolve } from 'node:path';
+import { readFolder } from 'mosaic-core';
 import { deriveUrl, getWebProfileRoot } from './url.js';
 import type {
   MosaicCoreReadFolder,
@@ -92,43 +93,6 @@ interface AstroLoader {
   load(context: LoaderContext): Promise<void>;
 }
 
-// --- mosaic-core import shim ---------------------------------------------
-//
-// mosaic-core is a separate package developed in parallel. To keep the
-// adapter compilable when core is absent (e.g. CI before both repos are
-// installed side-by-side), we resolve the import dynamically and surface a
-// clear error at LOAD time, not at MODULE time. Production builds with
-// mosaic-core present hit the dynamic import once and cache it.
-
-let readFolderImpl: MosaicCoreReadFolder | null = null;
-
-async function getReadFolder(): Promise<MosaicCoreReadFolder> {
-  if (readFolderImpl) return readFolderImpl;
-  try {
-    const mod = (await import('mosaic-core')) as {
-      readFolder?: MosaicCoreReadFolder;
-    };
-    if (typeof mod.readFolder !== 'function') {
-      throw new Error(
-        'mosaic-core is installed but does not export `readFolder`. ' +
-          'Expected `readFolder(rootPath: string): Promise<{records, manifest}>`. ' +
-          'Check the mosaic-core version is compatible with mosaic-astro 0.1.x.',
-      );
-    }
-    readFolderImpl = mod.readFolder;
-    return readFolderImpl;
-  } catch (err) {
-    const hint =
-      err instanceof Error && err.message.includes('mosaic-core is installed')
-        ? err.message
-        : 'mosaic-core could not be imported. Install it as a sibling ' +
-          'package (file:../mosaic-core) or from npm once published. ' +
-          'Original error: ' +
-          (err instanceof Error ? err.message : String(err));
-    throw new Error(hint);
-  }
-}
-
 // --- The loader factory --------------------------------------------------
 
 /**
@@ -169,7 +133,6 @@ export function mosaicLoader(options: MosaicLoaderOptions): AstroLoader {
         `mosaic-astro: loading collection "${context.collection}" from ${absoluteRoot}`,
       );
 
-      const readFolder = await getReadFolder();
       await loadOnce({
         absoluteRoot,
         store,

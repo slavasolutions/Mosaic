@@ -28,20 +28,26 @@ import type { MosaicManifest } from './types.js';
  * Per spec §2 both `profiles.web.root` and `profiles.mosaic-web.root` are
  * accepted and equivalent.
  */
-export function getWebProfileRoot(manifest: MosaicManifest | undefined): string | null {
+export function getWebProfileRoot(manifest: MosaicManifest | undefined | null): string | null {
   if (!manifest || typeof manifest !== 'object') return null;
-  const profiles = manifest.profiles;
+  // mosaic-core wraps the parsed JSON as { raw: {...} }; accept either the
+  // wrapped form or the raw JSON directly so callers building a manifest
+  // by hand also work.
+  const root = (manifest as { raw?: unknown }).raw ?? manifest;
+  if (!root || typeof root !== 'object') return null;
+  const profiles = (root as { profiles?: unknown }).profiles;
   if (!profiles || typeof profiles !== 'object') return null;
 
-  const web = profiles.web ?? profiles['mosaic-web'];
+  const profMap = profiles as Record<string, unknown>;
+  const web = profMap.web ?? profMap['mosaic-web'];
   if (!web || typeof web !== 'object') return null;
 
-  const root = (web as { root?: unknown }).root;
-  if (typeof root !== 'string' || root.length === 0) return null;
+  const webRoot = (web as { root?: unknown }).root;
+  if (typeof webRoot !== 'string' || webRoot.length === 0) return null;
 
   // Normalise: strip leading/trailing slashes; spec says root is a path
   // relative to the Mosaic root.
-  return root.replace(/^\/+|\/+$/g, '');
+  return webRoot.replace(/^\/+|\/+$/g, '');
 }
 
 /**

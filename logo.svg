@@ -1,13 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Mosaic">
   <title>Mosaic</title>
-  <defs>
-    <linearGradient id="bm" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="currentColor" stop-opacity="0.95"/>
-      <stop offset="100%" stop-color="currentColor" stop-opacity="0.6"/>
-    </linearGradient>
-  </defs>
-  <rect x="2"  y="2"  width="9"  height="9"  rx="1.5" fill="url(#bm)"/>
-  <rect x="13" y="2"  width="9"  height="6"  rx="1.5" fill="currentColor" opacity="0.55"/>
-  <rect x="13" y="10" width="9"  height="12" rx="1.5" fill="currentColor" opacity="0.8"/>
-  <rect x="2"  y="13" width="9"  height="9"  rx="1.5" fill="currentColor" opacity="0.4"/>
+  <rect x="2"  y="2"  width="9"  height="9"  rx="1.5" fill="#2b56d4"/>
+  <rect x="13" y="2"  width="9"  height="6"  rx="1.5" fill="#6b8be8"/>
+  <rect x="13" y="10" width="9"  height="12" rx="1.5" fill="#1b3aa0"/>
+  <rect x="2"  y="13" width="9"  height="9"  rx="1.5" fill="#4d76e8"/>
 </svg>
