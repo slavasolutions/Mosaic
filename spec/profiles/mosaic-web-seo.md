@@ -34,6 +34,19 @@ Net effect: every page has a stable URL, every field is addressable,
 and every value reaches the crawler as text in the response body. This
 is the floor; the next sections are what you build on top.
 
+### A note on body format
+
+A record's main prose lives in its `body` field (`format/01-format.md`
+§5.2). The base format treats `body` as **opaque UTF-8 text** and
+assigns it no meaning — markdown, HTML, plaintext, and AsciiDoc are
+all equally valid contents. Rendering markdown to HTML is an *adapter
+convention*, not a spec requirement; the Astro and Next adapters that
+ship with Mosaic happen to render `body` through a markdown processor
+because that is the most common authoring choice, but a Mosaic folder
+whose `body` fields are HTML or plaintext is equally conforming. The
+SEO surfaces below — JSON-LD, meta tags, sitemap — are independent of
+which text format you choose for `body`.
+
 ## 2. Structured data — Schema.org via `@type`
 
 `mosaic-web.md` §6 reserves the field name `@type` on records. When

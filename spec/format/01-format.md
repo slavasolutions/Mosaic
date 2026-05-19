@@ -40,9 +40,10 @@ The effective JSON of any record is computed in exactly this order, once:
 
 ```
 content (.json) or empty       (§5)
-  → + sidecar merge             (§8, shallow; sidecar wins on collision)
-    → + cascade fill            (02-references.md §12.3, locale or declared)
-      → + references resolved   (02-references.md §11.4, against the above)
+  → + body from text payload    (§5.2, paired content file → body field)
+    → + sidecar merge           (§8, shallow; sidecar wins on collision)
+      → + cascade fill          (02-references.md §12.3, locale or declared)
+        → + references resolved (02-references.md §11.4, against the above)
 ```
 
 §5–§9 in this document define steps 1 and 2 plus the rules that govern
@@ -119,6 +120,44 @@ in Markdown content.
    a JSON sidecar.
 3. The presence of frontmatter MUST NOT, by itself, make a folder
    non-conforming. Consumers MAY surface it as a warning.
+
+### 5.2 The `body` field
+
+When a record's opaque content file is **text** (UTF-8), a consumer MAY
+expose its bytes on the merged Record under the reserved field name
+**`body`** (a string). This codifies what §5 means by "the JSON describes
+that identity; the content file is its body" — the content file's text
+is the record's body, addressable as a single field.
+
+1. The field name `body` is reserved at the top level of any merged
+   Record. Writers MUST NOT use `body` for unrelated structured data.
+2. **Text extensions.** A content file is text for the purpose of `body`
+   when its extension is in the recognised set
+   `{.md, .txt, .html, .adoc}`. A profile or consumer MAY extend this
+   set; a consumer MUST NOT shrink it. The reference reader (`@ssolu/mosaic-core`)
+   exports the current set as `TEXT_BODY_EXTENSIONS` for introspection.
+3. **Binary content files** (everything not in the recognised text set —
+   `.pdf`, `.png`, `.csv`, …) MUST NOT populate `body`. Such records
+   remain addressable, their bytes remain reachable by path, but their
+   content is not inlined into the JSON model.
+4. **Pure-JSON records** (no paired content file) have no `body` field.
+5. **Pure content-file records** (content file, no sidecar) have a merged
+   Record whose only structured field is `body` (plus anything filled by
+   cascade, per `02-references.md` §12.3).
+6. **Variants** carry their own body. The body file is paired by the
+   full **(identity, modifier-set)** key per §7.1 — `about.fr.md` pairs
+   with the `fr` variant of `about`, not with the canonical variant.
+7. **Format-agnostic.** This section assigns **no meaning** to the
+   bytes inside `body`. Markdown, HTML, plaintext, AsciiDoc, and any
+   text format a future extension adds are all opaque UTF-8 to the
+   base format. Interpretation (rendering, syntax highlighting,
+   sanitisation) is a profile or consumer concern.
+
+Exposing `body` is RECOMMENDED for general-purpose readers. A consumer
+that omits the field — for example, a structured-only validator that
+never inlines payloads — remains conforming.
+
+Sidecar precedence over `body` is specified in §8.4.
 
 ## 6. Collections (Rule 2)
 
@@ -204,6 +243,15 @@ Sidecars follow from Sections 5 and 7; they are not a separate structural rule.
    `about.fr.md`, not for `about.md`. A modifier sidecar with no matching
    content sibling SHOULD be surfaced as a warning.
 
+### 8.1 Sidecar precedence over `body`
+
+A sidecar MAY carry an explicit top-level `body` field (a string). When
+present, this literal MUST override the bytes that would otherwise be
+read from the paired text content file per §5.2. The override is
+consistent with §8.2 (sidecar wins on collision) applied to the
+reserved `body` field. After the merge, the merged Record exposes a
+single `body` value: the sidecar's literal.
+
 ## 9. Unknown Fields
 
 A conforming writer MUST round-trip JSON fields it does not recognize, and MUST
@@ -246,4 +294,5 @@ Resolved identities: `(root)`, `about`, `pricing`, `brochure`, `team`,
 | 2 | A folder is a collection; `index.*` is the folder as a record. |
 | 3 | The filename is the contract: `name[.modifier]*.ext`; identity is form-independent. |
 
-Sidecars (§8) and unknown-field preservation (§9) follow from these three.
+Sidecars (§8), the `body` field (§5.2), and unknown-field preservation
+(§9) follow from these three.

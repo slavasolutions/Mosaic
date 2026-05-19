@@ -143,6 +143,11 @@ consumer-defined; profiles MAY codify common mappings. Consumers SHOULD
 strip Mosaic-internal fields (`slug`, `url`, `modifiers`, etc.) from
 the emitted JSON-LD. The `meta` field (see §7) is HTML metadata, not
 schema.org data, and MUST be stripped from JSON-LD output likewise.
+The `body` field (base format §5.2) is content payload, not schema.org
+data, and MUST be stripped from JSON-LD output. Renderers MAY map
+`body` to a schema.org `articleBody` / `text` property when emitting a
+`BlogPosting` or similar type, but they MUST NOT emit `body` under its
+Mosaic name.
 
 Schema.org structured data (this section) and HTML meta tags (§7) are
 complementary, not alternatives. A page MAY emit both; one carries
