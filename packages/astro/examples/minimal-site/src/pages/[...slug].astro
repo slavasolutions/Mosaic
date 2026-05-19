@@ -43,6 +43,14 @@ if (isBlogIndex) {
 
 const isPost = currentPath.startsWith('/blog/') && !isBlogIndex;
 const authorObj = data.author && typeof data.author === 'object' ? data.author : null;
+// `display` cascades from `mosaic.json#defaults.author.display` (or any
+// `defaults` block above the record). `text-only` suppresses every avatar
+// SVG. Default is `with-avatar`. The blog index never shows avatars
+// regardless — the author identity matters at the post, not the list.
+const authorDisplay = (authorObj && (authorObj as Record<string, unknown>).display) as
+  | string
+  | undefined;
+const showAuthorAvatar = isPost && authorDisplay !== 'text-only';
 
 const base = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
 function href(p: string): string {
@@ -79,14 +87,9 @@ function href(p: string): string {
         <ul class="blog-list">
           {posts.map((post) => (
             <li>
-              {post.authorName && (
-                <span class="avatar" set:html={renderAvatar(post.authorName, 36)}></span>
-              )}
-              <div class="post-item-text">
-                <a href={href(post.url)}>{post.title}</a>
-                <div class="meta">
-                  {post.publishedAt}{post.authorName ? ` · ${post.authorName}` : ''}
-                </div>
+              <a href={href(post.url)}>{post.title}</a>
+              <div class="meta">
+                {post.publishedAt}{post.authorName ? ` · ${post.authorName}` : ''}
               </div>
             </li>
           ))}
@@ -99,7 +102,7 @@ function href(p: string): string {
     <article>
       <h1 class="page-h1">{data.title}</h1>
       <div class="post-meta">
-        {authorObj && (
+        {showAuthorAvatar && authorObj && (
           <span class="avatar" set:html={renderAvatar(authorObj.name, 32)}></span>
         )}
         <span>
@@ -110,7 +113,9 @@ function href(p: string): string {
       {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
       {authorObj?.bio && (
         <div class="post-author-card">
-          <span class="avatar" set:html={renderAvatar(authorObj.name, 48)}></span>
+          {showAuthorAvatar && (
+            <span class="avatar" set:html={renderAvatar(authorObj.name, 48)}></span>
+          )}
           <div class="body">
             <strong>About {authorObj.name}</strong> — {authorObj.bio}
           </div>

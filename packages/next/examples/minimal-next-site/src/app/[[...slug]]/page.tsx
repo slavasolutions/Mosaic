@@ -343,18 +343,10 @@ function BlogIndexBody({
       <ul className="blog-list">
         {posts.map((post) => (
           <li key={post.url}>
-            {post.authorName && (
-              <span
-                className="avatar"
-                dangerouslySetInnerHTML={{ __html: renderAvatar(post.authorName, 36) }}
-              />
-            )}
-            <div className="post-item-text">
-              <a href={href(post.url)}>{post.title}</a>
-              <div className="meta">
-                {post.publishedAt}
-                {post.authorName ? ` · ${post.authorName}` : ''}
-              </div>
+            <a href={href(post.url)}>{post.title}</a>
+            <div className="meta">
+              {post.publishedAt}
+              {post.authorName ? ` · ${post.authorName}` : ''}
             </div>
           </li>
         ))}
@@ -374,6 +366,12 @@ function PostBody({ entry }: { entry: MosaicEntry }) {
   const authorName = typeof authorObj?.name === 'string' ? (authorObj.name as string) : null;
   const authorRole = typeof authorObj?.role === 'string' ? (authorObj.role as string) : null;
   const authorBio = typeof authorObj?.bio === 'string' ? (authorObj.bio as string) : null;
+  // `display` cascades from `mosaic.json#defaults.author.display`.
+  // `text-only` suppresses avatar SVGs even on post pages. Default is
+  // `with-avatar` (avatar shown).
+  const authorDisplay =
+    typeof authorObj?.display === 'string' ? (authorObj.display as string) : undefined;
+  const showAvatar = authorDisplay !== 'text-only';
 
   const bodyHtml = renderBody(entry.body, entry.bodyExt);
 
@@ -381,7 +379,7 @@ function PostBody({ entry }: { entry: MosaicEntry }) {
     <article>
       <h1 className="page-h1">{title}</h1>
       <div className="post-meta">
-        {authorName && (
+        {showAvatar && authorName && (
           <span
             className="avatar"
             dangerouslySetInnerHTML={{ __html: renderAvatar(authorName, 32) }}
@@ -398,10 +396,12 @@ function PostBody({ entry }: { entry: MosaicEntry }) {
       )}
       {authorBio && authorName && (
         <div className="post-author-card">
-          <span
-            className="avatar"
-            dangerouslySetInnerHTML={{ __html: renderAvatar(authorName, 48) }}
-          />
+          {showAvatar && (
+            <span
+              className="avatar"
+              dangerouslySetInnerHTML={{ __html: renderAvatar(authorName, 48) }}
+            />
+          )}
           <div className="body">
             <strong>About {authorName}</strong> — {authorBio}
           </div>
