@@ -25,9 +25,9 @@ npm run build --workspace=packages/next/examples/minimal-next-site
 
 The repo's `pages.yml` workflow builds this site three times (once per shape) under `MOSAIC_VARIANT=demo-single-next` / `demo-blog-next` / `demo-full-next` and publishes the `out/` tree to:
 
-- `https://slavasolutions.github.io/mosaic/demo-single-next/`
-- `https://slavasolutions.github.io/mosaic/demo-blog-next/`
-- `https://slavasolutions.github.io/mosaic/demo-full-next/`
+- `https://mosaic.ssolu.dev/demo-single-next/`
+- `https://mosaic.ssolu.dev/demo-blog-next/`
+- `https://mosaic.ssolu.dev/demo-full-next/`
 
 ## File layout
 

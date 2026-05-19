@@ -27,9 +27,9 @@ Then open whichever routes the shape ships:
 
 The repo's `pages.yml` workflow builds this site three times (once per shape) under `MOSAIC_VARIANT=demo-single` / `demo-blog` / `demo-full` and publishes to:
 
-- `https://slavasolutions.github.io/mosaic/demo-single/`
-- `https://slavasolutions.github.io/mosaic/demo-blog/`
-- `https://slavasolutions.github.io/mosaic/demo-full/`
+- `https://mosaic.ssolu.dev/demo-single/`
+- `https://mosaic.ssolu.dev/demo-blog/`
+- `https://mosaic.ssolu.dev/demo-full/`
 
 ## Chrome
 

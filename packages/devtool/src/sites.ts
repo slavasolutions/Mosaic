@@ -25,12 +25,12 @@ export interface SiteEntry {
  * `findActive`.
  */
 export const DEFAULT_SITES: SiteEntry[] = [
-  { label: 'Single · Astro', url: '/mosaic/demo-single/' },
-  { label: 'Single · Next', url: '/mosaic/demo-single-next/' },
-  { label: 'Blog · Astro', url: '/mosaic/demo-blog/' },
-  { label: 'Blog · Next', url: '/mosaic/demo-blog-next/' },
-  { label: 'Full · Astro', url: '/mosaic/demo-full/' },
-  { label: 'Full · Next', url: '/mosaic/demo-full-next/' },
+  { label: 'Single · Astro', url: '/demo-single/' },
+  { label: 'Single · Next', url: '/demo-single-next/' },
+  { label: 'Blog · Astro', url: '/demo-blog/' },
+  { label: 'Blog · Next', url: '/demo-blog-next/' },
+  { label: 'Full · Astro', url: '/demo-full/' },
+  { label: 'Full · Next', url: '/demo-full-next/' },
 ];
 
 export function readSitesData(doc: Document): SiteEntry[] | null {
@@ -64,11 +64,11 @@ export function readSitesData(doc: Document): SiteEntry[] | null {
 
 /**
  * Return the index of the entry that best matches `pathname`, or -1.
- * Tie-breaker: longest matching URL wins, so `/mosaic/astro/blog/hello/`
- * snaps to the blog-post entry instead of the blog-index entry.
+ * Tie-breaker: longest matching URL wins, so `/demo-full/services/restoration/`
+ * snaps to the restoration entry instead of the demo-full index entry.
  *
- * Also accepts a suffix match so local dev paths like `/example/` still
- * line up with the GH-Pages-prefixed `/mosaic/astro/`.
+ * Also accepts a suffix match so a local-dev path can still line up with
+ * a deployed-style entry URL when a host carries an extra leading segment.
  */
 export function findActive(entries: SiteEntry[], pathname: string): number {
   let best = -1;
@@ -85,9 +85,9 @@ export function findActive(entries: SiteEntry[], pathname: string): number {
       bestLen = u.length;
       continue;
     }
-    // Suffix match for non-prefixed hosts: the entry URL is GH-Pages-
-    // prefixed (`/mosaic/astro/blog/`) but the visitor is on local dev
-    // (`/example/blog/`). Strip a leading `/<seg>` off `u` once and retry.
+    // Suffix match for non-prefixed hosts: the entry URL may carry an
+    // extra leading segment that the visitor's host doesn't have. Strip
+    // a leading `/<seg>` off `u` once and retry.
     const stripped = u.replace(/^\/[^/]+/, '');
     if (
       stripped.length > 1 &&

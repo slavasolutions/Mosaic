@@ -8,12 +8,12 @@ import {
 
 describe('findActive', () => {
   it('matches by exact pathname', () => {
-    const i = findActive(DEFAULT_SITES, '/mosaic/demo-single/');
+    const i = findActive(DEFAULT_SITES, '/demo-single/');
     expect(DEFAULT_SITES[i]!.label).toBe('Single · Astro');
   });
 
   it('picks the longest matching prefix for nested routes', () => {
-    const i = findActive(DEFAULT_SITES, '/mosaic/demo-full/services/restoration/');
+    const i = findActive(DEFAULT_SITES, '/demo-full/services/restoration/');
     expect(DEFAULT_SITES[i]!.label).toBe('Full · Astro');
   });
 
@@ -71,7 +71,7 @@ describe('renderSites', () => {
       container,
       DEFAULT_SITES,
       document,
-      '/mosaic/demo-full-next/blog/',
+      '/demo-full-next/blog/',
     );
     const items = container.querySelectorAll('.site-item');
     expect(items.length).toBe(DEFAULT_SITES.length);

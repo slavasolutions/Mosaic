@@ -5,9 +5,9 @@
 <p align="center"><strong>A folder format for structured content.</strong></p>
 
 <p align="center">
-  <a href="https://slavasolutions.github.io/mosaic/explore/">Live example site</a>
+  <a href="https://mosaic.ssolu.dev/explore/">Live example site</a>
   ·
-  <a href="https://slavasolutions.github.io/mosaic/">Explainer</a>
+  <a href="https://mosaic.ssolu.dev/">Explainer</a>
   ·
   <a href="./spec/README.md">Specification</a>
   ·
@@ -24,7 +24,7 @@ Your content is a directory tree. JSON files are records. Subfolders are collect
 
 No database. No daemon. No engine. The filesystem is the database; the spec is the contract.
 
-**[Try the example site →](https://slavasolutions.github.io/mosaic/explore/)**
+**[Try the example site →](https://mosaic.ssolu.dev/explore/)**
 
 Each demo on that page is a real Mosaic folder at the repo root — [`examples/content-single/`](./examples/content-single/) (one page), [`examples/content-blog/`](./examples/content-blog/) (three pages plus a journal), [`examples/content-full/`](./examples/content-full/) (a dozen pages with nav, sub-pages, image URLs). Each shape is rendered twice — once by the Astro adapter, once by Next — so you can see the same folder under both frameworks.
 
@@ -70,7 +70,7 @@ Three ways to check a folder against the spec. Same answer from each — errors,
 |---|---|---|
 | **Node CLI** | `node packages/core/dist/cli.js validate <path>` | Once on npm: `npx @ssolu/mosaic-core validate <path>`. Covers §§5–9; also `mosaic read <path>` for the full pipeline (refs §11 + cascade §12). |
 | **Python** | `python3 spec/tools/validate.py <path>` | Stdlib only. No install. Base §§5–9 only. |
-| **Browser** | Drop a folder on the [live explainer](https://slavasolutions.github.io/mosaic/#validate) | Pure-client `@ssolu/mosaic-validator-web` (about 9 kB). Same rules, no terminal, nothing leaves the browser. |
+| **Browser** | Drop a folder on the [live explainer](https://mosaic.ssolu.dev/#validate) | Pure-client `@ssolu/mosaic-validator-web` (about 9 kB). Same rules, no terminal, nothing leaves the browser. |
 
 Try it against the four spec examples:
 
@@ -149,7 +149,7 @@ The Astro loader accepts either form — `{ root: './content' }` for filesystem,
 | [`packages/next/`](./packages/next/) | Next.js App Router adapter (`@ssolu/mosaic-next`). |
 | [`packages/s3/`](./packages/s3/) | S3-compatible source layer (`@ssolu/mosaic-s3`). Reads a bucket+prefix as a Mosaic folder. Works against AWS S3, Cloudflare R2, MinIO, Backblaze B2, Wasabi, DigitalOcean Spaces. |
 | [`packages/devtool/`](./packages/devtool/) | Astro dev-toolbar app for inspecting Mosaic records at edit time. |
-| [`index.html`](./index.html) | Visual explainer (hosted at the [explainer link above](https://slavasolutions.github.io/mosaic/)). |
+| [`index.html`](./index.html) | Visual explainer (hosted at the [explainer link above](https://mosaic.ssolu.dev/)). |
 
 ## Compared to other content tools
 
@@ -197,7 +197,7 @@ Mosaic is a **format**, not a CMS. Honest comparison vs the tools you might othe
 
 **Version 0.9.4** — working draft. The headline format is locked; details may still shift before 1.0. See [`spec/CHANGELOG.md`](./spec/CHANGELOG.md) for what changed since 0.9.2.
 
-> **Pre-release notice.** Packages aren't on npm yet. The install snippets above use `@ssolu/*` names that will publish at 1.0. To evaluate today: visit the [live explainer](https://slavasolutions.github.io/mosaic/) or clone this repo + `npm install`.
+> **Pre-release notice.** Packages aren't on npm yet. The install snippets above use `@ssolu/*` names that will publish at 1.0. To evaluate today: visit the [live explainer](https://mosaic.ssolu.dev/) or clone this repo + `npm install`.
 
 ## Roadmap
 

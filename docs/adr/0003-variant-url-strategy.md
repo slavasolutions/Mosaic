@@ -9,12 +9,12 @@ Mosaic deploys multiple renderings of the example content. The matrix
 now ships six variants — three content shapes crossed with two
 adapters:
 
-- `/mosaic/demo-single/` — Astro adapter, `examples/content-single/`
-- `/mosaic/demo-single-next/` — Next adapter, same shape
-- `/mosaic/demo-blog/` — Astro adapter, `examples/content-blog/`
-- `/mosaic/demo-blog-next/` — Next adapter, same shape
-- `/mosaic/demo-full/` — Astro adapter, `examples/content-full/`
-- `/mosaic/demo-full-next/` — Next adapter, same shape
+- `/demo-single/` — Astro adapter, `examples/content-single/`
+- `/demo-single-next/` — Next adapter, same shape
+- `/demo-blog/` — Astro adapter, `examples/content-blog/`
+- `/demo-blog-next/` — Next adapter, same shape
+- `/demo-full/` — Astro adapter, `examples/content-full/`
+- `/demo-full-next/` — Next adapter, same shape
 
 A visitor on `/demo-blog/blog/hello/` should be able to switch to the
 Next rendering of the same record, or jump to a different content
@@ -32,9 +32,9 @@ builds cross-variant links by swapping the prefix while preserving the
 path:
 
 ```
-/mosaic/demo-blog/blog/hello   ⇆   /mosaic/demo-blog-next/blog/hello
-                                ⇆   /mosaic/demo-full/blog/hello
-                                ⇆   /mosaic/demo-single/                 (404-tolerant)
+/demo-blog/blog/hello   ⇆   /demo-blog-next/blog/hello
+                                ⇆   /demo-full/blog/hello
+                                ⇆   /demo-single/                 (404-tolerant)
 ```
 
 No query parameter. No client-side routing — variants are byte-distinct
@@ -46,7 +46,7 @@ prerenders.
   with different env (`MOSAIC_VARIANT`, `MOSAIC_CONTENT_DIR`). No
   server, no edge worker, no client-side framework router required
   for variant switching.
-- **Linkable variants.** Pasting `/mosaic/demo-full/services/repairs/`
+- **Linkable variants.** Pasting `/demo-full/services/repairs/`
   into chat survives the round-trip; the recipient sees the exact
   rendering immediately.
 - **CI work scales linearly with variants.** Today: six builds in

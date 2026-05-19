@@ -54,12 +54,12 @@ const devtoolSrc = BASE
   : '/_mosaic-devtool/mosaic-devtool.js';
 
 const SITE_LIST = JSON.stringify([
-  { label: 'Single · Astro', url: '/mosaic/demo-single/', note: '1 page' },
-  { label: 'Single · Next', url: '/mosaic/demo-single-next/', note: '1 page' },
-  { label: 'Blog · Astro', url: '/mosaic/demo-blog/', note: '3 pages + journal' },
-  { label: 'Blog · Next', url: '/mosaic/demo-blog-next/', note: '3 pages + journal' },
-  { label: 'Full · Astro', url: '/mosaic/demo-full/', note: '12+ pages, nav, sub-pages' },
-  { label: 'Full · Next', url: '/mosaic/demo-full-next/', note: '12+ pages, nav, sub-pages' },
+  { label: 'Single · Astro', url: '/demo-single/', note: '1 page' },
+  { label: 'Single · Next', url: '/demo-single-next/', note: '1 page' },
+  { label: 'Blog · Astro', url: '/demo-blog/', note: '3 pages + journal' },
+  { label: 'Blog · Next', url: '/demo-blog-next/', note: '3 pages + journal' },
+  { label: 'Full · Astro', url: '/demo-full/', note: '12+ pages, nav, sub-pages' },
+  { label: 'Full · Next', url: '/demo-full-next/', note: '12+ pages, nav, sub-pages' },
 ]);
 
 function isActive(linkUrl: string, currentPath: string): boolean {

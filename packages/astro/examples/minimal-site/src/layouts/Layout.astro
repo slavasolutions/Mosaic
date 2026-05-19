@@ -84,7 +84,7 @@ const resolvedJson = JSON.stringify(
 // sibling to the deploy slots so all six adapter sites share one copy.
 const isDeploy = import.meta.env.GITHUB_PAGES_DEPLOY === '1' || process.env.GITHUB_PAGES_DEPLOY === '1';
 const devtoolSrc = isDeploy
-  ? '/mosaic/_mosaic-devtool/mosaic-devtool.js'
+  ? '/_mosaic-devtool/mosaic-devtool.js'
   : '/_mosaic-devtool/mosaic-devtool.js';
 
 // === File tree (devtool Tree tab) ============================================
@@ -106,12 +106,12 @@ const treeJson = JSON.stringify(treePayload);
 // matrix is the same on every page; the devtool highlights whichever entry
 // matches the current pathname.
 const SITE_LIST = JSON.stringify([
-  { label: 'Single · Astro', url: '/mosaic/demo-single/', note: '1 page' },
-  { label: 'Single · Next', url: '/mosaic/demo-single-next/', note: '1 page' },
-  { label: 'Blog · Astro', url: '/mosaic/demo-blog/', note: '3 pages + journal' },
-  { label: 'Blog · Next', url: '/mosaic/demo-blog-next/', note: '3 pages + journal' },
-  { label: 'Full · Astro', url: '/mosaic/demo-full/', note: '12+ pages, nav, sub-pages' },
-  { label: 'Full · Next', url: '/mosaic/demo-full-next/', note: '12+ pages, nav, sub-pages' },
+  { label: 'Single · Astro', url: '/demo-single/', note: '1 page' },
+  { label: 'Single · Next', url: '/demo-single-next/', note: '1 page' },
+  { label: 'Blog · Astro', url: '/demo-blog/', note: '3 pages + journal' },
+  { label: 'Blog · Next', url: '/demo-blog-next/', note: '3 pages + journal' },
+  { label: 'Full · Astro', url: '/demo-full/', note: '12+ pages, nav, sub-pages' },
+  { label: 'Full · Next', url: '/demo-full-next/', note: '12+ pages, nav, sub-pages' },
 ]);
 
 // === Design tokens (mosaic-design-tokens profile) ============================

@@ -121,7 +121,7 @@ export async function getStaticProps({ params }: { params: { slug?: string[] } }
 
 ## Live example
 
-A runnable demo lives at `packages/next/examples/minimal-next-site/`. The deployed copies are at <https://slavasolutions.github.io/mosaic/demo-single-next/>, <https://slavasolutions.github.io/mosaic/demo-blog-next/>, and <https://slavasolutions.github.io/mosaic/demo-full-next/> — three content shapes rendered by Next. The Astro twin builds the same three folders to `/demo-single/`, `/demo-blog/`, `/demo-full/`. See <https://slavasolutions.github.io/mosaic/explore/> for the picker page.
+A runnable demo lives at `packages/next/examples/minimal-next-site/`. The deployed copies are at <https://mosaic.ssolu.dev/demo-single-next/>, <https://mosaic.ssolu.dev/demo-blog-next/>, and <https://mosaic.ssolu.dev/demo-full-next/> — three content shapes rendered by Next. The Astro twin builds the same three folders to `/demo-single/`, `/demo-blog/`, `/demo-full/`. See <https://mosaic.ssolu.dev/explore/> for the picker page.
 
 ## License
 
