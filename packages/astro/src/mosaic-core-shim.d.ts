@@ -24,5 +24,8 @@ declare module '@ssolu/mosaic-core' {
     records: Map<string, MosaicCoreRecord>;
     manifest: MosaicManifest;
   }
-  export function readFolder(rootPath: string): Promise<MosaicCoreReadResult>;
+  export function readFolder(
+    rootPath: string,
+    opts?: { cascadingKeys?: string[]; keepDangling?: boolean; contentRoot?: string },
+  ): Promise<MosaicCoreReadResult>;
 }

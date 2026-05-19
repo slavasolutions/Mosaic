@@ -38,6 +38,50 @@ const resolvedJson = JSON.stringify(
   null,
   2,
 );
+
+// === Design tokens (mosaic-design-tokens profile) ============================
+// `theme` cascades from the root collection record (content/index.json's
+// defaults.theme = "ref:/tokens"). After ref resolution, entry.data.theme
+// is the full theme record — read its `tokens` field. Falls back to inline
+// defaults if no theme is set.
+const themeRecord = entry.data.theme as { tokens?: Record<string, string> } | undefined;
+const tok = themeRecord?.tokens ?? {};
+function v(key: string, fallback: string): string {
+  return tok[key] ?? fallback;
+}
+const tokenCss = `:root {
+  --bg: ${v('color.bg', '#faf6ee')};
+  --bg-elev: ${v('color.bg-elev', '#ffffff')};
+  --bg-sunk: ${v('color.bg-sunk', '#f2ede1')};
+  --ink: ${v('color.ink', '#2a2620')};
+  --ink-soft: ${v('color.ink-soft', '#5a544a')};
+  --ink-mute: ${v('color.ink-mute', '#8a8278')};
+  --line: ${v('color.line', '#e8e0cc')};
+  --accent: ${v('color.accent', '#4a9b7a')};
+  --accent-soft: ${v('color.accent-soft', '#d6ecdf')};
+  --accent-ink: ${v('color.accent-ink', '#2d6b54')};
+  --banner-bg: ${v('color.banner-bg', '#fbeec2')};
+  --banner-ink: ${v('color.banner-ink', '#6a4d10')};
+  --banner-line: ${v('color.banner-line', '#e8d49a')};
+}`;
+
+// === JSON-LD (mosaic-web profile §6) =========================================
+// Emit a schema.org graph for any record that declares @type. Strip
+// Mosaic-internal fields (slug, url, modifiers, theme — all consumer-side
+// concerns, not schema.org properties).
+const schemaType = entry.data['@type'] as string | undefined;
+let jsonLd: string | null = null;
+if (schemaType) {
+  const { slug, url, modifiers, theme, ...semantic } = entry.data as Record<string, unknown>;
+  jsonLd = JSON.stringify(
+    {
+      '@context': (entry.data['@context'] as string | undefined) ?? 'https://schema.org',
+      ...semantic,
+    },
+    null,
+    2,
+  );
+}
 ---
 <!doctype html>
 <html lang="en">
@@ -100,21 +144,25 @@ const resolvedJson = JSON.stringify(
       a { color: var(--accent); text-decoration: none; }
       a:hover { text-decoration: underline; }
 
-      /* ----- Meta banner — clearly OFF the page chrome ----- */
+      /* ----- Meta banner — thin single-line strip, scrolls horizontally if narrow ----- */
       .meta-banner {
         background: var(--banner-bg);
         color: var(--banner-ink);
         border-bottom: 1px solid var(--banner-line);
-        padding: 10px 20px;
+        padding: 0;
         font-size: 13px;
-        line-height: 1.5;
+        line-height: 1.4;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
       }
       .meta-banner-inner {
-        max-width: 720px;
-        margin: 0 auto;
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 20px;
+        white-space: nowrap;
       }
       .meta-banner-label {
         flex-shrink: 0;
@@ -122,12 +170,10 @@ const resolvedJson = JSON.stringify(
         font-size: 10px;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        padding: 3px 6px;
+        padding: 2px 5px;
         background: rgba(0,0,0,0.08);
         border-radius: 3px;
         line-height: 1.2;
-        white-space: nowrap;
-        margin-top: 1px;
       }
       @media (prefers-color-scheme: dark) {
         .meta-banner-label { background: rgba(255,255,255,0.08); }
@@ -135,10 +181,6 @@ const resolvedJson = JSON.stringify(
       .meta-banner a {
         color: var(--banner-ink);
         text-decoration: underline;
-        white-space: nowrap;
-      }
-      @media (max-width: 540px) {
-        .meta-banner-inner { flex-direction: column; gap: 6px; }
       }
 
       /* ----- Site header (chrome) ----- */
@@ -315,6 +357,10 @@ const resolvedJson = JSON.stringify(
       }
       .body-block p { margin: 0 0 1em; }
     </style>
+    <style set:html={tokenCss}></style>
+    {jsonLd && (
+      <script type="application/ld+json" set:html={jsonLd}></script>
+    )}
   </head>
   <body>
     {banner && (

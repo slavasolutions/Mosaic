@@ -104,4 +104,5 @@ export interface MosaicCoreReadResult {
 
 export type MosaicCoreReadFolder = (
   rootPath: string,
+  opts?: { cascadingKeys?: string[]; keepDangling?: boolean; contentRoot?: string },
 ) => Promise<MosaicCoreReadResult>;

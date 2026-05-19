@@ -1,5 +1,5 @@
 {
-  "text": "Demo site. Every page below is a JSON file (plus optional Markdown) in a folder. Astro compiled it to static HTML — no runtime, no database. This banner is itself a Mosaic record: content/banner.json. It sits outside pages/, so it has no URL, but the loader still emits it and the layout reads it.",
-  "linkText": "See the spec →",
+  "text": "Demo · every page is a JSON file in a folder · Astro compiled it to static HTML.",
+  "linkText": "Spec →",
   "linkUrl": "https://github.com/slavasolutions/mosaic"
 }

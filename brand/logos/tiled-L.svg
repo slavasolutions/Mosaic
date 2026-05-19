@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Mosaic">
+  <title>Mosaic</title>
+  <!-- L-shaped arrangement: vertical bar on left + horizontal bar on bottom -->
+  <!-- Left column: 3 tiles stacked -->
+  <rect x="1"  y="1"  width="7" height="7" rx="1" fill="#b8dcc7"/>
+  <rect x="1"  y="9"  width="7" height="5" rx="1" fill="#a8c8e8"/>
+  <rect x="1"  y="16" width="7" height="7" rx="1" fill="#cdc1ea"/>
+  <!-- Bottom row extending right -->
+  <rect x="10" y="16" width="5" height="7" rx="1" fill="#f5d97c"/>
+  <rect x="17" y="16" width="3" height="7" rx="1" fill="#f4c8a8"/>
+  <rect x="22" y="19" width="2" height="4" rx="0.5" fill="#a3c9a8"/>
+  <!-- Small accent top-right -->
+  <rect x="12" y="1"  width="4" height="4" rx="0.5" fill="#f4c8a8"/>
+  <rect x="18" y="1"  width="3" height="3" rx="0.5" fill="#f5d97c"/>
+</svg>

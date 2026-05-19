@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Mosaic">
+  <title>Mosaic</title>
+  <!-- Four corner tiles + center accent, open middle — balanced, sparse -->
+  <!-- Corners: medium tiles -->
+  <rect x="1"  y="1"  width="8" height="8" rx="1.5" fill="#b8dcc7"/>
+  <rect x="15" y="1"  width="8" height="8" rx="1.5" fill="#f5d97c"/>
+  <rect x="1"  y="15" width="8" height="8" rx="1.5" fill="#cdc1ea"/>
+  <rect x="15" y="15" width="8" height="8" rx="1.5" fill="#a8c8e8"/>
+  <!-- Center small chip -->
+  <rect x="10" y="10" width="4" height="4" rx="1"   fill="#f4c8a8"/>
+  <!-- Mid-edge small accents -->
+  <rect x="11" y="2"  width="2" height="2" rx="0.5" fill="#a3c9a8"/>
+  <rect x="11" y="20" width="2" height="2" rx="0.5" fill="#a3c9a8"/>
+  <rect x="2"  y="11" width="2" height="2" rx="0.5" fill="#f5d97c"/>
+  <rect x="20" y="11" width="2" height="2" rx="0.5" fill="#f4c8a8"/>
+</svg>

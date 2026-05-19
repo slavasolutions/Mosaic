@@ -60,21 +60,25 @@ body {
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* ----- Meta banner — clearly OFF the page chrome ----- */
+/* ----- Meta banner — thin single-line strip, scrolls horizontally if narrow ----- */
 .meta-banner {
   background: var(--banner-bg);
   color: var(--banner-ink);
   border-bottom: 1px solid var(--banner-line);
-  padding: 10px 20px;
+  padding: 0;
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.4;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
 .meta-banner-inner {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 20px;
+  white-space: nowrap;
 }
 .meta-banner-label {
   flex-shrink: 0;
@@ -82,12 +86,10 @@ a:hover { text-decoration: underline; }
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 3px 6px;
+  padding: 2px 5px;
   background: rgba(0,0,0,0.08);
   border-radius: 3px;
   line-height: 1.2;
-  white-space: nowrap;
-  margin-top: 1px;
 }
 @media (prefers-color-scheme: dark) {
   .meta-banner-label { background: rgba(255,255,255,0.08); }
@@ -95,10 +97,6 @@ a:hover { text-decoration: underline; }
 .meta-banner a {
   color: var(--banner-ink);
   text-decoration: underline;
-  white-space: nowrap;
-}
-@media (max-width: 540px) {
-  .meta-banner-inner { flex-direction: column; gap: 6px; }
 }
 
 /* ----- Site header (chrome) ----- */

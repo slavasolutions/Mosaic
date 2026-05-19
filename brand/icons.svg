@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+
+  <!-- icon-folder: geometric closed folder, no skeuomorphism -->
+  <symbol id="icon-folder" viewBox="0 0 20 20">
+    <rect x="1" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M1 8h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+    <path d="M1 7V6a1 1 0 011-1h5l2 2H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+
+  <!-- icon-folder-open: geometric open folder -->
+  <symbol id="icon-folder-open" viewBox="0 0 20 20">
+    <path d="M1 7V6a1 1 0 011-1h5l2 2H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M1 8h18l-2 9H3L1 8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- icon-file-json: square file with { } mark -->
+  <symbol id="icon-file-json" viewBox="0 0 20 20">
+    <path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M12 2v4h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <text x="5" y="15" font-family="monospace" font-size="6" fill="currentColor" font-weight="700">{}</text>
+  </symbol>
+
+  <!-- icon-file-md: file with M mark -->
+  <symbol id="icon-file-md" viewBox="0 0 20 20">
+    <path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M12 2v4h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <text x="5" y="15" font-family="monospace" font-size="6" fill="currentColor" font-weight="700">md</text>
+  </symbol>
+
+  <!-- icon-file-img: file with image placeholder (rectangle + diagonal) -->
+  <symbol id="icon-file-img" viewBox="0 0 20 20">
+    <path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M12 2v4h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <rect x="5" y="10" width="10" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1"/>
+    <circle cx="8" cy="12.5" r="1" fill="currentColor"/>
+    <path d="M5 16l3-3 2 2 2-2 3 3" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- icon-arrow: clean directional arrow -->
+  <symbol id="icon-arrow" viewBox="0 0 20 20">
+    <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+
+  <!-- icon-link: ref link — two squares connected by line -->
+  <symbol id="icon-link" viewBox="0 0 20 20">
+    <rect x="1" y="7" width="7" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="12" y="7" width="7" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M8 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
+
+</svg>

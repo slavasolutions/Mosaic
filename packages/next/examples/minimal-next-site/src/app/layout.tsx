@@ -30,8 +30,37 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     | BannerRecord
     | null;
 
+  // Design tokens (mosaic-design-tokens profile). The `tokens` record sits
+  // outside pages/ — non-route — and its `tokens` field carries the active
+  // theme. The layout emits one CSS variable per token on :root; existing
+  // globals.css uses those vars. Override values come from the folder, not
+  // from this template.
+  const tokensRecord = nonRouted.find((e) => e.id === 'tokens')?.data as
+    | { tokens?: Record<string, string> }
+    | undefined;
+  const tok = tokensRecord?.tokens ?? {};
+  const v = (k: string, fallback: string) => tok[k] ?? fallback;
+  const tokenCss = `:root {
+  --bg: ${v('color.bg', '#faf6ee')};
+  --bg-elev: ${v('color.bg-elev', '#ffffff')};
+  --bg-sunk: ${v('color.bg-sunk', '#f2ede1')};
+  --ink: ${v('color.ink', '#2a2620')};
+  --ink-soft: ${v('color.ink-soft', '#5a544a')};
+  --ink-mute: ${v('color.ink-mute', '#8a8278')};
+  --line: ${v('color.line', '#e8e0cc')};
+  --accent: ${v('color.accent', '#4a9b7a')};
+  --accent-soft: ${v('color.accent-soft', '#d6ecdf')};
+  --accent-ink: ${v('color.accent-ink', '#2d6b54')};
+  --banner-bg: ${v('color.banner-bg', '#fbeec2')};
+  --banner-ink: ${v('color.banner-ink', '#6a4d10')};
+  --banner-line: ${v('color.banner-line', '#e8d49a')};
+}`;
+
   return (
     <html lang="en">
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: tokenCss }} />
+      </head>
       <body>
         {banner && (
           <div className="meta-banner">

@@ -1,5 +1,5 @@
-This is the body of a Mosaic record. The structured metadata lives in hello.json (title, publishedAt, author). The prose you are reading is hello.md sitting next to it.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-Notice the author field in the JSON sidecar — it is the string "ref:/team/ada". The base spec says any string starting with "ref:" is a reference to another record by its identity. When the Astro adapter resolves this page, that ref expands into the full record at /team/ada — name, role, bio — and the byline you see at the top of this post is rendered from those resolved fields.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-Move /team/ada.json anywhere in the tree. The ref still resolves. Rename the file from ada.json to ada/index.json. Same identity, same resolution. The filename is the contract.
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.

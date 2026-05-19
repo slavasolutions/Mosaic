@@ -1,11 +1,5 @@
-A reference is a JSON string that starts with the four characters "ref:". The rest is the identity of another record.
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
 
-Three forms cover everything:
+Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
 
-ref:team/ada — absolute. Resolved from the root, regardless of where this post lives in the tree.
-
-ref:./other — relative. Resolved against the folder this record is in. Useful for keeping intra-folder links survivable when the whole folder gets moved as a unit.
-
-ref:/team/ada#/name — an RFC 6901 JSON Pointer after the hash. Resolves to a value inside the target record — the string "Ada Lovelace" instead of the whole person object.
-
-That is the entire grammar. No wildcards. No predicates. No expressions. The spec calls this the hard ceiling — it is the line that keeps Mosaic from re-deriving XPath.
+Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.

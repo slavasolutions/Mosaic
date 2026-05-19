@@ -42,7 +42,12 @@ export async function readMosaic(
   const includeNonRouteRecords = opts.includeNonRouteRecords ?? true;
   const absoluteRoot = pathResolve(process.cwd(), rootPath);
 
-  const result = (await readFolder(absoluteRoot)) as MosaicCoreReadResult;
+  // Pass-through cascading keys: 'theme' is the cascading field declared by
+  // the design-tokens profile. Anything that wants cross-cutting cascade
+  // should be added here too (e.g. a future layout profile).
+  const result = (await readFolder(absoluteRoot, {
+    cascadingKeys: ['theme'],
+  } as any)) as MosaicCoreReadResult;
   const manifest = normaliseManifest(result.manifest);
   const profileRoot = getWebProfileRoot(manifest);
 
@@ -51,6 +56,9 @@ export async function readMosaic(
   const nonRouted: MosaicEntry[] = [];
 
   for (const [identity, variantsOrRecord] of result.records) {
+    // Skip the root collection record (identity ""); cascade source only,
+    // never an entry consumers see.
+    if (identity === '') continue;
     // Path A: mosaic-core returns Map<Identity, Record[]>; legacy test
     // stubs still hand back a single Record. Normalise both forms.
     const variants = Array.isArray(variantsOrRecord)

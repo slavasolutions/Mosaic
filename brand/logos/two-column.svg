@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Mosaic">
+  <title>Mosaic</title>
+  <!-- Two unequal columns: wide left, narrow right — newspaper layout feel -->
+  <!-- Left column: 2 tall tiles -->
+  <rect x="1"  y="1"  width="9" height="13" rx="1.5" fill="#b8dcc7"/>
+  <rect x="1"  y="16" width="9" height="7"  rx="1.5" fill="#f5d97c"/>
+  <!-- Right column: 4 small stacked -->
+  <rect x="12" y="1"  width="11" height="4"  rx="1"   fill="#f4c8a8"/>
+  <rect x="12" y="7"  width="11" height="4"  rx="1"   fill="#cdc1ea"/>
+  <rect x="12" y="13" width="5"  height="4"  rx="1"   fill="#a8c8e8"/>
+  <rect x="19" y="13" width="4"  height="4"  rx="1"   fill="#a3c9a8"/>
+  <rect x="12" y="19" width="11" height="4"  rx="1"   fill="#a8c8e8"/>
+</svg>

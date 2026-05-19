@@ -200,7 +200,13 @@ async function loadOnce(args: LoadOnceArgs): Promise<void> {
     includeNonRouteRecords,
   } = args;
 
-  const { records, manifest } = await readFolder(absoluteRoot);
+  // `theme` is the cascading key the design-tokens profile declares; pass it
+  // through so themes flow from root collection record's `defaults.theme`
+  // down to every descendant page. Other cascading keys (like profile-
+  // declared layout keys) would be added here too.
+  const { records, manifest } = await readFolder(absoluteRoot, {
+    cascadingKeys: ['theme'],
+  });
   const profileRoot = getWebProfileRoot(manifest);
 
   if (!profileRoot) {
@@ -218,6 +224,11 @@ async function loadOnce(args: LoadOnceArgs): Promise<void> {
   let skipped = 0;
 
   for (const [identity, variantsOrRecord] of records) {
+    // Skip the root collection record — its identity is "" (per §7.1
+    // path normalisation) and Astro's DataStore requires non-empty IDs.
+    // Root records exist for cascade-source purposes only; they never
+    // become entries in any collection.
+    if (identity === '') continue;
     // Path A: mosaic-core returns Map<Identity, Record[]>; older shapes
     // (used by some test stubs / legacy fixtures) hand back a single
     // Record. Normalise either into the variant array form.

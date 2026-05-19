@@ -1,5 +1,5 @@
-Acme Foundry started in 2016 in a borrowed shed behind a hardware store. We pour small bronze parts for restorers, prop houses, and the occasional museum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod malesuada.
 
-This page is rendered from two files. The structured fields (title, lede) come from about.json. The prose you are reading right now is in about.md alongside it — that is the sidecar pattern. The Mosaic spec says any non-JSON file is opaque content with an optional JSON sidecar; the engine merges them at read time and hands you the result.
+Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante.
 
-Nothing more, nothing less.
+Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.

@@ -4,14 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mosaic — a folder format for structured content</title>
-<meta name="description" content="Mosaic is a folder format for structured content. Three rules, a naming grammar, sidecars, and refs. Any conforming reader turns the folder into a website.">
+<meta name="description" content="Mosaic is a folder format for structured content. Three rules. Any conforming reader turns the folder into a site.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ------------------------------------------------------------------ */
 /*  Design tokens                                                       */
 /* ------------------------------------------------------------------ */
 :root {
-  /* color (light) */
   --c-bg:           #fafaf7;
   --c-bg-elev:      #ffffff;
   --c-bg-sunk:      #f1f0ea;
@@ -23,75 +25,45 @@
   --c-accent:       #2b56d4;
   --c-accent-soft:  #e7edff;
   --c-accent-ink:   #1b3aa0;
-  --c-warn:         #b06b00;
-  --c-warn-soft:    #fff1d6;
-  --c-bad:          #b3261e;
-  --c-bad-soft:     #fde6e4;
-  --c-good:         #1f7a3a;
-  --c-good-soft:    #e2f5e8;
 
-  /* spacing */
-  --s-1: 4px;
-  --s-2: 8px;
-  --s-3: 12px;
-  --s-4: 16px;
-  --s-5: 24px;
-  --s-6: 32px;
-  --s-7: 48px;
-  --s-8: 72px;
-  --s-9: 96px;
+  --s-1: 4px;   --s-2: 8px;   --s-3: 12px;  --s-4: 16px;
+  --s-5: 24px;  --s-6: 32px;  --s-7: 48px;  --s-8: 72px;
 
-  /* radii */
-  --r-xs: 4px;
-  --r-sm: 6px;
-  --r-md: 10px;
-  --r-lg: 14px;
-  --r-xl: 20px;
+  --r-xs: 4px;  --r-sm: 6px;  --r-md: 10px;
+  --r-lg: 14px; --r-xl: 20px;
 
-  /* type */
-  --f-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --f-serif: ui-serif, Georgia, "Times New Roman", serif;
-  --f-mono: ui-monospace, "SF Mono", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+  --f-display: "DM Serif Display", ui-serif, Georgia, serif;
+  --f-mono:    "DM Mono", ui-monospace, "Menlo", monospace;
+  --f-sans:    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  /* code colors */
   --code-bg:    #f7f6ef;
   --code-ink:   #2a2c33;
   --code-key:   #1b3aa0;
   --code-str:   #1f7a3a;
-  --code-num:   #b06b00;
-  --code-punct: #6b6e78;
   --code-ref:   #b3261e;
   --code-cmt:   #5a5d66;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --c-bg:           #0d0f13;
-    --c-bg-elev:      #14171c;
-    --c-bg-sunk:      #0a0c10;
-    --c-ink:          #ecedf0;
-    --c-ink-soft:     #b8bbc4;
-    --c-ink-mute:     #7d818d;
-    --c-line:         #23262e;
-    --c-line-soft:    #1a1d24;
-    --c-accent:       #7da3ff;
-    --c-accent-soft:  #182142;
-    --c-accent-ink:   #b9cbff;
-    --c-warn:         #f4b860;
-    --c-warn-soft:    #2a200f;
-    --c-bad:          #ff7a72;
-    --c-bad-soft:     #2a1413;
-    --c-good:         #7fd296;
-    --c-good-soft:    #102415;
+    --c-bg:          #0d0f13;
+    --c-bg-elev:     #14171c;
+    --c-bg-sunk:     #0a0c10;
+    --c-ink:         #ecedf0;
+    --c-ink-soft:    #b8bbc4;
+    --c-ink-mute:    #7d818d;
+    --c-line:        #23262e;
+    --c-line-soft:   #1a1d24;
+    --c-accent:      #7da3ff;
+    --c-accent-soft: #182142;
+    --c-accent-ink:  #b9cbff;
 
-    --code-bg:    #12141a;
-    --code-ink:   #d6d8df;
-    --code-key:   #9eb5ff;
-    --code-str:   #95d6a4;
-    --code-num:   #f0c279;
-    --code-punct: #7d818d;
-    --code-ref:   #ff9b8f;
-    --code-cmt:   #6a6e78;
+    --code-bg:   #12141a;
+    --code-ink:  #d6d8df;
+    --code-key:  #9eb5ff;
+    --code-str:  #95d6a4;
+    --code-ref:  #ff9b8f;
+    --code-cmt:  #6a6e78;
   }
 }
 
@@ -108,13 +80,11 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 img, svg { display: block; max-width: 100%; }
 a { color: var(--c-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-button { font: inherit; cursor: pointer; }
 p { margin: 0 0 var(--s-4) 0; }
 p:last-child { margin-bottom: 0; }
 
@@ -126,17 +96,13 @@ p:last-child { margin-bottom: 0; }
   margin: 0 auto;
   padding: 0 var(--s-4);
 }
-@media (min-width: 600px) {
-  .wrap { padding: 0 var(--s-5); }
-}
+@media (min-width: 600px) { .wrap { padding: 0 var(--s-5); } }
 
 section {
   padding: var(--s-7) 0;
   border-top: 1px solid var(--c-line);
 }
-@media (min-width: 860px) {
-  section { padding: var(--s-8) 0; }
-}
+@media (min-width: 860px) { section { padding: var(--s-8) 0; } }
 section:first-of-type { border-top: none; }
 
 .eyebrow {
@@ -148,17 +114,17 @@ section:first-of-type { border-top: none; }
   margin: 0 0 var(--s-3) 0;
 }
 .section-title {
-  font-family: var(--f-serif);
-  font-weight: 500;
-  font-size: clamp(22px, 3vw, 34px);
-  line-height: 1.2;
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.15;
   letter-spacing: -0.01em;
   margin: 0 0 var(--s-3) 0;
 }
 .section-lede {
   color: var(--c-ink-soft);
-  max-width: 58ch;
-  font-size: clamp(15px, 2vw, 17px);
+  max-width: 52ch;
+  font-size: clamp(14px, 2vw, 16px);
   margin: 0 0 var(--s-6) 0;
 }
 
@@ -182,14 +148,12 @@ section:first-of-type { border-top: none; }
   max-width: 1100px;
   margin: 0 auto;
 }
-@media (min-width: 600px) {
-  .topbar-inner { padding: var(--s-3) var(--s-5); }
-}
+@media (min-width: 600px) { .topbar-inner { padding: var(--s-3) var(--s-5); } }
 .brand {
   display: flex;
   align-items: center;
   gap: var(--s-2);
-  font-family: var(--f-serif);
+  font-family: var(--f-display);
   font-size: 17px;
   color: var(--c-ink);
   text-decoration: none;
@@ -235,7 +199,7 @@ section:first-of-type { border-top: none; }
   background: var(--c-bg-elev);
   color: var(--c-ink);
   text-decoration: none;
-  transition: border-color 0.15s ease, background 0.15s ease, transform 0.08s ease;
+  transition: border-color 0.15s, background 0.15s, transform 0.08s;
   min-height: 44px;
   white-space: nowrap;
 }
@@ -251,18 +215,15 @@ section:first-of-type { border-top: none; }
   border-color: var(--c-accent-ink);
   color: #fff;
 }
-.btn .arrow { transition: transform 0.15s ease; }
+.btn .arrow { transition: transform 0.15s; }
 .btn:hover .arrow { transform: translateX(2px); }
 
 /* ------------------------------------------------------------------ */
 /*  Hero                                                               */
 /* ------------------------------------------------------------------ */
-.hero {
-  padding: var(--s-7) 0 var(--s-8);
-}
-@media (min-width: 860px) {
-  .hero { padding: var(--s-8) 0; }
-}
+.hero { padding: var(--s-7) 0 var(--s-8); }
+@media (min-width: 860px) { .hero { padding: var(--s-8) 0; } }
+
 .hero-inner {
   display: grid;
   gap: var(--s-6);
@@ -274,32 +235,35 @@ section:first-of-type { border-top: none; }
     gap: var(--s-7);
   }
 }
+
 .hero-logo {
   display: flex;
   align-items: center;
   gap: var(--s-3);
-  margin-bottom: var(--s-4);
+  margin-bottom: var(--s-5);
 }
-.hero-logo-mark { width: 40px; height: 40px; }
+.hero-logo-mark { width: 44px; height: 44px; }
 .hero-logo-name {
-  font-family: var(--f-serif);
-  font-size: clamp(22px, 4vw, 30px);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-family: var(--f-display);
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 400;
 }
+
+/* THE load-bearing phrase — largest type on the page */
 .hero-title {
-  font-family: var(--f-serif);
-  font-weight: 500;
-  font-size: clamp(28px, 5vw, 52px);
-  line-height: 1.08;
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: clamp(38px, 7vw, 68px);
+  line-height: 1.04;
   letter-spacing: -0.02em;
-  margin: 0 0 var(--s-4) 0;
+  margin: 0 0 var(--s-5) 0;
 }
-.hero-title .hl { color: var(--c-accent); }
+.hero-title .hl { color: var(--c-accent); font-style: italic; }
+
 .hero-lede {
-  font-size: clamp(15px, 2vw, 18px);
+  font-size: clamp(14px, 2vw, 17px);
   color: var(--c-ink-soft);
-  max-width: 46ch;
+  max-width: 42ch;
   margin: 0 0 var(--s-5) 0;
 }
 .hero-cta {
@@ -317,19 +281,17 @@ section:first-of-type { border-top: none; }
   overflow: hidden;
   position: relative;
 }
-@media (min-width: 600px) {
-  .hero-diagram { padding: var(--s-5); }
-}
+@media (min-width: 600px) { .hero-diagram { padding: var(--s-5); } }
 .hero-diagram::before {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(500px 180px at 10% 0%, color-mix(in srgb, var(--c-accent) 8%, transparent), transparent 60%),
-    radial-gradient(400px 200px at 90% 100%, color-mix(in srgb, var(--c-accent) 6%, transparent), transparent 60%);
+    radial-gradient(500px 180px at 10% 0%, color-mix(in srgb, var(--c-accent) 7%, transparent), transparent 60%),
+    radial-gradient(400px 200px at 90% 100%, color-mix(in srgb, #b8dcc7 20%, transparent), transparent 60%);
   pointer-events: none;
 }
-/* Two-row layout: folder tree top, then arrow+mockup bottom */
+
 .diag-layout {
   display: flex;
   flex-direction: column;
@@ -350,7 +312,6 @@ section:first-of-type { border-top: none; }
   font-family: var(--f-mono);
   font-size: 13px;
   line-height: 1.9;
-  overflow: hidden;
 }
 .diag-folder-title {
   color: var(--c-ink-mute);
@@ -358,15 +319,24 @@ section:first-of-type { border-top: none; }
   display: flex;
   align-items: center;
   gap: var(--s-2);
+  font-size: 12px;
 }
 .df-row { display: flex; align-items: center; gap: 6px; }
-.df-indent { padding-left: 18px; }
-.df-indent2 { padding-left: 36px; }
-.df-icon { flex-shrink: 0; }
+.df-indent  { padding-left: 16px; }
+.df-indent2 { padding-left: 32px; }
+.df-indent3 { padding-left: 48px; }
+
+/* Geometric icon colours */
+.df-icon { flex-shrink: 0; width: 14px; height: 14px; }
+.df-icon.folder { color: #a8c8e8; }
+.df-icon.file-json { color: var(--code-key); }
+.df-icon.file-md   { color: var(--code-str); }
+.df-icon.manifest  { color: #b06b00; }
+
 .df-name { color: var(--code-ink); }
 .df-name.is-json { color: var(--code-key); }
-.df-name.is-md { color: var(--code-str); }
-.df-name.is-manifest { color: var(--code-num); }
+.df-name.is-md   { color: var(--code-str); }
+.df-name.is-manifest { color: #b06b00; }
 
 .diag-arrow {
   display: flex;
@@ -376,7 +346,6 @@ section:first-of-type { border-top: none; }
   color: var(--c-ink-mute);
   font-family: var(--f-mono);
   font-size: 10px;
-  text-align: center;
   flex-shrink: 0;
   padding: 0 var(--s-2);
 }
@@ -386,7 +355,6 @@ section:first-of-type { border-top: none; }
   max-width: 64px;
   text-align: center;
 }
-
 .diag-site {
   background: var(--c-bg-elev);
   border: 1px solid var(--c-line);
@@ -401,12 +369,7 @@ section:first-of-type { border-top: none; }
   align-items: center;
   gap: var(--s-2);
 }
-.diag-site-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--c-line);
-  flex-shrink: 0;
-}
+.diag-site-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-line); flex-shrink: 0; }
 .diag-site-url {
   font-family: var(--f-mono);
   font-size: 10px;
@@ -415,26 +378,10 @@ section:first-of-type { border-top: none; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.diag-site-body {
-  padding: var(--s-3);
-}
-.diag-site-nav {
-  display: flex;
-  gap: var(--s-3);
-  margin-bottom: var(--s-3);
-}
-.diag-site-nav-item {
-  height: 8px;
-  border-radius: 4px;
-  background: var(--c-accent);
-  opacity: 0.7;
-}
-.diag-site-line {
-  height: 7px;
-  border-radius: 4px;
-  background: var(--c-line);
-  margin-bottom: var(--s-2);
-}
+.diag-site-body { padding: var(--s-3); }
+.diag-site-nav { display: flex; gap: var(--s-3); margin-bottom: var(--s-3); }
+.diag-site-nav-item { height: 8px; border-radius: 4px; background: var(--c-accent); opacity: 0.7; }
+.diag-site-line { height: 7px; border-radius: 4px; background: var(--c-line); margin-bottom: var(--s-2); }
 .diag-caption {
   margin-top: var(--s-3);
   font-size: 12px;
@@ -447,19 +394,15 @@ section:first-of-type { border-top: none; }
 /* ------------------------------------------------------------------ */
 /*  Three rules                                                        */
 /* ------------------------------------------------------------------ */
-.rules-grid {
-  display: grid;
-  gap: var(--s-4);
-}
-@media (min-width: 680px) {
-  .rules-grid { grid-template-columns: repeat(3, 1fr); }
-}
+.rules-grid { display: grid; gap: var(--s-4); }
+@media (min-width: 680px) { .rules-grid { grid-template-columns: repeat(3, 1fr); } }
+
 .rule-card {
   background: var(--c-bg-elev);
   border: 1px solid var(--c-line);
   border-radius: var(--r-lg);
   padding: var(--s-5);
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s;
 }
 .rule-card:hover { border-color: var(--c-ink-mute); }
 .rule-num {
@@ -470,15 +413,15 @@ section:first-of-type { border-top: none; }
   margin-bottom: var(--s-3);
 }
 .rule-title {
-  font-family: var(--f-serif);
-  font-size: clamp(17px, 2.2vw, 20px);
-  font-weight: 500;
+  font-family: var(--f-display);
+  font-size: clamp(17px, 2.2vw, 21px);
+  font-weight: 400;
   margin: 0 0 var(--s-3) 0;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 .rule-body {
   color: var(--c-ink-soft);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.6;
   margin: 0 0 var(--s-4) 0;
 }
@@ -498,7 +441,6 @@ section:first-of-type { border-top: none; }
 .cs { color: var(--code-str); }
 .cm { color: var(--code-cmt); }
 .cr { color: var(--code-ref); }
-.cp { color: var(--code-punct); }
 
 /* ------------------------------------------------------------------ */
 /*  Pipeline                                                           */
@@ -509,11 +451,7 @@ section:first-of-type { border-top: none; }
   gap: var(--s-3);
 }
 @media (min-width: 700px) {
-  .pipeline {
-    flex-direction: row;
-    align-items: stretch;
-    gap: 0;
-  }
+  .pipeline { flex-direction: row; align-items: stretch; gap: 0; }
 }
 .pipe-step {
   flex: 1;
@@ -521,44 +459,18 @@ section:first-of-type { border-top: none; }
   border: 1px solid var(--c-line);
   border-radius: var(--r-md);
   padding: var(--s-4);
-  position: relative;
 }
 @media (min-width: 700px) {
-  .pipe-step {
-    border-radius: 0;
-    margin-right: -1px;
-  }
+  .pipe-step { border-radius: 0; margin-right: -1px; }
   .pipe-step:first-child { border-radius: var(--r-md) 0 0 var(--r-md); }
   .pipe-step:last-child  { border-radius: 0 var(--r-md) var(--r-md) 0; margin-right: 0; }
 }
-.pipe-step-num {
-  font-family: var(--f-mono);
-  font-size: 10px;
-  color: var(--c-ink-mute);
-  letter-spacing: 0.08em;
-  margin-bottom: var(--s-2);
-}
-.pipe-step-name {
-  font-weight: 600;
-  font-size: 13px;
-  margin-bottom: var(--s-1);
-  color: var(--c-ink);
-}
-.pipe-step-desc {
-  font-size: 12px;
-  color: var(--c-ink-mute);
-  line-height: 1.5;
-}
-.pipe-arrow-mobile {
-  text-align: center;
-  color: var(--c-ink-mute);
-  font-size: 18px;
-  line-height: 1;
-}
+.pipe-step-num { font-family: var(--f-mono); font-size: 10px; color: var(--c-ink-mute); letter-spacing: 0.08em; margin-bottom: var(--s-2); }
+.pipe-step-name { font-weight: 600; font-size: 13px; margin-bottom: var(--s-1); }
+.pipe-step-desc { font-size: 12px; color: var(--c-ink-mute); line-height: 1.5; }
+.pipe-arrow-mobile { text-align: center; color: var(--c-ink-mute); font-size: 18px; line-height: 1; }
 @media (min-width: 700px) { .pipe-arrow-mobile { display: none; } }
-.pipe-arrow-desktop {
-  display: none;
-}
+.pipe-arrow-desktop { display: none; }
 @media (min-width: 700px) {
   .pipe-arrow-desktop {
     display: flex;
@@ -569,32 +481,26 @@ section:first-of-type { border-top: none; }
     background: var(--c-bg);
     padding: 0 4px;
     margin: 0 -4px;
-    border-radius: 0;
     position: relative;
   }
 }
 .pipe-caption {
   margin-top: var(--s-5);
-  font-size: 13px;
+  font-size: 12px;
   color: var(--c-ink-soft);
   font-family: var(--f-mono);
   background: var(--c-bg-sunk);
   border: 1px solid var(--c-line);
   border-radius: var(--r-sm);
   padding: var(--s-3) var(--s-4);
-  line-height: 1.5;
 }
 
 /* ------------------------------------------------------------------ */
 /*  References                                                         */
 /* ------------------------------------------------------------------ */
-.refs-grid {
-  display: grid;
-  gap: var(--s-3);
-}
-@media (min-width: 600px) {
-  .refs-grid { grid-template-columns: repeat(3, 1fr); }
-}
+.refs-grid { display: grid; gap: var(--s-3); }
+@media (min-width: 600px) { .refs-grid { grid-template-columns: repeat(3, 1fr); } }
+
 .ref-card {
   background: var(--c-bg-elev);
   border: 1px solid var(--c-line);
@@ -603,84 +509,65 @@ section:first-of-type { border-top: none; }
 }
 .ref-value {
   font-family: var(--f-mono);
-  font-size: clamp(12px, 2vw, 14px);
+  font-size: clamp(11px, 2vw, 13px);
   color: var(--code-ref);
   margin-bottom: var(--s-3);
   word-break: break-all;
 }
-.ref-desc {
-  font-size: 13px;
-  color: var(--c-ink-soft);
-  line-height: 1.5;
-}
-.ref-caption {
-  margin-top: var(--s-5);
-  font-size: 13px;
-  color: var(--c-ink-mute);
-  font-style: italic;
-}
+.ref-label { font-size: 12px; font-weight: 600; color: var(--c-ink); margin-bottom: 2px; }
+.ref-desc { font-size: 12px; color: var(--c-ink-soft); line-height: 1.5; }
 
 /* ------------------------------------------------------------------ */
 /*  Not list                                                           */
 /* ------------------------------------------------------------------ */
 .not-list {
   display: grid;
-  gap: var(--s-3);
+  gap: var(--s-2);
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0 0 var(--s-5) 0;
 }
-@media (min-width: 600px) {
-  .not-list { grid-template-columns: 1fr 1fr; }
-}
+@media (min-width: 600px) { .not-list { grid-template-columns: 1fr 1fr; } }
 .not-list li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
   background: var(--c-bg-elev);
   border: 1px solid var(--c-line);
   border-radius: var(--r-md);
-  padding: var(--s-4);
   font-size: 14px;
-  line-height: 1.5;
+  font-weight: 500;
 }
-.not-list .not-icon {
+.not-icon {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   background: var(--c-bg-sunk);
   border: 1px solid var(--c-line);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--c-ink-mute);
-  margin-top: 1px;
+  font-family: var(--f-mono);
 }
-.not-list strong { display: block; color: var(--c-ink); margin-bottom: 2px; }
-.not-list span { color: var(--c-ink-soft); }
 .not-footer {
-  margin-top: var(--s-5);
   padding: var(--s-4);
   background: var(--c-accent-soft);
   border: 1px solid color-mix(in srgb, var(--c-accent) 25%, transparent);
   border-radius: var(--r-md);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--c-accent-ink);
-  line-height: 1.5;
+  font-style: italic;
 }
 
 /* ------------------------------------------------------------------ */
 /*  CTA cards                                                          */
 /* ------------------------------------------------------------------ */
-.cta-grid {
-  display: grid;
-  gap: var(--s-4);
-}
-@media (min-width: 600px) {
-  .cta-grid { grid-template-columns: repeat(3, 1fr); }
-}
+.cta-grid { display: grid; gap: var(--s-4); }
+@media (min-width: 600px) { .cta-grid { grid-template-columns: repeat(3, 1fr); } }
+
 .cta-card {
   display: flex;
   flex-direction: column;
@@ -690,7 +577,7 @@ section:first-of-type { border-top: none; }
   padding: var(--s-5);
   text-decoration: none;
   color: var(--c-ink);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s, transform 0.15s;
   min-height: 44px;
 }
 .cta-card:hover { border-color: var(--c-accent); text-decoration: none; transform: translateY(-2px); }
@@ -703,9 +590,9 @@ section:first-of-type { border-top: none; }
   margin-bottom: var(--s-2);
 }
 .cta-card-title {
-  font-family: var(--f-serif);
-  font-size: 18px;
-  font-weight: 500;
+  font-family: var(--f-display);
+  font-size: 19px;
+  font-weight: 400;
   margin-bottom: var(--s-2);
 }
 .cta-card-desc {
@@ -715,11 +602,7 @@ section:first-of-type { border-top: none; }
   flex: 1;
   margin-bottom: var(--s-4);
 }
-.cta-card-link {
-  font-size: 13px;
-  color: var(--c-accent);
-  font-weight: 500;
-}
+.cta-card-link { font-size: 13px; color: var(--c-accent); font-weight: 500; }
 
 /* ------------------------------------------------------------------ */
 /*  Footer                                                             */
@@ -736,25 +619,50 @@ footer {
   gap: var(--s-3);
 }
 @media (min-width: 600px) {
-  .footer-inner {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+  .footer-inner { flex-direction: row; justify-content: space-between; align-items: center; }
 }
-.footer-links {
-  display: flex;
-  gap: var(--s-4);
-  flex-wrap: wrap;
-}
-.footer-links a {
-  color: var(--c-ink-mute);
-  font-size: 13px;
-}
+.footer-links { display: flex; gap: var(--s-4); flex-wrap: wrap; }
+.footer-links a { color: var(--c-ink-mute); font-size: 13px; }
 .footer-links a:hover { color: var(--c-ink); }
 </style>
 </head>
 <body>
+
+<!-- Icon sprite (hidden) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="icon-folder" viewBox="0 0 20 20">
+    <path d="M2 6a1 1 0 011-1h4l2 2h8a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="icon-folder-open" viewBox="0 0 20 20">
+    <path d="M2 6a1 1 0 011-1h4l2 2h8a1 1 0 011 1v2H2V6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M2 10h16l-2 7H4L2 10z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="icon-file-json" viewBox="0 0 20 20">
+    <path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M12 2v4h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <text x="5.5" y="15.5" font-family="monospace" font-size="5.5" fill="currentColor" font-weight="700">{}</text>
+  </symbol>
+  <symbol id="icon-file-md" viewBox="0 0 20 20">
+    <path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M12 2v4h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <text x="5" y="15.5" font-family="monospace" font-size="5.5" fill="currentColor" font-weight="700">md</text>
+  </symbol>
+  <symbol id="icon-arrow" viewBox="0 0 20 20">
+    <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+  <symbol id="icon-link" viewBox="0 0 20 20">
+    <rect x="1" y="7" width="7" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="12" y="7" width="7" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M8 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="icon-file-img" viewBox="0 0 20 20">
+    <path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M12 2v4h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <rect x="5" y="10" width="10" height="5.5" rx="0.8" fill="none" stroke="currentColor" stroke-width="1"/>
+    <circle cx="7.5" cy="12.5" r="1" fill="currentColor"/>
+    <path d="M5 15.5l3-3 2 2 2-2 3 3" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+  </symbol>
+</svg>
 
 <!-- ================================================================ -->
 <!--  Top bar                                                          -->
@@ -767,7 +675,7 @@ footer {
       <span class="brand-version">0.9.2</span>
     </a>
     <nav class="topnav" aria-label="Site navigation">
-      <a href="https://slavasolutions.github.io/mosaic/example/">Example site</a>
+      <a href="https://slavasolutions.github.io/mosaic/example/">Example</a>
       <a href="./spec/README.md">Spec</a>
       <a href="./packages/astro/">Astro</a>
       <a href="https://github.com/slavasolutions/mosaic">GitHub</a>
@@ -786,69 +694,67 @@ footer {
 
       <div class="hero-copy">
         <div class="hero-logo">
-          <img class="hero-logo-mark" src="logo.svg" alt="Mosaic" width="40" height="40">
+          <img class="hero-logo-mark" src="logo.svg" alt="Mosaic" width="44" height="44">
           <span class="hero-logo-name">Mosaic</span>
         </div>
-        <h1 class="hero-title">The folder<br>is the <span class="hl">website.</span></h1>
-        <p class="hero-lede">A folder format for structured content. Three rules, a naming grammar, sidecars, and refs. Any conforming reader turns the folder into a site.</p>
+        <h1 class="hero-title">The folder<br>IS the <span class="hl">website.</span></h1>
+        <p class="hero-lede">A folder format for structured content. Three rules. Any conforming reader turns the folder into a site.</p>
         <div class="hero-cta">
           <a class="btn btn-primary" href="https://slavasolutions.github.io/mosaic/example/">
             Example site <span class="arrow" aria-hidden="true">→</span>
           </a>
-          <a class="btn" href="./spec/README.md">
-            Read the spec
-          </a>
+          <a class="btn" href="./spec/README.md">Read the spec</a>
         </div>
       </div>
 
       <!-- Folder → website diagram -->
-      <div class="hero-diagram" aria-label="A content folder on the left, an arrow labelled 'any conforming reader', a rendered website on the right">
+      <div class="hero-diagram" role="img" aria-label="A content folder on the left, an arrow labelled 'any conforming reader', a rendered website on the right">
         <div class="diag-layout">
 
-          <!-- Row 1: Folder tree -->
+          <!-- Folder tree -->
           <div class="diag-folder">
             <div class="diag-folder-title">
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M2 4a1 1 0 011-1h4l1.5 2H13a1 1 0 011 1v6a1 1 0 01-1 1H3a1 1 0 01-1-1V4z" fill="currentColor" opacity=".4"/>
-              </svg>
+              <svg class="df-icon folder" aria-hidden="true"><use href="#icon-folder-open"/></svg>
               content/
             </div>
             <div class="df-row">
-              <span class="df-icon" aria-hidden="true">📄</span>
+              <svg class="df-icon manifest" aria-hidden="true"><use href="#icon-file-json"/></svg>
               <span class="df-name is-manifest">mosaic.json</span>
             </div>
             <div class="df-row df-indent">
-              <span class="df-icon" aria-hidden="true">📁</span>
+              <svg class="df-icon folder" aria-hidden="true"><use href="#icon-folder"/></svg>
               <span class="df-name">pages/</span>
             </div>
             <div class="df-row df-indent2">
+              <svg class="df-icon file-json" aria-hidden="true"><use href="#icon-file-json"/></svg>
               <span class="df-name is-json">about.json</span>
             </div>
             <div class="df-row df-indent2">
-              <span class="df-icon" aria-hidden="true">📁</span>
+              <svg class="df-icon folder" aria-hidden="true"><use href="#icon-folder"/></svg>
               <span class="df-name">blog/</span>
             </div>
-            <div class="df-row" style="padding-left:54px">
+            <div class="df-row df-indent3">
+              <svg class="df-icon file-md" aria-hidden="true"><use href="#icon-file-md"/></svg>
               <span class="df-name is-md">hello.md</span>
             </div>
-            <div class="df-row" style="padding-left:54px">
+            <div class="df-row df-indent3">
+              <svg class="df-icon file-json" aria-hidden="true"><use href="#icon-file-json"/></svg>
               <span class="df-name is-json">hello.json</span>
             </div>
             <div class="df-row df-indent">
-              <span class="df-icon" aria-hidden="true">📁</span>
+              <svg class="df-icon folder" aria-hidden="true"><use href="#icon-folder"/></svg>
               <span class="df-name">team/</span>
             </div>
             <div class="df-row df-indent2">
+              <svg class="df-icon file-json" aria-hidden="true"><use href="#icon-file-json"/></svg>
               <span class="df-name is-json">ada.json</span>
             </div>
           </div>
 
-          <!-- Row 2: Arrow + site mockup -->
+          <!-- Arrow + site mockup -->
           <div class="diag-bottom">
             <div class="diag-arrow" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <svg width="20" height="20"><use href="#icon-arrow"/></svg>
               <span class="diag-arrow-label">any conforming reader</span>
             </div>
             <div class="diag-site">
@@ -861,18 +767,18 @@ footer {
               <div class="diag-site-body">
                 <div class="diag-site-nav">
                   <div class="diag-site-nav-item" style="width:32px"></div>
-                  <div class="diag-site-nav-item" style="width:28px; opacity:.4"></div>
-                  <div class="diag-site-nav-item" style="width:24px; opacity:.4"></div>
+                  <div class="diag-site-nav-item" style="width:28px;opacity:.4"></div>
+                  <div class="diag-site-nav-item" style="width:24px;opacity:.4"></div>
                 </div>
                 <div class="diag-site-line" style="width:80%"></div>
                 <div class="diag-site-line" style="width:95%"></div>
-                <div class="diag-site-line" style="width:70%"></div>
+                <div class="diag-site-line" style="width:65%"></div>
               </div>
             </div>
           </div>
 
         </div>
-        <p class="diag-caption">The folder IS the site. Switch readers — content stays.</p>
+        <p class="diag-caption">Switch readers — content stays.</p>
       </div>
 
     </div>
@@ -887,44 +793,43 @@ footer {
   <div class="wrap">
     <p class="eyebrow">The spec</p>
     <h2 class="section-title">Three rules. Nothing more.</h2>
-    <p class="section-lede">Every concept in the spec — sidecars, identity, cascade, refs — derives from one of these three. If a rule isn't here, it isn't Mosaic.</p>
 
     <div class="rules-grid">
 
       <div class="rule-card">
         <div class="rule-num">RULE 01</div>
         <h3 class="rule-title">A file is a record.</h3>
-        <p class="rule-body"><code>.json</code> files hold structure. <code>.md</code>, <code>.pdf</code>, <code>.png</code> — opaque payloads. Structured metadata for any file goes in a <code>.json</code> sidecar with the same name.</p>
+        <p class="rule-body"><code>.json</code> files hold structure. <code>.md</code>, <code>.pdf</code>, <code>.png</code> are opaque payloads. Metadata goes in a same-named <code>.json</code> sidecar.</p>
         <div class="rule-code"><span class="cm"># structured</span>
-<span class="ck">about.json</span>         → record
+<span class="ck">about.json</span>       → record
 
 <span class="cm"># opaque + sidecar</span>
 <span class="cs">hello.md</span>
-<span class="ck">hello.json</span>         → sidecar</div>
+<span class="ck">hello.json</span>       → sidecar</div>
       </div>
 
       <div class="rule-card">
         <div class="rule-num">RULE 02</div>
         <h3 class="rule-title">A folder is a collection.</h3>
-        <p class="rule-body">Any directory is a collection. Folders nest to any depth. <code>index.json</code> (or <code>index.md</code>) inside a folder <em>is</em> that folder's record.</p>
+        <p class="rule-body">Any directory is a collection. Folders nest freely. <code>index.json</code> inside a folder <em>is</em> that folder's record.</p>
         <div class="rule-code"><span class="cm"># team/ is a collection</span>
 team/
-  <span class="ck">index.json</span>         → team record
-  <span class="ck">ada.json</span>           → team/ada
+  <span class="ck">index.json</span>     → team
+  <span class="ck">ada.json</span>       → team/ada
   <span class="cs">grace.md</span>
-  <span class="ck">grace.json</span>         → team/grace</div>
+  <span class="ck">grace.json</span>     → team/grace</div>
       </div>
 
       <div class="rule-card">
         <div class="rule-num">RULE 03</div>
         <h3 class="rule-title">The filename is the contract.</h3>
-        <p class="rule-body">Names follow <code>name[.modifier]*.ext</code>. Identity is form-independent — file form and folder form are the same record. No rename, no broken refs.</p>
+        <p class="rule-body">Names follow <code>name[.modifier]*.ext</code>. File form and folder form are the same identity — no rename, no broken refs.</p>
         <div class="rule-code"><span class="cm"># same identity: about</span>
 <span class="ck">about.json</span>
-<span class="ck">about/index.json</span>   → identical
+<span class="ck">about/index.json</span> → identical
 
-<span class="cm"># variant modifier</span>
-<span class="cs">about.fr.md</span>        → locale fr</div>
+<span class="cm"># locale modifier</span>
+<span class="cs">about.fr.md</span>      → locale fr</div>
       </div>
 
     </div>
@@ -939,14 +844,13 @@ team/
   <div class="wrap">
     <p class="eyebrow">How it works</p>
     <h2 class="section-title">Reading a record is one pass.</h2>
-    <p class="section-lede">The pipeline is fixed, single-pass, never re-entered. This predictability is what keeps Mosaic from growing an evaluator.</p>
 
     <div class="pipeline" role="list">
 
       <div class="pipe-step" role="listitem">
         <div class="pipe-step-num">STEP 1</div>
         <div class="pipe-step-name">Content</div>
-        <div class="pipe-step-desc"><code>.json</code> object, or empty object for opaque files</div>
+        <div class="pipe-step-desc"><code>.json</code> object, or empty for opaque files</div>
       </div>
 
       <div class="pipe-arrow-mobile" aria-hidden="true">↓</div>
@@ -955,7 +859,7 @@ team/
       <div class="pipe-step" role="listitem">
         <div class="pipe-step-num">STEP 2</div>
         <div class="pipe-step-name">Sidecar merge</div>
-        <div class="pipe-step-desc">Sidecar JSON merged on top. Sidecar wins on collision. Shallow.</div>
+        <div class="pipe-step-desc">Sidecar JSON merged on top. Sidecar wins. Shallow.</div>
       </div>
 
       <div class="pipe-arrow-mobile" aria-hidden="true">↓</div>
@@ -964,7 +868,7 @@ team/
       <div class="pipe-step" role="listitem">
         <div class="pipe-step-num">STEP 3</div>
         <div class="pipe-step-name">Cascade fill</div>
-        <div class="pipe-step-desc">Fills absent keys from ancestor <code>defaults</code>. Only <code>locale</code> by default; profiles declare more.</div>
+        <div class="pipe-step-desc">Fills absent keys from ancestor <code>defaults</code>. <code>locale</code> by default; profiles declare more.</div>
       </div>
 
       <div class="pipe-arrow-mobile" aria-hidden="true">↓</div>
@@ -973,12 +877,12 @@ team/
       <div class="pipe-step" role="listitem">
         <div class="pipe-step-num">STEP 4</div>
         <div class="pipe-step-name">Refs resolved</div>
-        <div class="pipe-step-desc"><code>ref:</code> strings replaced with their targets. Pure: same folder → same result, always.</div>
+        <div class="pipe-step-desc"><code>ref:</code> strings replaced with targets. Single-pass, deterministic.</div>
       </div>
 
     </div>
 
-    <div class="pipe-caption">No evaluator. No recursion. No XPath.</div>
+    <div class="pipe-caption">Fixed order. No recursion. Same folder → same result, always.</div>
   </div>
 </section>
 
@@ -990,28 +894,29 @@ team/
   <div class="wrap">
     <p class="eyebrow">References</p>
     <h2 class="section-title">Link records with <code>ref:</code></h2>
-    <p class="section-lede">A reference is a JSON string starting with <code>ref:</code>. Two anchor forms, one optional JSON Pointer. That's the entire grammar.</p>
+    <p class="section-lede">A reference is a JSON string starting with <code>ref:</code>. Two anchor forms, one optional JSON Pointer.</p>
 
     <div class="refs-grid">
 
       <div class="ref-card">
         <div class="ref-value">"ref:team/ada"</div>
-        <div class="ref-desc"><strong>Absolute.</strong> Resolved from the root, regardless of where the reference appears. Recommended default.</div>
+        <div class="ref-label">Absolute</div>
+        <div class="ref-desc">Resolved from the root. Recommended default.</div>
       </div>
 
       <div class="ref-card">
         <div class="ref-value">"ref:./other"</div>
-        <div class="ref-desc"><strong>Relative.</strong> Resolved against the referring record's folder. Use for intra-collection links that should survive the folder being moved.</div>
+        <div class="ref-label">Relative</div>
+        <div class="ref-desc">Resolved from the referring record's folder. Survives folder moves.</div>
       </div>
 
       <div class="ref-card">
         <div class="ref-value">"ref:team/ada#/email"</div>
-        <div class="ref-desc"><strong>JSON Pointer.</strong> RFC 6901 path after <code>#</code> selects a value inside the resolved target. Yields the string <code>"ada@x.io"</code>.</div>
+        <div class="ref-label">JSON Pointer</div>
+        <div class="ref-desc">RFC 6901 path after <code>#</code> selects a value inside the target.</div>
       </div>
 
     </div>
-
-    <p class="ref-caption">No wildcards. No predicates. No content-queries. The ceiling against re-deriving XPath is permanent and explicit in the spec.</p>
   </div>
 </section>
 
@@ -1023,56 +928,17 @@ team/
   <div class="wrap">
     <p class="eyebrow">Scope</p>
     <h2 class="section-title">What Mosaic is not.</h2>
-    <p class="section-lede">Pre-empting the most common misconceptions, because a clear boundary is part of the spec.</p>
 
     <ul class="not-list">
-      <li>
-        <div class="not-icon" aria-hidden="true">✕</div>
-        <div>
-          <strong>Not a CMS</strong>
-          <span>No admin UI, no auth, no media pipeline. Mosaic is a folder shape, not a product.</span>
-        </div>
-      </li>
-      <li>
-        <div class="not-icon" aria-hidden="true">✕</div>
-        <div>
-          <strong>Not a database</strong>
-          <span>No query language, no indexes, no transactions. The filesystem is the store; a reader is not a DB engine.</span>
-        </div>
-      </li>
-      <li>
-        <div class="not-icon" aria-hidden="true">✕</div>
-        <div>
-          <strong>Not a build tool</strong>
-          <span>Mosaic doesn't build anything. Astro, Next, a custom Rust script — they build. Mosaic is what they read.</span>
-        </div>
-      </li>
-      <li>
-        <div class="not-icon" aria-hidden="true">✕</div>
-        <div>
-          <strong>Not a runtime</strong>
-          <span>No daemon, no server, no required process. A conforming folder is readable with a filesystem and a JSON parser.</span>
-        </div>
-      </li>
-      <li>
-        <div class="not-icon" aria-hidden="true">✕</div>
-        <div>
-          <strong>Not an opinion about templates</strong>
-          <span>No layout system, no component format, no design tokens (yet). Engines decide how content is rendered.</span>
-        </div>
-      </li>
-      <li>
-        <div class="not-icon" aria-hidden="true">✕</div>
-        <div>
-          <strong>Not an opinion about design</strong>
-          <span>No theming, no color tokens, no breakpoint conventions. That's the engine's domain, not the format's.</span>
-        </div>
-      </li>
+      <li><div class="not-icon" aria-hidden="true">✕</div> Not a CMS</li>
+      <li><div class="not-icon" aria-hidden="true">✕</div> Not a database</li>
+      <li><div class="not-icon" aria-hidden="true">✕</div> Not a build tool</li>
+      <li><div class="not-icon" aria-hidden="true">✕</div> Not a runtime</li>
+      <li><div class="not-icon" aria-hidden="true">✕</div> Not an opinion about templates</li>
+      <li><div class="not-icon" aria-hidden="true">✕</div> Not an opinion about design</li>
     </ul>
 
-    <div class="not-footer">
-      It's a folder shape. Tools layer on top. The spec is the contract between the folder and the tools.
-    </div>
+    <div class="not-footer">A folder shape. Tools layer on top. The spec is the contract between the folder and the tools.</div>
   </div>
 </section>
 
@@ -1084,28 +950,27 @@ team/
   <div class="wrap">
     <p class="eyebrow">Get started</p>
     <h2 class="section-title">Pick your path.</h2>
-    <p class="section-lede">The example site runs from a plain Mosaic folder. The spec is the authoritative reference. The Astro adapter is the first production reader.</p>
 
     <div class="cta-grid">
 
       <a class="cta-card" href="https://slavasolutions.github.io/mosaic/example/">
         <div class="cta-card-label">Live demo</div>
         <div class="cta-card-title">Example site</div>
-        <div class="cta-card-desc">A running Mosaic Web site. Browse it, then look at the folder it was built from — same files, no magic.</div>
-        <div class="cta-card-link">Open example site →</div>
+        <div class="cta-card-desc">A running Mosaic site. Browse it, then look at the folder it came from — same files, no magic.</div>
+        <div class="cta-card-link">Open example →</div>
       </a>
 
       <a class="cta-card" href="./spec/README.md">
         <div class="cta-card-label">Reference</div>
         <div class="cta-card-title">Read the spec</div>
-        <div class="cta-card-desc">Three structural rules, the naming grammar, sidecars, refs, cascade, and the Mosaic Web routing profile.</div>
+        <div class="cta-card-desc">Three rules, the naming grammar, sidecars, refs, cascade, and the Mosaic Web routing profile.</div>
         <div class="cta-card-link">Open spec →</div>
       </a>
 
       <a class="cta-card" href="./packages/astro/">
         <div class="cta-card-label">Integration</div>
         <div class="cta-card-title">Use it in Astro</div>
-        <div class="cta-card-desc">One <code>mosaicLoader()</code> call wires a Mosaic folder to Astro's Content Layer. Zero config beyond the root path.</div>
+        <div class="cta-card-desc">One <code>mosaicLoader()</code> call wires a Mosaic folder into Astro's Content Layer.</div>
         <div class="cta-card-link">Astro adapter →</div>
       </a>
 

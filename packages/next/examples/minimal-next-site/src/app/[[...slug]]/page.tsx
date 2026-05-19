@@ -73,8 +73,41 @@ export default async function Page({ params }: PageProps) {
     2,
   );
 
+  // JSON-LD per mosaic-web profile §6. Strip Mosaic-internal fields from the
+  // schema.org payload (slug/url/modifiers/theme — consumer-side, not
+  // schema.org properties).
+  const schemaType = (entry.data as Record<string, unknown>)['@type'] as
+    | string
+    | undefined;
+  let jsonLd: string | null = null;
+  if (schemaType) {
+    const {
+      slug: _slug,
+      url: _url,
+      modifiers: _mods,
+      theme: _theme,
+      ...semantic
+    } = entry.data as Record<string, unknown>;
+    jsonLd = JSON.stringify(
+      {
+        '@context':
+          ((entry.data as Record<string, unknown>)['@context'] as string | undefined) ??
+          'https://schema.org',
+        ...semantic,
+      },
+      null,
+      2,
+    );
+  }
+
   return (
     <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
       <header className="site">
         <div className="nav-inner">
           <a className="brand" href={href('/')}>
@@ -308,9 +341,6 @@ function PostBody({ entry }: { entry: MosaicEntry }) {
       {authorBio && authorName && (
         <div className="post-author-card">
           <strong>About {authorName}</strong> — {authorBio}
-          <div className="resolved-from">
-            (Resolved from <code>ref:/team/ada</code> at build time.)
-          </div>
         </div>
       )}
     </article>

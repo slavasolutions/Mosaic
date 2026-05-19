@@ -110,7 +110,35 @@ no auto-aliasing of `/home` to `/` in this draft. (Earlier 0.8.x drafts
 reserved the slug `home`; that rule has been dropped pending a real-world
 case that needs it.)
 
-## 6. What this profile does NOT define
+## 6. Schema.org structured data (RECOMMENDED)
+
+A consumer that supports this profile SHOULD emit JSON-LD in the
+`<head>` of every rendered page when the corresponding record declares
+an `@type` field. The value of `@type` MUST be a schema.org type
+identifier (`Article`, `Person`, `Event`, `WebSite`, `BlogPosting`, …).
+
+The field name `@type` is reserved on records when this profile is
+active; it carries the schema.org type for that record. The field name
+`@context` is reserved likewise; absent on a record, consumers SHOULD
+use `https://schema.org` as the default JSON-LD context.
+
+This profile RECOMMENDS but does not REQUIRE structured-data emission.
+A renderer that emits valid JSON-LD when `@type` is present conforms;
+one that omits it also conforms. Records without `@type` MUST NOT
+trigger structured-data emission.
+
+Resolved references inside a record (per `../format/02-references.md`
+§11.4) MAY be embedded directly in the JSON-LD output. For example, a
+`BlogPosting` whose `author` field resolves to a `Person` record can
+emit the resolved Person inline as the `author` value, producing a
+nested schema.org graph in one JSON-LD block.
+
+Field-name mapping (Mosaic record fields → schema.org properties) is
+consumer-defined; profiles MAY codify common mappings. Consumers SHOULD
+strip Mosaic-internal fields (`slug`, `url`, `modifiers`, etc.) from
+the emitted JSON-LD.
+
+## 7. What this profile does NOT define
 
 Out of scope for 0.9.2 of this profile. Each MAY return in a later draft:
 
@@ -129,7 +157,7 @@ Out of scope for 0.9.2 of this profile. Each MAY return in a later draft:
   surface images at predictable URLs (e.g. `pages/images/hero.png` at
   `/images/hero.png`) but this profile does not normatively require it.
 
-## 7. Relationship to the base format
+## 8. Relationship to the base format
 
 This profile **layers**. It adds the identity → URL map; it does not change
 any base rule. The base format's three structural rules — file is record,
@@ -140,11 +168,11 @@ unchanged.
 If a folder fails base-format validation, this profile considers it
 non-conforming. There is no looser "web-compatible" mode.
 
-## 8. Status
+## 9. Status
 
 This is a 0.9.2 working draft. It deliberately covers the bare minimum
 required for a consumer (an editor, a renderer, a static-site generator)
-to produce predictable URLs from a Mosaic folder. The deferred items in §6
+to produce predictable URLs from a Mosaic folder. The deferred items in §7
 will return as the profile matures.
 
 The example fixture at `../examples/D-web/content/` exercises this profile

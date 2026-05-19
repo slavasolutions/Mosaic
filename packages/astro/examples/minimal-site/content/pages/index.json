@@ -1,4 +1,6 @@
 {
+  "@type": "WebSite",
+  "theme": "ref:/tokens",
   "title": "Acme Foundry",
   "tagline": "We make small, sharp things.",
   "intro": "Every page on this site is a JSON file in a folder. There is no database. There is no CMS. The Astro adapter reads the folder, resolves the spec rules, and Astro compiles each route to a static HTML file you can drop on any host.",
