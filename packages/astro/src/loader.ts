@@ -33,7 +33,7 @@ import { resolve as pathResolve } from 'node:path';
 import { readFolder } from '@ssolu/mosaic-core';
 import { deriveUrl, getWebProfileRoot } from './url.js';
 import type {
-  MosaicCoreReadFolder,
+  MosaicCoreReadResult,
   MosaicLoaderOptions,
   MosaicEntry,
 } from './types.js';
@@ -111,14 +111,19 @@ interface AstroLoader {
  * ```
  */
 export function mosaicLoader(options: MosaicLoaderOptions): AstroLoader {
-  if (!options || typeof options.root !== 'string' || options.root.length === 0) {
+  if (!options) {
+    throw new TypeError('mosaicLoader: options object is required.');
+  }
+  const hasRoot = typeof options.root === 'string' && options.root.length > 0;
+  const hasSource = typeof options.source === 'function';
+  if (hasRoot === hasSource) {
     throw new TypeError(
-      'mosaicLoader: `root` is required and must be a non-empty path string.',
+      'mosaicLoader: pass exactly one of `root` (filesystem) or `source` ' +
+        '(custom async function returning a mosaic-core Resolution).',
     );
   }
 
   const includeNonRouteRecords = options.includeNonRouteRecords ?? true;
-  const rootInput = options.root;
 
   return {
     name: options.name ?? 'mosaic',
@@ -126,37 +131,43 @@ export function mosaicLoader(options: MosaicLoaderOptions): AstroLoader {
     async load(context: LoaderContext): Promise<void> {
       const { store, logger, parseData, generateDigest, watcher } = context;
 
-      // Resolve `root` against the process cwd if it's relative. Astro runs
-      // loaders with cwd set to the Astro project root.
-      const absoluteRoot = pathResolve(process.cwd(), rootInput);
+      let absoluteRoot: string | null = null;
+      let read: () => Promise<MosaicCoreReadResult>;
 
-      logger.info(
-        `mosaic-astro: loading collection "${context.collection}" from ${absoluteRoot}`,
-      );
+      if (hasRoot) {
+        absoluteRoot = pathResolve(process.cwd(), options.root!);
+        logger.info(
+          `mosaic-astro: loading collection "${context.collection}" from ${absoluteRoot}`,
+        );
+        read = () => readFolder(absoluteRoot!, { cascadingKeys: ['theme'] });
+      } else {
+        logger.info(
+          `mosaic-astro: loading collection "${context.collection}" from custom source`,
+        );
+        read = options.source!;
+      }
 
       await loadOnce({
-        absoluteRoot,
         store,
         logger,
         parseData,
         generateDigest,
-        readFolder,
+        read,
         includeNonRouteRecords,
       });
 
-      // Dev-mode hot reload: watch the folder and re-run the load on
-      // change. mosaic-core handles the read; we just trigger.
-      if (watcher && typeof watcher.on === 'function') {
+      // Filesystem mode: wire Astro's watcher. Custom sources opt into
+      // their own reload (e.g. polling), keeping this loader source-agnostic.
+      if (absoluteRoot && watcher && typeof watcher.on === 'function') {
         const trigger = (path: string) => {
-          if (!path.startsWith(absoluteRoot)) return;
+          if (!path.startsWith(absoluteRoot!)) return;
           logger.info(`mosaic-astro: change detected (${path}); reloading`);
           loadOnce({
-            absoluteRoot,
             store,
             logger,
             parseData,
             generateDigest,
-            readFolder,
+            read,
             includeNonRouteRecords,
           }).catch((err: unknown) => {
             logger.error(
@@ -181,33 +192,31 @@ export function mosaicLoader(options: MosaicLoaderOptions): AstroLoader {
 // --- internals -----------------------------------------------------------
 
 interface LoadOnceArgs {
-  absoluteRoot: string;
   store: DataStore;
   logger: AstroLogger;
   parseData: LoaderContext['parseData'];
   generateDigest: LoaderContext['generateDigest'];
-  readFolder: MosaicCoreReadFolder;
+  /**
+   * Bound read function — closes over whichever source the caller picked
+   * (filesystem `readFolder` or custom adapter like `readBucket`). The
+   * filesystem path in the public factory wires the `theme` cascading key;
+   * custom sources pre-wire whatever they want in their own factory.
+   */
+  read: () => Promise<MosaicCoreReadResult>;
   includeNonRouteRecords: boolean;
 }
 
 async function loadOnce(args: LoadOnceArgs): Promise<void> {
   const {
-    absoluteRoot,
     store,
     logger,
     parseData,
     generateDigest,
-    readFolder,
+    read,
     includeNonRouteRecords,
   } = args;
 
-  // `theme` is the cascading key the design-tokens profile declares; pass it
-  // through so themes flow from root collection record's `defaults.theme`
-  // down to every descendant page. Other cascading keys (like profile-
-  // declared layout keys) would be added here too.
-  const { records, manifest } = await readFolder(absoluteRoot, {
-    cascadingKeys: ['theme'],
-  });
+  const { records, manifest } = await read();
   const profileRoot = getWebProfileRoot(manifest);
 
   if (!profileRoot) {

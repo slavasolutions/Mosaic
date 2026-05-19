@@ -129,15 +129,32 @@ afterEach(() => {
 });
 
 describe('mosaicLoader — option validation', () => {
-  it('throws when root is missing', () => {
-    expect(() => mosaicLoader({} as unknown as { root: string })).toThrow(/root/);
+  it('throws when neither root nor source is provided', () => {
+    expect(() => mosaicLoader({} as unknown as { root: string })).toThrow(/root.*source/);
   });
 
   it('throws when root is empty', () => {
-    expect(() => mosaicLoader({ root: '' })).toThrow(/root/);
+    expect(() => mosaicLoader({ root: '' })).toThrow(/root.*source/);
   });
 
-  it('returns an object with a name and load()', () => {
+  it('throws when BOTH root and source are provided (mutually exclusive)', () => {
+    expect(() =>
+      mosaicLoader({
+        root: './content',
+        source: async () => ({ records: new Map(), manifest: {} }),
+      } as unknown as { root: string }),
+    ).toThrow(/exactly one/);
+  });
+
+  it('accepts source-only mode without root', () => {
+    const loader = mosaicLoader({
+      source: async () => ({ records: new Map(), manifest: {} }),
+    });
+    expect(loader.name).toBe('mosaic');
+    expect(typeof loader.load).toBe('function');
+  });
+
+  it('returns an object with a name and load() in root mode', () => {
     const loader = mosaicLoader({ root: './content' });
     expect(loader.name).toBe('mosaic');
     expect(typeof loader.load).toBe('function');
@@ -145,6 +162,48 @@ describe('mosaicLoader — option validation', () => {
 
   it('honours a custom name', () => {
     expect(mosaicLoader({ root: './content', name: 'pages' }).name).toBe('pages');
+  });
+});
+
+describe('mosaicLoader — custom source mode', () => {
+  it('uses the supplied source fn instead of readFolder', async () => {
+    const source = vi.fn().mockResolvedValue(dwebFixture());
+    const loader = mosaicLoader({ source });
+    const ctx = makeContext();
+
+    await loader.load(ctx);
+
+    expect(source).toHaveBeenCalledTimes(1);
+    expect(mockReadFolder).not.toHaveBeenCalled();
+    const byId = new Map(ctx.store._all().map((e) => [e.id, e]));
+    expect(byId.get('pages/about')?.data.url).toBe('/about');
+  });
+
+  it('logs that it is loading from a custom source', async () => {
+    const source = vi.fn().mockResolvedValue({
+      records: new Map(),
+      manifest: { profiles: { web: { root: 'pages' } } },
+    });
+    const loader = mosaicLoader({ source });
+    const ctx = makeContext();
+    await loader.load(ctx);
+    expect(ctx.logger.lines.some((l) => l.includes('custom source'))).toBe(true);
+  });
+
+  it('surfaces source errors without crashing the loader factory', async () => {
+    const source = vi.fn().mockRejectedValue(new Error('s3 5xx'));
+    const loader = mosaicLoader({ source });
+    const ctx = makeContext();
+    await expect(loader.load(ctx)).rejects.toThrow('s3 5xx');
+  });
+
+  it('does not wire a filesystem watcher in source mode', async () => {
+    const source = vi.fn().mockResolvedValue(dwebFixture());
+    const loader = mosaicLoader({ source });
+    const watcherOn = vi.fn();
+    const ctx = { ...makeContext(), watcher: { on: watcherOn } };
+    await loader.load(ctx);
+    expect(watcherOn).not.toHaveBeenCalled();
   });
 });
 
