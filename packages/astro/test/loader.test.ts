@@ -1,6 +1,6 @@
 /**
  * Loader integration tests — drive `mosaicLoader` with a fake
- * LoaderContext and a fake mosaic-core. We stub `mosaic-core` via Vitest's
+ * LoaderContext and a fake mosaic-core. We stub `@ssolu/mosaic-core` via Vitest's
  * module mocker so the test runs even when the sibling repo is absent.
  *
  * The integration test against a real Astro project is documented as
@@ -11,10 +11,11 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Stub mosaic-core before importing the loader. The dynamic import inside
-// loader.ts will pick this up.
-const mockReadFolder = vi.fn();
-vi.mock('mosaic-core', () => ({ readFolder: mockReadFolder }));
+// Stub @ssolu/mosaic-core before importing the loader. vi.mock is hoisted
+// to the top of the file; use vi.hoisted so the mock fn exists when the
+// hoisted mock factory runs.
+const { mockReadFolder } = vi.hoisted(() => ({ mockReadFolder: vi.fn() }));
+vi.mock('@ssolu/mosaic-core', () => ({ readFolder: mockReadFolder }));
 
 import { mosaicLoader } from '../src/index.js';
 

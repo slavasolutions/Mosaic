@@ -1,5 +1,5 @@
 {
-  "name": "mosaic-astro",
+  "name": "@ssolu/mosaic-astro",
   "version": "0.1.0",
   "description": "Astro Content Layer loader for Mosaic folders. Read your content from a folder; let Astro render it.",
   "type": "module",
@@ -43,7 +43,7 @@
     "url": "https://github.com/slavasolutions/mosaic/issues"
   },
   "dependencies": {
-    "mosaic-core": "*"
+    "@ssolu/mosaic-core": "*"
   },
   "peerDependencies": {
     "astro": "^4.14.0 || ^5.0.0"

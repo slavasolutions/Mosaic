@@ -1,6 +1,6 @@
-# mosaic-astro — minimal example site
+# @ssolu/mosaic-astro — minimal example site
 
-A tiny Astro site that loads `./content/` as a Mosaic folder via `mosaic-astro`.
+A tiny Astro site that loads `./content/` as a Mosaic folder via `@ssolu/mosaic-astro`.
 
 ## Run
 
@@ -20,7 +20,7 @@ Then open the four routes the Mosaic Web profile derives:
 
 ## Requirements
 
-This example uses `file:` deps for `mosaic-astro` and `mosaic-core`, so both repos must be present as siblings:
+This example uses `file:` deps for `@ssolu/mosaic-astro` and `@ssolu/mosaic-core`, so both repos must be present as siblings:
 
 ```
 /some/parent/
@@ -28,4 +28,4 @@ This example uses `file:` deps for `mosaic-astro` and `mosaic-core`, so both rep
   mosaic-core/         (sibling — needed for installs to resolve)
 ```
 
-Once `mosaic-core` publishes to npm, `npm install` will work from a clean checkout without the sibling requirement.
+Once `@ssolu/mosaic-core` publishes to npm, `npm install` will work from a clean checkout without the sibling requirement.

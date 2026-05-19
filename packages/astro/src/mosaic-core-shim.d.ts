@@ -1,5 +1,5 @@
 /**
- * Ambient declaration for `mosaic-core`.
+ * Ambient declaration for `@ssolu/mosaic-core`.
  *
  * mosaic-core is a sibling package developed in parallel; while it is
  * pre-release we declare it as `file:../mosaic-core` in package.json. If
@@ -9,7 +9,7 @@
  * Once mosaic-core publishes to npm, its own `.d.ts` will take precedence
  * over this fallback automatically.
  */
-declare module 'mosaic-core' {
+declare module '@ssolu/mosaic-core' {
   export interface MosaicCoreRecord {
     data: Record<string, unknown>;
     body?: string;

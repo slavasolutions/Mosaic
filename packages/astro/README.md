@@ -1,12 +1,12 @@
 <p align="center"><img src="logo.svg" width="64" alt="Mosaic logo"></p>
 
-# mosaic-astro
+# @ssolu/mosaic-astro
 
 **Astro Content Layer loader for Mosaic folders. Read your content from a folder; let Astro render it.**
 
 [Mosaic](https://github.com/slavasolutions/mosaic) is a folder format for structured content — files are records, folders are collections, references link records. This package is the Astro adapter: it teaches Astro how to read a Mosaic folder as a content collection.
 
-It is a thin wrapper around [mosaic-core](https://github.com/slavasolutions/mosaic-core), which does the actual reading (sidecar merge, cascade fill, reference resolution) per the base format spec. `mosaic-astro` just translates the resolved records to Astro's Content Layer shape and applies the [Mosaic Web profile](https://github.com/slavasolutions/mosaic/blob/main/spec/profiles/mosaic-web.md) `identity -> URL` map.
+It is a thin wrapper around [mosaic-core](https://github.com/slavasolutions/mosaic-core), which does the actual reading (sidecar merge, cascade fill, reference resolution) per the base format spec. `@ssolu/mosaic-astro` just translates the resolved records to Astro's Content Layer shape and applies the [Mosaic Web profile](https://github.com/slavasolutions/mosaic/blob/main/spec/profiles/mosaic-web.md) `identity -> URL` map.
 
 ## Status
 
@@ -15,17 +15,17 @@ It is a thin wrapper around [mosaic-core](https://github.com/slavasolutions/mosa
 ## Install
 
 ```sh
-npm install mosaic-astro mosaic-core astro
+npm install @ssolu/mosaic-astro @ssolu/mosaic-core astro
 ```
 
-While `mosaic-core` is pre-release, `mosaic-astro` declares it as a local `file:` dependency. Once `mosaic-core` ships to npm we'll switch the dep over and the install line above will work without any sibling-folder setup.
+While `@ssolu/mosaic-core` is pre-release, `@ssolu/mosaic-astro` declares it as a local `file:` dependency. Once `@ssolu/mosaic-core` ships to npm we'll switch the dep over and the install line above will work without any sibling-folder setup.
 
 ## Use
 
 ```ts
 // src/content/config.ts
 import { defineCollection } from 'astro:content';
-import { mosaicLoader } from 'mosaic-astro';
+import { mosaicLoader } from '@ssolu/mosaic-astro';
 
 export const collections = {
   pages: defineCollection({ loader: mosaicLoader({ root: './content' }) }),
@@ -56,12 +56,12 @@ That's it. Astro will:
 | Locale-as-prefix folders | deferred | web profile §6 |
 | Astro rendered HTML | deferred (no Markdown render yet) | — |
 
-The first four rows are work that lives in `mosaic-core`. If something there is wrong, the fix goes in that repo; this adapter only forwards what core produces.
+The first four rows are work that lives in `@ssolu/mosaic-core`. If something there is wrong, the fix goes in that repo; this adapter only forwards what core produces.
 
 ## API
 
 ```ts
-import { mosaicLoader } from 'mosaic-astro';
+import { mosaicLoader } from '@ssolu/mosaic-astro';
 
 mosaicLoader({
   root: './content',          // required: path to the Mosaic folder
@@ -116,7 +116,7 @@ npm test
 Two test layers:
 
 1. **Unit tests** for `deriveUrl` (URL derivation per Mosaic Web §3.1). Every row of the spec table is asserted.
-2. **Loader contract tests** that stub `mosaic-core` and drive `mosaicLoader` against a fake Astro `LoaderContext`.
+2. **Loader contract tests** that stub `@ssolu/mosaic-core` and drive `mosaicLoader` against a fake Astro `LoaderContext`.
 
 A full end-to-end test against a real Astro build is deferred for v0.1 — Astro's container API is moving and the unit + contract tests already cover the surface this package owns. The `examples/minimal-site/` demo is the manual end-to-end check.
 

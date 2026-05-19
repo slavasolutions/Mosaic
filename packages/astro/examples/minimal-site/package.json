@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "astro": "^5.0.0",
-    "mosaic-astro": "*",
-    "mosaic-core": "*"
+    "@ssolu/mosaic-astro": "*",
+    "@ssolu/mosaic-core": "*"
   }
 }

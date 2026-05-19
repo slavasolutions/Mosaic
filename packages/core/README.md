@@ -1,15 +1,15 @@
 <p align="center"><img src="logo.svg" width="64" alt="Mosaic logo"></p>
 
-# mosaic-core
+# @ssolu/mosaic-core
 
 Reference Mosaic reader for Node. Zero deps. Implements §§5–12 of the [Mosaic spec](https://github.com/slavasolutions/mosaic).
 
-Mosaic is a folder-format spec for structured content: files are records, folders are collections, references link records. `mosaic-core` is the framework-agnostic TypeScript library that reads a Mosaic folder from disk and returns resolved JSON. Adapters for specific frameworks (Astro, Next, etc.) build on top of this library.
+Mosaic is a folder-format spec for structured content: files are records, folders are collections, references link records. `@ssolu/mosaic-core` is the framework-agnostic TypeScript library that reads a Mosaic folder from disk and returns resolved JSON. Adapters for specific frameworks (Astro, Next, etc.) build on top of this library.
 
 ## Install
 
 ```sh
-npm install mosaic-core
+npm install @ssolu/mosaic-core
 ```
 
 Requires Node 20+. ES modules only.
@@ -17,7 +17,7 @@ Requires Node 20+. ES modules only.
 ## Usage
 
 ```ts
-import { readFolder, validate } from 'mosaic-core';
+import { readFolder, validate } from '@ssolu/mosaic-core';
 
 const result = await readFolder('./content');
 for (const [identity, record] of result.records) {
@@ -48,7 +48,7 @@ import type {
   Resolution,
   ReadOptions,
   ValidationResult,
-} from 'mosaic-core';
+} from '@ssolu/mosaic-core';
 
 export function readFolder(rootPath: string, opts?: ReadOptions): Promise<Resolution>;
 export function validate(rootPath: string): Promise<ValidationResult>;
