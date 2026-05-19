@@ -1,59 +1,61 @@
 {
-  "name": "@ssolu/mosaic-core",
+  "name": "@ssolu/mosaic-s3",
   "version": "0.1.0",
-  "description": "Reference Mosaic reader for Node. Zero deps. Implements §§5-12 of the spec.",
+  "description": "S3-compatible source layer for Mosaic. Reads a bucket+prefix as a Mosaic folder; works with AWS S3, Cloudflare R2, MinIO, Backblaze B2, Wasabi, and any other S3 API.",
   "type": "module",
   "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./adapter": {
-      "types": "./dist/adapter.d.ts",
-      "import": "./dist/adapter.js"
     }
-  },
-  "bin": {
-    "mosaic": "./dist/cli.js"
   },
   "files": [
     "dist",
     "src",
     "LICENSE",
-    "README.md",
-    "logo.svg"
+    "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "engines": {
     "node": ">=20"
   },
   "keywords": [
     "mosaic",
+    "s3",
+    "r2",
+    "cloudflare",
+    "minio",
     "content",
-    "folder",
-    "spec",
-    "cms"
+    "loader",
+    "cms",
+    "object-storage"
   ],
   "author": "Slava Solutions",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/slavasolutions/mosaic.git",
-    "directory": "packages/core"
+    "directory": "packages/s3"
   },
   "bugs": {
     "url": "https://github.com/slavasolutions/mosaic/issues"
   },
-  "homepage": "https://github.com/slavasolutions/mosaic/tree/main/packages/core#readme",
+  "homepage": "https://github.com/slavasolutions/mosaic/tree/main/packages/s3#readme",
+  "dependencies": {
+    "@ssolu/mosaic-core": "*"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-s3": "^3.0.0"
+  },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
     "@types/node": "^25.9.0",
     "typescript": "^6.0.3",
     "vitest": "^3.2.4"

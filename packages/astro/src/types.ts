@@ -10,15 +10,40 @@
 
 /**
  * Options accepted by {@link mosaicLoader}.
+ *
+ * Two modes, mutually exclusive:
+ *   - `root` — filesystem source via mosaic-core's `readFolder`.
+ *   - `source` — caller-supplied async fn returning a mosaic-core
+ *     `Resolution`. Use with `@ssolu/mosaic-s3` (`readBucket`),
+ *     `@ssolu/mosaic-git` (planned), or any other adapter that produces
+ *     the same shape.
+ *
+ * Filesystem mode gets a free dev watcher; non-filesystem sources have
+ * no built-in change detection (consumers re-run their pipeline on a
+ * polling interval / webhook if they need hot reload).
  */
-export interface MosaicLoaderOptions {
-  /**
-   * Path to the Mosaic folder root, relative to the Astro project root or
-   * absolute. The folder MUST be a conforming Mosaic folder (see
-   * https://github.com/slavasolutions/mosaic for the base format).
-   */
-  root: string;
+export type MosaicLoaderOptions =
+  | (MosaicLoaderCommon & {
+      /**
+       * Path to the Mosaic folder root, relative to the Astro project root or
+       * absolute. The folder MUST be a conforming Mosaic folder (see
+       * https://github.com/slavasolutions/mosaic for the base format).
+       */
+      root: string;
+      source?: never;
+    })
+  | (MosaicLoaderCommon & {
+      root?: never;
+      /**
+       * Caller-supplied source function. Must return a value structurally
+       * matching mosaic-core's {@link MosaicCoreReadResult} (i.e. what
+       * `readFolder` / `readBucket` return). Called once at build start and
+       * on each reload trigger.
+       */
+      source: () => Promise<MosaicCoreReadResult>;
+    });
 
+interface MosaicLoaderCommon {
   /**
    * Optional: name of the Astro collection this loader is feeding. Used in
    * log lines only — Astro itself passes the collection name through

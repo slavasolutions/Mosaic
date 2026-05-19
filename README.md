@@ -104,14 +104,37 @@ export const collections = {
 
 Astro now reads `./content/mosaic.json`, walks the tree, resolves sidecars/refs/cascade, and hands you a normal Astro collection. A runnable demo lives at [`packages/astro/examples/minimal-site/`](./packages/astro/examples/minimal-site/).
 
-**From any Node program:**
+**From any Node program** (filesystem):
 
 ```ts
 import { readFolder } from '@ssolu/mosaic-core';
 const { records, manifest } = await readFolder('./content');
 ```
 
-`records` is a `Map<identity, ResolvedRecord>` — sidecars merged, cascade applied, refs resolved per the spec pipeline. Zero runtime deps.
+**From any Node program** (S3 / R2 / MinIO / any S3-compatible store):
+
+```ts
+import { S3Client } from '@aws-sdk/client-s3';
+import { readBucket } from '@ssolu/mosaic-s3';
+
+const client = new S3Client({ /* AWS, R2, MinIO, … */ });
+const { records, manifest } = await readBucket({ client, bucket: 'my-content' });
+```
+
+`records` is a `Map<identity, Record[]>` in both cases — sidecars merged, cascade applied, refs resolved per the spec pipeline, variants of an identity surfaced separately (Path A). The shape is byte-identical regardless of source, so swapping adapters is a one-line change.
+
+### Adapter ecosystem
+
+Mosaic's pipeline is source-agnostic. Every adapter package supplies a source layer (a lister + a JSON fetcher) and routes through the same `runPipeline` in core. Switching adapters changes one import line; record shapes, URL derivation, refs, cascade — all identical.
+
+| Package | What it reads from | Status |
+|---|---|---|
+| [`@ssolu/mosaic-core`](./packages/core/) (`readFolder`) | filesystem | ✅ shipped |
+| [`@ssolu/mosaic-s3`](./packages/s3/) (`readBucket`) | S3-compatible object storage (AWS S3, R2, MinIO, B2, Wasabi, Spaces) | ✅ shipped |
+| `@ssolu/mosaic-git` | git repository at any branch / commit / ref | 📝 proposed |
+| `@ssolu/mosaic-memory` | in-memory fixtures (testing) | 📝 proposed |
+
+The Astro loader accepts either form — `{ root: './content' }` for filesystem, or `{ source: () => readBucket(...) }` for any custom adapter.
 
 ---
 
@@ -125,8 +148,11 @@ const { records, manifest } = await readFolder('./content');
 | [`spec/schemas/`](./spec/schemas/) | JSON Schema 2020-12 for `mosaic.json` manifests. |
 | [`spec/tools/validate.py`](./spec/tools/validate.py) | Python reference validator. Stdlib only. |
 | [`spec/profiles/mosaic-web.md`](./spec/profiles/mosaic-web.md) | Web profile (routing). One of N future profiles. |
-| [`packages/core/`](./packages/core/) | Reference Node reader (`@ssolu/mosaic-core`). Zero-dep TypeScript. Exposes `readFolder`, `validate`, and the `mosaic` CLI. |
+| [`packages/core/`](./packages/core/) | Reference Node reader (`@ssolu/mosaic-core`). Zero-dep TypeScript. Exposes `readFolder`, `validate`, the `mosaic` CLI, and the source-agnostic `runPipeline` (re-exported under `@ssolu/mosaic-core/adapter` for backend adapters). |
 | [`packages/astro/`](./packages/astro/) | Astro Content Layer loader (`@ssolu/mosaic-astro`). |
+| [`packages/next/`](./packages/next/) | Next.js App Router adapter (`@ssolu/mosaic-next`). |
+| [`packages/s3/`](./packages/s3/) | S3-compatible source layer (`@ssolu/mosaic-s3`). Reads a bucket+prefix as a Mosaic folder. Works against AWS S3, Cloudflare R2, MinIO, Backblaze B2, Wasabi, DigitalOcean Spaces. |
+| [`packages/devtool/`](./packages/devtool/) | Astro dev-toolbar app for inspecting Mosaic records at edit time. |
 | [`index.html`](./index.html) | Visual explainer (hosted at the [explainer link above](https://slavasolutions.github.io/mosaic/)). |
 
 Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs, the 0.8.x monolithic spec, session artefacts, heavier 0.9.1 fixtures — lives in a sibling folder at `../mosaic-archive/` (not part of this repository).
