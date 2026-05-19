@@ -53,7 +53,7 @@ jobs:
           mkdir -p _site/next-example
           cp -r packages/next/examples/minimal-next-site/out/* _site/next-example/
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
