@@ -1,0 +1,60 @@
+{
+  "name": "@ssolu/mosaic-migrate",
+  "version": "0.1.0",
+  "description": "Adoption-ramp scanner for Mosaic. Reads an existing site (HTML/JSX/MDX/CSS) and reports opportunities to extract Mosaic shapes (tokens, snippets, blocks, meta).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "mosaic-migrate": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "mosaic",
+    "migrate",
+    "scanner",
+    "adoption",
+    "audit"
+  ],
+  "author": "Slava Solutions",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slavasolutions/mosaic.git",
+    "directory": "packages/migrate"
+  },
+  "homepage": "https://github.com/slavasolutions/mosaic/tree/main/packages/migrate#readme",
+  "bugs": {
+    "url": "https://github.com/slavasolutions/mosaic/issues"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "commander": "^12.1.0",
+    "globby": "^14.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.0",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.4"
+  }
+}

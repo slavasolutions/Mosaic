@@ -1,0 +1,22 @@
+:root {
+  --brand: #ff6b35;
+}
+
+body {
+  background: white;
+  color: #222222;
+}
+
+.button {
+  background: #ff6b35;
+  color: white;
+  border: 1px solid rgb(255, 107, 53);
+}
+
+.bg {
+  background-image: url("/images/hero.png");
+}
+
+.bg-2 {
+  background-image: url("https://cdn.acme.example/banner.jpg");
+}
