@@ -1,9 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
+import { fileURLToPath } from 'node:url';
+import { buildTree, toTreePath } from '../lib/tree';
 const { title, currentPath, entry } = Astro.props as {
   title: string;
   currentPath: string;
-  entry: { id: string; data: Record<string, unknown>; body?: string };
+  entry: { id: string; data: Record<string, unknown>; body?: string; filePath?: string };
 };
 const base = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
 function href(p: string): string {
@@ -49,6 +51,19 @@ const isDeploy = import.meta.env.GITHUB_PAGES_DEPLOY === '1' || process.env.GITH
 const devtoolSrc = isDeploy
   ? '/mosaic/_mosaic-devtool/mosaic-devtool.js'
   : '/_mosaic-devtool/mosaic-devtool.js';
+
+// === File tree (devtool Tree tab) ============================================
+// Walks examples/content/ at SSG and emits the flat shape devtool's
+// tree.ts accepts. activePath is the canonical source file (entry.filePath)
+// for the record being rendered. Devtool hides the tab when the script is
+// absent, so emitting it unconditionally is fine.
+const contentRoot = fileURLToPath(new URL('../../../../../../examples/content/', import.meta.url));
+const treePayload = buildTree(contentRoot, 'content');
+if (entry.filePath) {
+  const ap = toTreePath(entry.filePath, contentRoot);
+  if (ap) treePayload.activePath = ap;
+}
+const treeJson = JSON.stringify(treePayload);
 
 // === Design tokens (mosaic-design-tokens profile) ============================
 // `theme` cascades from the root collection record (content/index.json's
@@ -392,6 +407,7 @@ if (schemaType) {
       <script type="application/ld+json" set:html={jsonLd}></script>
     )}
     <script type="application/json" id="mosaic-record" set:html={resolvedJson}></script>
+    <script type="application/json" id="mosaic-tree" set:html={treeJson}></script>
   </head>
   <body>
     {banner && (

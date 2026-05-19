@@ -13,9 +13,39 @@
 
 import { notFound } from 'next/navigation';
 import { renderBody } from '@ssolu/mosaic-next';
-import { getMosaic } from '../../lib/mosaic';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { getMosaic, CONTENT_ROOT } from '../../lib/mosaic';
 import type { MosaicEntry } from '../../lib/mosaic';
 import { renderAvatar } from '../../lib/avatar';
+import { buildTree, type TreePayload } from '../../lib/tree';
+
+// Walk the content folder once at module load; reused across routes.
+const TREE_BASE: TreePayload = buildTree(CONTENT_ROOT, 'content');
+const TREE_PATHS = new Set(TREE_BASE.entries.map((e) => e.path));
+
+// Best-effort canonical-file lookup for the devtool's Tree tab. Identity
+// maps to `pages/<id>.json` or `pages/<id>/index.json` for the routed
+// records this example uses; the team/* and tokens/* identities have
+// matching paths under their respective folders. Falls back to leaving
+// activePath unset if no obvious candidate exists.
+function findActivePath(entry: MosaicEntry): string | undefined {
+  const candidates: string[] = [];
+  const id = entry.id;
+  // Slash-form: identity as a path under the content root.
+  candidates.push(`${id}.json`);
+  candidates.push(`${id}/index.json`);
+  // Web profile root inference: routed entries live under pages/.
+  if (entry.url !== undefined) {
+    candidates.push(`pages/${id.replace(/^pages\//, '')}.json`);
+    candidates.push(`pages/${id.replace(/^pages\//, '')}/index.json`);
+  }
+  for (const c of candidates) {
+    if (TREE_PATHS.has(c)) return c;
+    if (existsSync(join(CONTENT_ROOT, c))) return c;
+  }
+  return undefined;
+}
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 const href = (p: string): string => BASE + p;
@@ -149,6 +179,13 @@ export default async function Page({ params }: PageProps) {
         type="application/json"
         id="mosaic-record"
         dangerouslySetInnerHTML={{ __html: resolvedJson }}
+      />
+      <script
+        type="application/json"
+        id="mosaic-tree"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({ ...TREE_BASE, activePath: findActivePath(entry) }),
+        }}
       />
       <script
         dangerouslySetInnerHTML={{

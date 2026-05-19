@@ -14,7 +14,7 @@ import { join } from 'node:path';
 // the Astro twin and this Next site. `process.cwd()` during `next build`
 // is this example's root (packages/next/examples/minimal-next-site/), so
 // we hop up four levels to reach the repo root.
-const CONTENT_ROOT = join(process.cwd(), '..', '..', '..', '..', 'examples', 'content');
+export const CONTENT_ROOT = join(process.cwd(), '..', '..', '..', '..', 'examples', 'content');
 
 let cached: Promise<MosaicResolution> | null = null;
 
