@@ -1,0 +1,22 @@
+{
+  "tokens": {
+    "color.bg": "#15110a",
+    "color.bg-elev": "#1d1810",
+    "color.bg-sunk": "#0e0b07",
+    "color.ink": "#ede4cf",
+    "color.ink-soft": "#b8ad94",
+    "color.ink-mute": "#7d7460",
+    "color.line": "#2b2417",
+    "color.accent": "#d68a52",
+    "color.accent-soft": "#2a1c10",
+    "color.accent-ink": "#f0c89c",
+    "color.banner-bg": "#2a1f0e",
+    "color.banner-ink": "#e6c890",
+    "color.banner-line": "#4f3a17",
+    "font.body": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Helvetica Neue\", Arial, sans-serif",
+    "font.serif": "ui-serif, Georgia, \"Times New Roman\", serif",
+    "font.mono": "ui-monospace, \"SF Mono\", \"Menlo\", \"Consolas\", monospace",
+    "space.gutter": "20px",
+    "radius.md": "8px"
+  }
+}

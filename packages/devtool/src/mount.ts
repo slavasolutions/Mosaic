@@ -134,7 +134,7 @@ export function mount(opts: MountOptions = {}): void {
 
   tabs.push({
     id: 'sites',
-    label: 'Sites',
+    label: 'Adapter',
     body: () => ({
       kind: 'dom',
       render: (el) => renderSites(el, sites, doc, pathname),

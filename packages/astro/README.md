@@ -97,12 +97,15 @@ npm install
 npm run dev
 ```
 
-It reads the canonical `examples/content/` folder at the repo root (a small Mosaic folder mirroring the spec's D-web fixture, shared with the Next twin) and serves the expected routes:
+It reads one of three Mosaic folders at the repo root — `examples/content-single/`, `examples/content-blog/`, or `examples/content-full/` — selected via `MOSAIC_CONTENT_DIR` (default `content-blog`). Each shape is shared byte-for-byte with the Next twin under `packages/next/examples/minimal-next-site/`.
+
+Routes served by the blog shape:
 
 - `/` (from `pages/index.json`)
-- `/about` (from `pages/about.json`)
+- `/about` (from `pages/about.json` + `pages/about.fr.json` variant)
 - `/blog` (from `pages/blog/index.json`)
-- `/blog/hello` (from `pages/blog/hello.md` + `pages/blog/hello.json`)
+- `/blog/<post>` (one route per `pages/blog/<post>.{json,md}` pair)
+- `/legal` (HTML body fixture — `pages/legal.{json,html}`)
 
 The non-route record `team/ada.json` is exposed via the content collection but does not get a URL.
 

@@ -16,7 +16,6 @@ export const STYLES = /* css */ `
 :host{all:initial;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;color-scheme:light dark;--b:#fff;--bs:#f5f5f5;--i:#1a1a1a;--is:#555;--im:#888;--l:#e0e0e0;--a:#4a9b7a;--sh:0 4px 18px rgba(0,0,0,.2)}
 @media (prefers-color-scheme:dark){:host{--b:#1a1a1a;--bs:#0f0f0f;--i:#ecead8;--is:#b8b3a0;--im:#7d7868;--l:#2a2620;--a:#88c4a8;--sh:0 4px 18px rgba(0,0,0,.5)}}
 .fab{position:fixed;right:16px;bottom:16px;z-index:2147483640;background:var(--i);color:var(--b);border:none;border-radius:999px;padding:10px 14px;font:500 12px ${MONO};cursor:pointer;box-shadow:var(--sh);display:inline-flex;align-items:center;gap:6px;min-height:44px}
-.fab:hover{transform:translateY(-1px)}
 .modal[hidden]{display:none!important}.modal{position:fixed;inset:0;z-index:2147483641;display:flex;justify-content:flex-end}
 .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.35);cursor:pointer}
 .panel{position:relative;width:min(560px,100vw);height:100vh;background:var(--b);border-left:1px solid var(--l);box-shadow:-8px 0 24px rgba(0,0,0,.15);display:flex;flex-direction:column}

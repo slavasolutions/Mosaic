@@ -5,7 +5,7 @@
 <p align="center"><strong>A folder format for structured content.</strong></p>
 
 <p align="center">
-  <a href="https://slavasolutions.github.io/mosaic/astro/">Live example site</a>
+  <a href="https://slavasolutions.github.io/mosaic/explore/">Live example site</a>
   ·
   <a href="https://slavasolutions.github.io/mosaic/">Explainer</a>
   ·
@@ -24,9 +24,9 @@ Your content is a directory tree. JSON files are records. Subfolders are collect
 
 No database. No daemon. No engine. The filesystem is the database; the spec is the contract.
 
-**[Try the example site →](https://slavasolutions.github.io/mosaic/astro/)**
+**[Try the example site →](https://slavasolutions.github.io/mosaic/explore/)**
 
-The pages you see there are literally the JSON files in [`examples/content/`](./examples/content/). Edit a file, the site updates. Move the folder anywhere — the site moves with it. Both the Astro and Next example apps read from this one folder — proof that the content is independent of the framework that renders it.
+Each demo on that page is a real Mosaic folder at the repo root — [`examples/content-single/`](./examples/content-single/) (one page), [`examples/content-blog/`](./examples/content-blog/) (three pages plus a journal), [`examples/content-full/`](./examples/content-full/) (a dozen pages with nav, sub-pages, image URLs). Each shape is rendered twice — once by the Astro adapter, once by Next — so you can see the same folder under both frameworks.
 
 ### About the "website" framing
 

@@ -1,31 +1,36 @@
-# @ssolu/mosaic-astro — minimal example site
+# @ssolu/mosaic-astro — example site
 
-A tiny Astro site that loads `./content/` as a Mosaic folder via `@ssolu/mosaic-astro`.
+An Astro site whose content is a Mosaic folder. The same site code is built three times against three content shapes — `content-single`, `content-blog`, `content-full` — at the repo root.
 
 ## Run
 
 ```sh
 npm install
+
+# Default — renders examples/content-blog/
 npm run dev
+
+# Render a different shape (single page, or twelve-plus pages)
+MOSAIC_CONTENT_DIR=content-single npm run dev
+MOSAIC_CONTENT_DIR=content-full   npm run dev
 ```
 
-Then open the four routes the Mosaic Web profile derives:
+Then open whichever routes the shape ships:
 
-- `/` (from `content/pages/index.json`)
-- `/about` (from `content/pages/about.json`)
-- `/blog` (from `content/pages/blog/index.json`)
-- `/blog/hello` (from `content/pages/blog/hello.md` + `content/pages/blog/hello.json`)
+| Shape | Routes |
+|---|---|
+| `content-single` | `/` only |
+| `content-blog` | `/`, `/about`, `/blog`, `/blog/<post>`, plus `/legal` (HTML body fixture) |
+| `content-full` | `/`, `/about`, `/services` + 4 sub-pages, `/team` + 3 person pages, `/blog` + 5 posts, `/contact` |
 
-`content/team/ada.json` is a record but **not** a web route — it sits outside the `pages/` profile root, so the loader emits it without a URL.
+## Deploy
 
-## Requirements
+The repo's `pages.yml` workflow builds this site three times (once per shape) under `MOSAIC_VARIANT=demo-single` / `demo-blog` / `demo-full` and publishes to:
 
-This example uses `file:` deps for `@ssolu/mosaic-astro` and `@ssolu/mosaic-core`, so both repos must be present as siblings:
+- `https://slavasolutions.github.io/mosaic/demo-single/`
+- `https://slavasolutions.github.io/mosaic/demo-blog/`
+- `https://slavasolutions.github.io/mosaic/demo-full/`
 
-```
-/some/parent/
-  mosaic-astro/        (this repo)
-  mosaic-core/         (sibling — needed for installs to resolve)
-```
+## Chrome
 
-Once `@ssolu/mosaic-core` publishes to npm, `npm install` will work from a clean checkout without the sibling requirement.
+Every page ships a locale switcher in the header (visible when the record has an `.fr` sibling) and a theme switcher in the footer (light / dark / system, persisted in `localStorage`). The adapter switcher (Astro ↔ Next) lives in the floating devtool, not in the page.

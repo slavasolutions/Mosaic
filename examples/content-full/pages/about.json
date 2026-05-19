@@ -1,0 +1,12 @@
+{
+  "@type": "AboutPage",
+  "title": "About",
+  "lede": "Four people, one shed, ten years of mistakes.",
+  "hero": {
+    "image": "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1600&q=80",
+    "alt": "Workshop interior with kiln and pour station"
+  },
+  "meta": {
+    "description": "Holloway & Fife — origin, location, philosophy, and what we don't do."
+  }
+}

@@ -11,47 +11,59 @@ const base = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
 function href(p: string): string {
   return base + p;
 }
-// Banner content comes from a Mosaic record (content/banner.json) outside the
-// pages/ profile root — it has no URL but the loader still emits it. This
-// dogfoods the "non-route record" pattern from Mosaic Web §4.3.
+
+// === Site chrome — banner + nav + footer read from non-route records ========
+// Banner: `<root>/banner.json`. Nav: index collection record's `nav` field
+// (under `defaults`-style root config). Footer columns: same record's
+// `footer` field. Any of these may be absent — the layout degrades to a
+// minimal chrome (single shape has no banner, no footer columns, no nav).
 const all = await getCollection('pages');
 const banner = all.find((e) => e.id === 'banner')?.data as
   | { text?: string; linkText?: string; linkUrl?: string }
   | undefined;
 
-const nav = [
-  { label: 'Home', url: '/' },
-  { label: 'About', url: '/about' },
-  { label: 'Blog', url: '/blog' },
-  { label: 'Legal', url: '/legal' },
-];
+// `id === ''` is the root collection record (mosaic.json + root index.json).
+// Loader emits it with id 'index' in some shapes; we look at both.
+const rootRecord =
+  (all.find((e) => e.id === 'index') ??
+    all.find((e) => e.id === ''))?.data as
+    | {
+        nav?: Array<{ label: string; url: string }>;
+        footer?: {
+          tagline?: string;
+          address?: string;
+          email?: string;
+          columns?: Array<{
+            heading?: string;
+            links?: Array<{ label: string; url: string }>;
+          }>;
+        };
+      }
+    | undefined;
+
+const navItems: Array<{ label: string; url: string }> = rootRecord?.nav ?? [];
+const footer = rootRecord?.footer;
+
 function isActive(linkUrl: string): boolean {
   if (linkUrl === '/') return currentPath === '/';
   return currentPath === linkUrl || currentPath.startsWith(linkUrl + '/');
 }
 
-// === Variant pill (framework selector) =======================================
-// Renders Astro / Next / future-variant links in the top bar. Each pill href
-// rewrites the current path under the other variant's GH-Pages prefix. On
-// local dev (no base) the pill still renders but the links point at sibling
-// paths that won't resolve — fine, the pill is intended for the deploy.
-interface Variant { slot: string; label: string; }
-const VARIANTS: Variant[] = [
-  { slot: 'astro',         label: 'Astro' },
-  { slot: 'astro-dark',    label: 'Astro · dark' },
-  { slot: 'astro-minimal', label: 'Astro · minimal' },
-  { slot: 'next',          label: 'Next' },
-];
-const currentVariant = process.env.MOSAIC_VARIANT ?? 'astro';
-function variantHref(slot: string): string {
-  // currentPath is like '/about' or '/blog/hello' (no base prefix); rebuild
-  // with the target variant's base. Trailing slash on home to match the
-  // deploy structure (`/mosaic/<slot>/`).
-  const isDeploy = process.env.GITHUB_PAGES_DEPLOY === '1';
-  const root = isDeploy ? `/mosaic/${slot}` : '';
-  if (currentPath === '/') return root + '/';
-  return root + currentPath;
-}
+// === Locale switcher ========================================================
+// The Astro loader emits Path A variants as separate entries with id
+// `<identity>::<modifiers.join('.')>` (canonical entries keep the bare
+// identity). The current entry's identity sits in `entry.data.slug`; we
+// look for a sibling entry whose modifiers include 'fr'.
+const currentSlug = (entry.data as any).slug as string | undefined;
+const currentModifiers = ((entry.data as any).modifiers ?? []) as string[];
+const isFrenchVariant = currentModifiers.includes('fr');
+const hasFrenchVariant = currentSlug
+  ? all.some((e) => {
+      const d = e.data as any;
+      return d.slug === currentSlug && Array.isArray(d.modifiers) && d.modifiers.includes('fr');
+    })
+  : false;
+const showLocaleSwitcher = hasFrenchVariant || isFrenchVariant;
 
 // Serialise the resolved record so @ssolu/mosaic-devtool can find it in the
 // page when the inspector mounts. The devtool reads
@@ -69,18 +81,16 @@ const resolvedJson = JSON.stringify(
 
 // Devtool loads on every page (set `?nodebug=1` on the URL to suppress).
 // The script lives at <pages-root>/_mosaic-devtool/mosaic-devtool.js —
-// sibling to `/astro/` and `/next/` so both adapter sites share one copy.
+// sibling to the deploy slots so all six adapter sites share one copy.
 const isDeploy = import.meta.env.GITHUB_PAGES_DEPLOY === '1' || process.env.GITHUB_PAGES_DEPLOY === '1';
 const devtoolSrc = isDeploy
   ? '/mosaic/_mosaic-devtool/mosaic-devtool.js'
   : '/_mosaic-devtool/mosaic-devtool.js';
 
 // === File tree (devtool Tree tab) ============================================
-// Walks examples/<contentDir>/ at SSG and emits the flat shape devtool's
-// tree.ts accepts. activePath is the canonical source file (entry.filePath)
-// for the record being rendered. Devtool hides the tab when the script is
-// absent, so emitting it unconditionally is fine. Matrix variants drive
-// `MOSAIC_CONTENT_DIR` to point at content-dark / content-minimal.
+// Walks the active content folder at SSG and emits the flat shape devtool's
+// tree.ts accepts. Matrix variants drive `MOSAIC_CONTENT_DIR` to point at
+// content-single / content-blog / content-full.
 const contentDir = process.env.MOSAIC_CONTENT_DIR ?? 'content';
 const contentRoot = fileURLToPath(new URL(`../../../../../../examples/${contentDir}/`, import.meta.url));
 const treePayload = buildTree(contentRoot, contentDir);
@@ -90,17 +100,34 @@ if (entry.filePath) {
 }
 const treeJson = JSON.stringify(treePayload);
 
+// === Devtool site list — adapter switcher entries ===========================
+// Emits an `id="mosaic-sites"` payload that overrides the devtool's
+// hardcoded default list with this deploy's matrix. The shape × adapter URL
+// matrix is the same on every page; the devtool highlights whichever entry
+// matches the current pathname.
+const SITE_LIST = JSON.stringify([
+  { label: 'Single · Astro', url: '/mosaic/demo-single/', note: '1 page' },
+  { label: 'Single · Next', url: '/mosaic/demo-single-next/', note: '1 page' },
+  { label: 'Blog · Astro', url: '/mosaic/demo-blog/', note: '3 pages + journal' },
+  { label: 'Blog · Next', url: '/mosaic/demo-blog-next/', note: '3 pages + journal' },
+  { label: 'Full · Astro', url: '/mosaic/demo-full/', note: '12+ pages, nav, sub-pages' },
+  { label: 'Full · Next', url: '/mosaic/demo-full-next/', note: '12+ pages, nav, sub-pages' },
+]);
+
 // === Design tokens (mosaic-design-tokens profile) ============================
-// `theme` cascades from the root collection record (content/index.json's
-// defaults.theme = "ref:/tokens"). After ref resolution, entry.data.theme
-// is the full theme record — read its `tokens` field. Falls back to inline
-// defaults if no theme is set.
+// `theme` cascades from the root collection record's `defaults.theme`.
+// After ref resolution, entry.data.theme is the full theme record — read
+// its `tokens` field. Falls back to inline defaults if no theme is set.
 const themeRecord = entry.data.theme as { tokens?: Record<string, string> } | undefined;
 const tok = themeRecord?.tokens ?? {};
 function v(key: string, fallback: string): string {
   return tok[key] ?? fallback;
 }
-const tokenCss = `:root {
+// Light + dark token blocks. The dark side reuses the same keys; if a
+// folder doesn't ship a dark variant we use the embedded fallback. The
+// user can switch via the footer toggle (data-theme on <html>); without
+// an override prefers-color-scheme picks.
+const lightTokenCss = `:root {
   --bg: ${v('color.bg', '#faf6ee')};
   --bg-elev: ${v('color.bg-elev', '#ffffff')};
   --bg-sunk: ${v('color.bg-sunk', '#f2ede1')};
@@ -117,9 +144,6 @@ const tokenCss = `:root {
 }`;
 
 // === JSON-LD (mosaic-web profile §6) =========================================
-// Emit a schema.org graph for any record that declares @type. Strip
-// Mosaic-internal fields (slug, url, modifiers, theme — all consumer-side
-// concerns, not schema.org properties).
 const schemaType = entry.data['@type'] as string | undefined;
 let jsonLd: string | null = null;
 if (schemaType) {
@@ -133,13 +157,19 @@ if (schemaType) {
     2,
   );
 }
+
+// === Locale-switcher hrefs ==================================================
+// For the home/about pair we already know the variant lives at
+// `<id>.fr`. The route URL stays the same (sidecars share identity); we
+// keep the switcher informational for v1 and just toggle visibility.
+// Future work could route fr variants under `/fr/...`.
 ---
 <!doctype html>
-<html lang="en">
+<html lang={isFrenchVariant ? 'fr' : 'en'}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} — Acme Foundry</title>
+    <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href={href('/logo.svg')} />
     <style>
       :root {
@@ -153,14 +183,12 @@ if (schemaType) {
         --accent: #4a9b7a;
         --accent-soft: #d6ecdf;
         --accent-ink: #2d6b54;
-        --warm-yellow: #f5d97c;
-        --warm-yellow-soft: #fbeec2;
-        --warm-peach: #f4c8a8;
-        --warm-blue-soft: #d6e5f2;
         --banner-bg: #fbeec2;
         --banner-ink: #6a4d10;
         --banner-line: #e8d49a;
       }
+      /* OS-preference fallback. User pick via data-theme on <html> wins,
+         see `html[data-theme="dark"]` block below. */
       @media (prefers-color-scheme: dark) {
         :root {
           --bg: #15130f;
@@ -173,14 +201,42 @@ if (schemaType) {
           --accent: #88c4a8;
           --accent-soft: #1d3329;
           --accent-ink: #b8e0cd;
-          --warm-yellow: #c4a652;
-          --warm-yellow-soft: #2b240f;
-          --warm-peach: #c89a78;
-          --warm-blue-soft: #1b2530;
           --banner-bg: #2b240f;
           --banner-ink: #e8d49a;
           --banner-line: #524515;
         }
+      }
+      /* User-picked dark — overrides OS pref. */
+      html[data-theme="dark"] {
+        --bg: #15130f;
+        --bg-elev: #1e1b15;
+        --bg-sunk: #100e0b;
+        --ink: #ecead8;
+        --ink-soft: #b8b3a0;
+        --ink-mute: #7d7868;
+        --line: #2a261d;
+        --accent: #88c4a8;
+        --accent-soft: #1d3329;
+        --accent-ink: #b8e0cd;
+        --banner-bg: #2b240f;
+        --banner-ink: #e8d49a;
+        --banner-line: #524515;
+      }
+      /* User-picked light — overrides OS pref. */
+      html[data-theme="light"] {
+        --bg: #faf6ee;
+        --bg-elev: #ffffff;
+        --bg-sunk: #f2ede1;
+        --ink: #2a2620;
+        --ink-soft: #5a544a;
+        --ink-mute: #8a8278;
+        --line: #e8e0cc;
+        --accent: #4a9b7a;
+        --accent-soft: #d6ecdf;
+        --accent-ink: #2d6b54;
+        --banner-bg: #fbeec2;
+        --banner-ink: #6a4d10;
+        --banner-line: #e8d49a;
       }
       *, *::before, *::after { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
@@ -192,22 +248,22 @@ if (schemaType) {
         line-height: 1.6;
         font-size: 16px;
         -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
       a { color: var(--accent); text-decoration: none; }
       a:hover { text-decoration: underline; }
 
-      /* ----- Meta banner — thin centred strip, scrolls horizontally if narrow ----- */
+      /* ----- Meta banner ----- */
       .meta-banner {
         background: var(--banner-bg);
         color: var(--banner-ink);
         border-bottom: 1px solid var(--banner-line);
-        padding: 0;
         font-size: 13px;
         line-height: 1.4;
         overflow-x: auto;
-        overflow-y: hidden;
         white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
         text-align: center;
       }
       .meta-banner-inner {
@@ -215,7 +271,6 @@ if (schemaType) {
         gap: 10px;
         align-items: center;
         padding: 8px 20px;
-        white-space: nowrap;
         max-width: 1240px;
         margin: 0 auto;
       }
@@ -228,21 +283,13 @@ if (schemaType) {
         padding: 2px 5px;
         background: rgba(0,0,0,0.08);
         border-radius: 3px;
-        line-height: 1.2;
       }
-      @media (prefers-color-scheme: dark) {
-        .meta-banner-label { background: rgba(255,255,255,0.08); }
-      }
-      .meta-banner a {
-        color: var(--banner-ink);
-        text-decoration: underline;
-      }
+      @media (prefers-color-scheme: dark) { .meta-banner-label { background: rgba(255,255,255,0.08); } }
+      html[data-theme="dark"] .meta-banner-label { background: rgba(255,255,255,0.08); }
+      .meta-banner a { color: var(--banner-ink); text-decoration: underline; }
 
       /* ----- Site header (chrome) ----- */
-      header.site {
-        background: var(--bg);
-        border-bottom: 1px solid var(--line);
-      }
+      header.site { background: var(--bg); border-bottom: 1px solid var(--line); }
       .nav-inner {
         max-width: 1240px;
         margin: 0 auto;
@@ -263,7 +310,7 @@ if (schemaType) {
         color: var(--ink);
       }
       .brand img { width: 28px; height: 28px; display: block; }
-      nav.site-nav { display: flex; gap: 18px; }
+      nav.site-nav { display: flex; gap: 18px; flex-wrap: wrap; }
       nav.site-nav a {
         color: var(--ink-soft);
         font-size: 14px;
@@ -274,50 +321,117 @@ if (schemaType) {
       }
       nav.site-nav a.active { color: var(--ink); border-bottom: 2px solid var(--accent); }
 
-      /* ----- Variant pill (framework selector) ----- */
-      .variant-pill {
+      /* ----- Locale switcher (header right) ----- */
+      .locale-switch {
         display: inline-flex;
+        gap: 4px;
         align-items: center;
-        gap: 2px;
         padding: 3px;
         border: 1px solid var(--line);
         border-radius: 999px;
         background: var(--bg-elev);
         font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
         font-size: 11px;
-        line-height: 1.2;
       }
-      .variant-pill a {
+      .locale-switch a {
         padding: 4px 10px;
         border-radius: 999px;
         color: var(--ink-mute);
         text-decoration: none;
-        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         min-height: 24px;
         display: inline-flex;
         align-items: center;
       }
-      .variant-pill a:hover { color: var(--ink); background: var(--bg-sunk); text-decoration: none; }
-      .variant-pill a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); cursor: default; }
-      @media (max-width: 720px) {
-        .variant-pill a.dim { display: none; }
-      }
+      .locale-switch a:hover { color: var(--ink); background: var(--bg-sunk); text-decoration: none; }
+      .locale-switch a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); cursor: default; }
 
-      /* ----- Main + footer ----- */
+      /* ----- Main ----- */
       main {
+        flex: 1;
         max-width: 1240px;
         margin: 0 auto;
+        width: 100%;
         padding: 32px 20px 80px;
       }
+
+      /* ----- Footer ----- */
       footer.site {
-        max-width: 1240px;
-        margin: 0 auto;
-        padding: 28px 20px 80px;
         border-top: 1px solid var(--line);
+        background: var(--bg-sunk);
         color: var(--ink-mute);
         font-size: 13px;
       }
-      footer.site code { background: var(--bg-sunk); padding: 2px 5px; border-radius: 3px; font-size: 12px; }
+      .footer-inner {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 36px 20px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      @media (min-width: 720px) {
+        .footer-inner { grid-template-columns: 1.4fr repeat(3, 1fr); }
+      }
+      .footer-col h4 {
+        font-family: ui-mono, ui-monospace, monospace;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink);
+        margin: 0 0 12px;
+      }
+      .footer-col ul { list-style: none; margin: 0; padding: 0; }
+      .footer-col li { margin: 0 0 6px; }
+      .footer-col a { color: var(--ink-soft); }
+      .footer-tagline { color: var(--ink-soft); font-size: 14px; margin: 0 0 8px; }
+      .footer-meta { font-size: 12px; }
+      .footer-meta div { margin: 0 0 4px; }
+      .footer-bottom {
+        border-top: 1px solid var(--line);
+        background: var(--bg-sunk);
+        font-size: 12px;
+        color: var(--ink-mute);
+      }
+      .footer-bottom-inner {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 14px 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .footer-bottom code { background: var(--bg); padding: 2px 5px; border-radius: 3px; font-size: 11px; }
+
+      /* ----- Theme switcher (footer) ----- */
+      .theme-switch {
+        display: inline-flex;
+        gap: 2px;
+        align-items: center;
+        padding: 3px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--bg-elev);
+        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-size: 11px;
+      }
+      .theme-switch button {
+        padding: 4px 10px;
+        border: none;
+        background: none;
+        border-radius: 999px;
+        color: var(--ink-mute);
+        cursor: pointer;
+        min-height: 24px;
+        font: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .theme-switch button:hover { color: var(--ink); background: var(--bg-sunk); }
+      .theme-switch button[aria-pressed="true"] { color: var(--ink); background: var(--accent-soft); }
 
       /* ----- Page content elements (rendered markdown) ----- */
       .body-block { color: var(--ink-soft); }
@@ -364,11 +478,7 @@ if (schemaType) {
         font-size: 13px;
         line-height: 1.5;
       }
-      .body-block pre code {
-        background: none;
-        padding: 0;
-        font-size: inherit;
-      }
+      .body-block pre code { background: none; padding: 0; font-size: inherit; }
       .body-block table {
         border-collapse: collapse;
         margin: 1em 0;
@@ -384,8 +494,9 @@ if (schemaType) {
       .body-block strong { color: var(--ink); }
       .body-block em { font-style: italic; }
       .body-block a { color: var(--accent); }
+      .body-block img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0; }
 
-      /* ----- Home / page / post helpers (parity with Next globals.css) ----- */
+      /* ----- Home / page / post helpers ----- */
       .home-h1 {
         font-family: ui-serif, Georgia, serif;
         font-size: clamp(28px, 4vw, 44px);
@@ -394,6 +505,7 @@ if (schemaType) {
         margin: 0 0 12px;
       }
       .home-tagline { font-size: 18px; color: var(--ink-soft); margin: 0 0 24px; }
+      .hero-img { width: 100%; border-radius: 8px; margin: 0 0 28px; aspect-ratio: 16/7; object-fit: cover; }
       .home-cards {
         list-style: none;
         padding: 0;
@@ -409,6 +521,30 @@ if (schemaType) {
         border-radius: 8px;
         color: var(--ink);
       }
+      .featured-grid {
+        list-style: none;
+        padding: 0;
+        margin: 36px 0 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      @media (min-width: 720px) { .featured-grid { grid-template-columns: repeat(3, 1fr); } }
+      .featured-card {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--bg-elev);
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .featured-card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; }
+      .featured-card-body { padding: 14px 16px 18px; }
+      .featured-card h3 { font-family: ui-serif, Georgia, serif; margin: 0 0 6px; font-size: 18px; }
+      .featured-card p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+
       .page-h1 {
         font-family: ui-serif, Georgia, serif;
         font-size: clamp(26px, 3.5vw, 36px);
@@ -416,6 +552,24 @@ if (schemaType) {
         margin: 0 0 12px;
       }
       .page-lede { font-size: 17px; color: var(--ink-soft); margin: 0 0 28px; }
+
+      .subpage-grid {
+        list-style: none;
+        padding: 0;
+        margin: 28px 0 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 540px) { .subpage-grid { grid-template-columns: repeat(2, 1fr); } }
+      .subpage-grid a {
+        display: block;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--ink);
+      }
+      .subpage-grid a:hover { border-color: var(--accent); text-decoration: none; }
 
       .post-meta {
         display: flex;
@@ -440,12 +594,6 @@ if (schemaType) {
       .post-author-card .avatar { flex-shrink: 0; }
       .post-author-card .body { flex: 1; min-width: 0; }
       .post-author-card strong { color: var(--ink); }
-      .post-author-card .resolved-from {
-        margin-top: 6px;
-        font-size: 12px;
-        color: var(--ink-mute);
-        font-family: ui-monospace, monospace;
-      }
 
       .blog-list { list-style: none; padding: 0; margin: 24px 0 0; }
       .blog-list li { padding: 14px 0; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
@@ -456,12 +604,26 @@ if (schemaType) {
 
       .avatar { display: block; border-radius: 50%; }
     </style>
-    <style set:html={tokenCss}></style>
+    <style set:html={lightTokenCss}></style>
     {jsonLd && (
       <script type="application/ld+json" set:html={jsonLd}></script>
     )}
     <script type="application/json" id="mosaic-record" set:html={resolvedJson}></script>
     <script type="application/json" id="mosaic-tree" set:html={treeJson}></script>
+    <script type="application/json" id="mosaic-sites" set:html={SITE_LIST}></script>
+
+    <!-- Theme bootstrap — runs before <body> paints to avoid a flash. Reads
+         localStorage; writes data-theme on <html> if a saved pick exists. -->
+    <script is:inline>
+      (function () {
+        try {
+          var pick = localStorage.getItem('mosaic-theme');
+          if (pick === 'light' || pick === 'dark') {
+            document.documentElement.setAttribute('data-theme', pick);
+          }
+        } catch (e) { /* private mode etc — silently fall back to OS pref */ }
+      })();
+    </script>
   </head>
   <body>
     {banner && (
@@ -479,37 +641,117 @@ if (schemaType) {
       <div class="nav-inner">
         <a class="brand" href={href('/')}>
           <img src={href('/logo.svg')} alt="" />
-          Acme Foundry
+          {title.split(' — ')[0] || 'Mosaic'}
         </a>
-        <nav class="site-nav">
-          {nav.map((item) => (
+        {navItems.length > 0 && (
+          <nav class="site-nav">
+            {navItems.map((item) => (
+              <a
+                href={href(item.url)}
+                class={isActive(item.url) ? 'active' : ''}
+              >{item.label}</a>
+            ))}
+          </nav>
+        )}
+        {showLocaleSwitcher && (
+          <div class="locale-switch" role="group" aria-label="Switch language">
             <a
-              href={href(item.url)}
-              class={isActive(item.url) ? 'active' : ''}
-            >{item.label}</a>
-          ))}
-        </nav>
-        <div class="variant-pill" role="group" aria-label="Switch framework variant">
-          {VARIANTS.map((v) => (
+              href={href(isFrenchVariant
+                ? (currentPath || '/')
+                : (currentPath || '/'))}
+              aria-current={!isFrenchVariant ? 'page' : undefined}
+            >EN</a>
             <a
-              href={variantHref(v.slot)}
-              class={v.slot !== currentVariant && v.slot !== 'astro' && v.slot !== 'next' ? 'dim' : ''}
-              aria-current={v.slot === currentVariant ? 'page' : undefined}
-            >{v.label}</a>
-          ))}
-        </div>
+              href={href(currentPath || '/')}
+              aria-current={isFrenchVariant ? 'page' : undefined}
+              data-locale="fr"
+            >FR</a>
+          </div>
+        )}
       </div>
     </header>
     <main>
       <slot />
     </main>
+
     <footer class="site">
-      Built with <a href="https://astro.build">Astro</a> and the <a href="https://github.com/slavasolutions/mosaic"><code>@ssolu/mosaic-astro</code></a> loader. Each page is a single static HTML file compiled from a folder of JSON. No runtime, no database, no engine.
+      {footer && (footer.columns?.length || footer.tagline || footer.email) && (
+        <div class="footer-inner">
+          <div class="footer-col">
+            {footer.tagline && <p class="footer-tagline">{footer.tagline}</p>}
+            <div class="footer-meta">
+              {footer.address && <div>{footer.address}</div>}
+              {footer.email && <div><a href={`mailto:${footer.email}`}>{footer.email}</a></div>}
+            </div>
+          </div>
+          {(footer.columns ?? []).map((col) => (
+            <div class="footer-col">
+              {col.heading && <h4>{col.heading}</h4>}
+              <ul>
+                {(col.links ?? []).map((l) => (
+                  <li><a href={href(l.url)}>{l.label}</a></li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <span>
+            Built with <a href="https://astro.build">Astro</a> and{' '}
+            <a href="https://github.com/slavasolutions/mosaic"><code>@ssolu/mosaic-astro</code></a>.
+            Every page is a JSON file in a folder.
+          </span>
+          <div class="theme-switch" role="group" aria-label="Theme">
+            <button type="button" data-theme-set="light" aria-pressed="false">Light</button>
+            <button type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
+            <button type="button" data-theme-set="system" aria-pressed="false">System</button>
+          </div>
+        </div>
+      </div>
     </footer>
 
+    <!-- Theme switcher runtime. Reads the buttons, swaps data-theme on
+         <html>, persists in localStorage. Independent of the head bootstrap
+         so the buttons reflect saved state on hydrate. -->
+    <script is:inline>
+      (function () {
+        var buttons = document.querySelectorAll('[data-theme-set]');
+        function current() {
+          try { return localStorage.getItem('mosaic-theme') || 'system'; }
+          catch (e) { return 'system'; }
+        }
+        function paint() {
+          var c = current();
+          buttons.forEach(function (b) {
+            b.setAttribute('aria-pressed', b.getAttribute('data-theme-set') === c ? 'true' : 'false');
+          });
+        }
+        function apply(p) {
+          if (p === 'light' || p === 'dark') {
+            document.documentElement.setAttribute('data-theme', p);
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        }
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () {
+            var pick = b.getAttribute('data-theme-set');
+            try {
+              if (pick === 'system') localStorage.removeItem('mosaic-theme');
+              else localStorage.setItem('mosaic-theme', pick);
+            } catch (e) { /* ignore */ }
+            apply(pick);
+            paint();
+          });
+        });
+        paint();
+      })();
+    </script>
+
     <!-- @ssolu/mosaic-devtool inspector — loaded on every render.
-         Append `?nodebug=1` to any URL to suppress it. The gate script is
-         tiny; the IIFE bundle only pulls in when this script runs. -->
+         Append `?nodebug=1` to any URL to suppress. -->
     <script is:inline define:vars={{ devtoolSrc }}>
       (function () {
         if (location.search.indexOf('nodebug=1') !== -1) return;

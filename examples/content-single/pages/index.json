@@ -1,0 +1,10 @@
+{
+  "@type": "WebPage",
+  "title": "Marin Atelier",
+  "tagline": "A one-page Mosaic site.",
+  "lede": "Just a JSON sidecar plus a markdown body. No tokens, no nav, no blog. The smallest thing that can still be called a Mosaic site.",
+  "meta": {
+    "description": "Marin Atelier — a single-page demo built on Mosaic.",
+    "robots": "index,follow"
+  }
+}

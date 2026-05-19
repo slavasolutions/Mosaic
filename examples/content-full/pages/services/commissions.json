@@ -1,0 +1,10 @@
+{
+  "@type": "Service",
+  "title": "Commissions",
+  "lede": "Bespoke runs of small bronze hardware.",
+  "image": "https://images.unsplash.com/photo-1559268950-2d7ceb2efa3a?w=1200&q=80",
+  "imageAlt": "Bronze door pulls arrayed on a cloth",
+  "meta": {
+    "description": "Commissioned small-batch bronze hardware — door pulls, drawer fittings, decorative fixings."
+  }
+}

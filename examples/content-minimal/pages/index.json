@@ -1,9 +1,0 @@
-{
-  "title": "Mosaic without tokens",
-  "tagline": "No theme record, no design language — just records.",
-  "intro": "This deploy uses the same Astro adapter but a different folder. There is no tokens/ collection here. The layout's fallback CSS supplies all colours, fonts, and spacing. Proves the design profile is opt-in.",
-  "homeLinks": [
-    { "label": "About this variant", "url": "/about" },
-    { "label": "A record without ceremony", "url": "/note" }
-  ]
-}

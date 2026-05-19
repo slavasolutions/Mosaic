@@ -1,0 +1,1 @@
+Dev joined in 2021 from a watch-repair workshop two cities over. He handles the finishing — files, scrapers, the polishing wheel, and the slow lathe. He is unreasonably good at matching patinas from a one-inch sample.

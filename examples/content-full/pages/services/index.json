@@ -1,0 +1,14 @@
+{
+  "@type": "CollectionPage",
+  "title": "Services",
+  "lede": "Four things we do. Everything else is a polite no.",
+  "subPages": [
+    { "url": "/services/restoration", "title": "Restoration casting" },
+    { "url": "/services/pattern-making", "title": "Pattern-making" },
+    { "url": "/services/commissions", "title": "Commissions" },
+    { "url": "/services/repairs", "title": "Repairs" }
+  ],
+  "meta": {
+    "description": "Restoration casting, pattern-making, commissions, and repairs."
+  }
+}

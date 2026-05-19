@@ -46,45 +46,73 @@ jobs:
           mkdir -p _site/_mosaic-validator
           cp packages/validator-web/dist/mosaic-validator-web.js _site/_mosaic-validator/
 
-      - name: Build Astro variant — default theme, default content
+      # ----- Astro × 3 content shapes ----------------------------------------
+      - name: Astro · content-single → /demo-single/
         env:
           GITHUB_PAGES_DEPLOY: '1'
-          MOSAIC_VARIANT: astro
-          MOSAIC_CONTENT_DIR: content
-        run: |
-          npx --workspace=packages/astro/examples/minimal-site astro build
-          mkdir -p _site/astro
-          cp -r packages/astro/examples/minimal-site/dist/* _site/astro/
-
-      - name: Build Astro variant — dark theme, default content
-        env:
-          GITHUB_PAGES_DEPLOY: '1'
-          MOSAIC_VARIANT: astro-dark
-          MOSAIC_CONTENT_DIR: content-dark
+          MOSAIC_VARIANT: demo-single
+          MOSAIC_CONTENT_DIR: content-single
         run: |
           rm -rf packages/astro/examples/minimal-site/dist packages/astro/examples/minimal-site/.astro
           npx --workspace=packages/astro/examples/minimal-site astro build
-          mkdir -p _site/astro-dark
-          cp -r packages/astro/examples/minimal-site/dist/* _site/astro-dark/
+          mkdir -p _site/demo-single
+          cp -r packages/astro/examples/minimal-site/dist/* _site/demo-single/
 
-      - name: Build Astro variant — no tokens, minimal content
+      - name: Astro · content-blog → /demo-blog/
         env:
           GITHUB_PAGES_DEPLOY: '1'
-          MOSAIC_VARIANT: astro-minimal
-          MOSAIC_CONTENT_DIR: content-minimal
+          MOSAIC_VARIANT: demo-blog
+          MOSAIC_CONTENT_DIR: content-blog
         run: |
           rm -rf packages/astro/examples/minimal-site/dist packages/astro/examples/minimal-site/.astro
           npx --workspace=packages/astro/examples/minimal-site astro build
-          mkdir -p _site/astro-minimal
-          cp -r packages/astro/examples/minimal-site/dist/* _site/astro-minimal/
+          mkdir -p _site/demo-blog
+          cp -r packages/astro/examples/minimal-site/dist/* _site/demo-blog/
 
-      - name: Build Next example site
+      - name: Astro · content-full → /demo-full/
         env:
           GITHUB_PAGES_DEPLOY: '1'
+          MOSAIC_VARIANT: demo-full
+          MOSAIC_CONTENT_DIR: content-full
         run: |
+          rm -rf packages/astro/examples/minimal-site/dist packages/astro/examples/minimal-site/.astro
+          npx --workspace=packages/astro/examples/minimal-site astro build
+          mkdir -p _site/demo-full
+          cp -r packages/astro/examples/minimal-site/dist/* _site/demo-full/
+
+      # ----- Next × 3 content shapes -----------------------------------------
+      - name: Next · content-single → /demo-single-next/
+        env:
+          GITHUB_PAGES_DEPLOY: '1'
+          MOSAIC_VARIANT: demo-single-next
+          MOSAIC_CONTENT_DIR: content-single
+        run: |
+          rm -rf packages/next/examples/minimal-next-site/out packages/next/examples/minimal-next-site/.next
           npx --workspace=packages/next/examples/minimal-next-site next build
-          mkdir -p _site/next
-          cp -r packages/next/examples/minimal-next-site/out/* _site/next/
+          mkdir -p _site/demo-single-next
+          cp -r packages/next/examples/minimal-next-site/out/* _site/demo-single-next/
+
+      - name: Next · content-blog → /demo-blog-next/
+        env:
+          GITHUB_PAGES_DEPLOY: '1'
+          MOSAIC_VARIANT: demo-blog-next
+          MOSAIC_CONTENT_DIR: content-blog
+        run: |
+          rm -rf packages/next/examples/minimal-next-site/out packages/next/examples/minimal-next-site/.next
+          npx --workspace=packages/next/examples/minimal-next-site next build
+          mkdir -p _site/demo-blog-next
+          cp -r packages/next/examples/minimal-next-site/out/* _site/demo-blog-next/
+
+      - name: Next · content-full → /demo-full-next/
+        env:
+          GITHUB_PAGES_DEPLOY: '1'
+          MOSAIC_VARIANT: demo-full-next
+          MOSAIC_CONTENT_DIR: content-full
+        run: |
+          rm -rf packages/next/examples/minimal-next-site/out packages/next/examples/minimal-next-site/.next
+          npx --workspace=packages/next/examples/minimal-next-site next build
+          mkdir -p _site/demo-full-next
+          cp -r packages/next/examples/minimal-next-site/out/* _site/demo-full-next/
 
       - uses: actions/upload-pages-artifact@v5
         with:

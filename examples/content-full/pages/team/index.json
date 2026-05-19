@@ -1,0 +1,13 @@
+{
+  "@type": "CollectionPage",
+  "title": "Team",
+  "lede": "Four people. Most days, anyway. Sometimes three, sometimes a visiting student.",
+  "members": [
+    "ref:/team/ada",
+    "ref:/team/marin",
+    "ref:/team/dev"
+  ],
+  "meta": {
+    "description": "The four people who work at Holloway & Fife."
+  }
+}

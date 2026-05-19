@@ -1,9 +1,9 @@
 /**
- * Site-switcher tab — pill row of known Mosaic-rendered variants. v1 ships
- * a hardcoded list so the devtool stays self-contained (no fetch, no
- * runtime registry). Adapters that want to override the list can inject
+ * Adapter-switcher tab — pill row of the deployed sites in the matrix.
+ * v1 ships a hardcoded list so the devtool stays self-contained (no fetch,
+ * no runtime registry). Layouts that want to override the list can inject
  * `<script type="application/json" id="mosaic-sites">` with the same
- * `{ label, url }[]` shape.
+ * `{ label, url, note? }[]` shape.
  *
  * The current page is detected by matching `location.pathname` against
  * each entry's `url`. Longest matching prefix wins so deep routes don't
@@ -18,17 +18,19 @@ export interface SiteEntry {
 }
 
 /**
- * v1 default: five deployed variants spanning both adapter examples.
- * Paths are GH-Pages-prefixed so the devtool works on the live site. On
- * non-GH-Pages hosts (e.g. local dev) the matcher falls back to the path
- * suffix, see `findActive`.
+ * v1 default: six deployed sites — three content shapes (single / blog /
+ * full) crossed with two adapters (Astro / Next). Paths are GH-Pages-
+ * prefixed so the devtool works on the live site. On non-GH-Pages hosts
+ * (e.g. local dev) the matcher falls back to the path suffix, see
+ * `findActive`.
  */
 export const DEFAULT_SITES: SiteEntry[] = [
-  { label: 'Astro · home', url: '/mosaic/astro/' },
-  { label: 'Astro · about', url: '/mosaic/astro/about/' },
-  { label: 'Astro · blog', url: '/mosaic/astro/blog/' },
-  { label: 'Astro · blog post', url: '/mosaic/astro/blog/hello/' },
-  { label: 'Next · home', url: '/mosaic/next/' },
+  { label: 'Single · Astro', url: '/mosaic/demo-single/' },
+  { label: 'Single · Next', url: '/mosaic/demo-single-next/' },
+  { label: 'Blog · Astro', url: '/mosaic/demo-blog/' },
+  { label: 'Blog · Next', url: '/mosaic/demo-blog-next/' },
+  { label: 'Full · Astro', url: '/mosaic/demo-full/' },
+  { label: 'Full · Next', url: '/mosaic/demo-full-next/' },
 ];
 
 export function readSitesData(doc: Document): SiteEntry[] | null {

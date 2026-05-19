@@ -1,0 +1,41 @@
+{
+  "@type": "WebSite",
+  "theme": "ref:/tokens",
+  "title": "Holloway & Fife",
+  "tagline": "Bronze, brass, and patient repair work.",
+  "intro": "A four-person shop on the south side of the canal, casting small architectural and decorative parts since 2016. Restoration runs, prop work, the occasional museum commission. Everything you see on this site is rendered from a folder of JSON files.",
+  "hero": {
+    "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80",
+    "alt": "Workbench with bronze parts and tools"
+  },
+  "homeLinks": [
+    { "label": "What we do", "url": "/services" },
+    { "label": "Meet the team", "url": "/team" },
+    { "label": "Latest from the journal", "url": "/blog" },
+    { "label": "Get a quote", "url": "/contact" }
+  ],
+  "featuredWork": [
+    {
+      "title": "Restoration casting",
+      "summary": "Pour-matched replacements for missing or broken bronze. Hardware, escutcheons, finials.",
+      "url": "/services/restoration",
+      "image": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80"
+    },
+    {
+      "title": "Pattern-making",
+      "summary": "Wax and clay patterns cut from drawings, photographs, or rubbings — including missing-original work.",
+      "url": "/services/pattern-making",
+      "image": "https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=800&q=80"
+    },
+    {
+      "title": "Commissions",
+      "summary": "Small runs of bespoke parts — door pulls, drawer hardware, decorative fixings.",
+      "url": "/services/commissions",
+      "image": "https://images.unsplash.com/photo-1559268950-2d7ceb2efa3a?w=800&q=80"
+    }
+  ],
+  "meta": {
+    "description": "Holloway & Fife — small bronze foundry. Restoration, pattern-making, commissions, repairs.",
+    "robots": "index,follow"
+  }
+}

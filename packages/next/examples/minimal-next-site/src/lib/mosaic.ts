@@ -10,22 +10,23 @@ import { readMosaic } from '@ssolu/mosaic-next';
 import type { MosaicEntry, MosaicResolution } from '@ssolu/mosaic-next';
 import { join } from 'node:path';
 
-// Canonical content lives at `<repo>/examples/content/` — shared between
-// the Astro twin and this Next site. `process.cwd()` during `next build`
-// is this example's root (packages/next/examples/minimal-next-site/), so
-// we hop up four levels to reach the repo root.
-export const CONTENT_ROOT = join(process.cwd(), '..', '..', '..', '..', 'examples', 'content');
+// `MOSAIC_CONTENT_DIR` selects which content shape to render. The Pages
+// workflow sets it per build slot (demo-single-next / demo-blog-next /
+// demo-full-next). Default is content-blog so `next dev` works without
+// env-var ceremony.
+const CONTENT_DIR = process.env.MOSAIC_CONTENT_DIR ?? 'content-blog';
+export const CONTENT_ROOT = join(
+  process.cwd(),
+  '..',
+  '..',
+  '..',
+  '..',
+  'examples',
+  CONTENT_DIR,
+);
 
 let cached: Promise<MosaicResolution> | null = null;
 
-/**
- * Read the Mosaic folder. Cached for the lifetime of the build process —
- * `next build` invokes server components many times across routes and we
- * don't want to walk the tree per route. Cache is process-scoped, so
- * `next dev` picks up file changes on each restart (good enough for a
- * demo; the astro adapter dogfoods FS watch in dev which we don't need
- * for the static export demo).
- */
 export function getMosaic(): Promise<MosaicResolution> {
   if (!cached) cached = readMosaic(CONTENT_ROOT);
   return cached;

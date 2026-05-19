@@ -131,7 +131,7 @@ describe('mount', () => {
     );
   });
 
-  it('always shows the Sites tab with default routes', () => {
+  it('always shows the Adapter tab with default routes', () => {
     setBody('<script type="application/json" id="mosaic-record">{"id":"x"}</script>');
     mount();
     const root = document.getElementById('mosaic-devtool-host')!.shadowRoot!;
@@ -140,8 +140,9 @@ describe('mount', () => {
       'button.tab[data-tab="sites"]',
     ) as HTMLButtonElement;
     expect(sitesTab).not.toBeNull();
+    expect(sitesTab.textContent).toBe('Adapter');
     sitesTab.click();
-    expect(root.querySelectorAll('.site-item').length).toBe(5);
+    expect(root.querySelectorAll('.site-item').length).toBe(6);
   });
 
   it('allows the host to override the sites list via mosaic-sites', () => {

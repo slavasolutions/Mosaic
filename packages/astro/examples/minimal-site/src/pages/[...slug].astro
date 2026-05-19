@@ -18,8 +18,11 @@ const { entry } = Astro.props;
 const data = entry.data as Record<string, any>;
 const currentPath = data.url as string;
 
-// For the blog index, surface the list of sibling posts.
+const isHome = currentPath === '/';
 const isBlogIndex = currentPath === '/blog';
+const isPost = currentPath.startsWith('/blog/') && !isBlogIndex;
+
+// Surface posts for blog index + featured tiles.
 let posts: Array<{ url: string; title: string; publishedAt?: string; authorName?: string }> = [];
 if (isBlogIndex) {
   const all = await getCollection('pages');
@@ -41,12 +44,7 @@ if (isBlogIndex) {
     .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
 }
 
-const isPost = currentPath.startsWith('/blog/') && !isBlogIndex;
 const authorObj = data.author && typeof data.author === 'object' ? data.author : null;
-// `display` cascades from `mosaic.json#defaults.author.display` (or any
-// `defaults` block above the record). `text-only` suppresses every avatar
-// SVG. Default is `with-avatar`. The blog index never shows avatars
-// regardless — the author identity matters at the post, not the list.
 const authorDisplay = (authorObj && (authorObj as Record<string, unknown>).display) as
   | string
   | undefined;
@@ -56,15 +54,25 @@ const base = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
 function href(p: string): string {
   return base + p;
 }
+
+const hasSubPages = Array.isArray(data.subPages) && data.subPages.length > 0;
+const hasMembers = Array.isArray(data.members) && data.members.length > 0;
+const hasFeatured = Array.isArray(data.featuredWork) && data.featuredWork.length > 0;
+const hasHomeLinks = Array.isArray(data.homeLinks) && data.homeLinks.length > 0;
+const heroImg = data.hero && typeof data.hero === 'object' ? data.hero : null;
 ---
 
-<Layout title={data.title ?? entry.id} currentPath={currentPath} entry={entry}>
-  {currentPath === '/' && (
+<Layout title={`${data.title ?? entry.id}${data.title ? ' — ' : ''}${data.title ? '' : ''}`} currentPath={currentPath} entry={entry}>
+  {isHome && (
     <section>
       <h1 class="home-h1">{data.title}</h1>
       {data.tagline && <p class="home-tagline">{data.tagline}</p>}
+      {heroImg && heroImg.image && (
+        <img class="hero-img" src={heroImg.image} alt={heroImg.alt ?? ''} loading="lazy" />
+      )}
       {data.intro && <p>{data.intro}</p>}
-      {Array.isArray(data.homeLinks) && (
+      {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
+      {hasHomeLinks && (
         <ul class="home-cards">
           {data.homeLinks.map((link: any) => (
             <li>
@@ -73,23 +81,96 @@ function href(p: string): string {
           ))}
         </ul>
       )}
+      {hasFeatured && (
+        <ul class="featured-grid">
+          {data.featuredWork.map((card: any) => (
+            <li>
+              <a class="featured-card" href={href(card.url)}>
+                {card.image && <img src={card.image} alt="" loading="lazy" />}
+                <div class="featured-card-body">
+                  <h3>{card.title}</h3>
+                  {card.summary && <p>{card.summary}</p>}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   )}
 
-  {currentPath !== '/' && !isPost && (
+  {!isHome && !isPost && (
     <section>
       <h1 class="page-h1">{data.title}</h1>
       {data.lede && <p class="page-lede">{data.lede}</p>}
+      {heroImg && heroImg.image && (
+        <img class="hero-img" src={heroImg.image} alt={heroImg.alt ?? ''} loading="lazy" />
+      )}
+      {data.image && typeof data.image === 'string' && (
+        <img class="hero-img" src={data.image} alt={data.imageAlt ?? ''} loading="lazy" />
+      )}
 
       {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
+
+      {hasSubPages && (
+        <ul class="subpage-grid">
+          {data.subPages.map((sp: any) => (
+            <li><a href={href(sp.url)}><strong>{sp.title}</strong></a></li>
+          ))}
+        </ul>
+      )}
+
+      {hasMembers && (
+        <ul class="subpage-grid">
+          {data.members.map((m: any) => {
+            const name = typeof m === 'object' ? (m.name ?? m.title ?? '') : '';
+            const role = typeof m === 'object' ? (m.role ?? '') : '';
+            return (
+              <li>
+                <a href="#" style="pointer-events:none;cursor:default;">
+                  <strong>{name}</strong>
+                  {role && <div style="color:var(--ink-mute);font-size:13px;margin-top:4px;">{role}</div>}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {data['@type'] === 'ContactPage' && data.email && (
+        <div style="margin-top:24px;padding:16px;background:var(--bg-sunk);border-radius:8px;font-size:14px;">
+          <div><strong>Email:</strong> <a href={`mailto:${data.email}`}>{data.email}</a></div>
+          {data.phone && <div style="margin-top:6px;"><strong>Phone:</strong> {data.phone}</div>}
+          {data.address && typeof data.address === 'object' && (
+            <div style="margin-top:6px;">
+              <strong>Address:</strong>{' '}
+              {[data.address.line1, data.address.city, data.address.postcode, data.address.country].filter(Boolean).join(', ')}
+            </div>
+          )}
+          {Array.isArray(data.hours) && (
+            <table style="margin-top:14px;border-collapse:collapse;width:100%;">
+              <tbody>
+                {data.hours.map((h: any) => (
+                  <tr>
+                    <th style="text-align:left;padding:4px 12px 4px 0;font-weight:600;color:var(--ink);">{h.days}</th>
+                    <td style="padding:4px 0;">{h.hours}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
 
       {isBlogIndex && (
         <ul class="blog-list">
           {posts.map((post) => (
             <li>
-              <a href={href(post.url)}>{post.title}</a>
-              <div class="meta">
-                {post.publishedAt}{post.authorName ? ` · ${post.authorName}` : ''}
+              <div class="post-item-text">
+                <a href={href(post.url)}>{post.title}</a>
+                <div class="meta">
+                  {post.publishedAt}{post.authorName ? ` · ${post.authorName}` : ''}
+                </div>
               </div>
             </li>
           ))}
@@ -110,6 +191,9 @@ function href(p: string): string {
           {authorObj?.role && ` (${authorObj.role})`}
         </span>
       </div>
+      {heroImg && heroImg.image && (
+        <img class="hero-img" src={heroImg.image} alt={heroImg.alt ?? ''} loading="lazy" />
+      )}
       {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
       {authorObj?.bio && (
         <div class="post-author-card">

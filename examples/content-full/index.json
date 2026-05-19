@@ -1,0 +1,45 @@
+{
+  "defaults": {
+    "theme": "ref:/tokens"
+  },
+  "nav": [
+    { "label": "Home", "url": "/" },
+    { "label": "About", "url": "/about" },
+    { "label": "Services", "url": "/services" },
+    { "label": "Team", "url": "/team" },
+    { "label": "Blog", "url": "/blog" },
+    { "label": "Contact", "url": "/contact" }
+  ],
+  "footer": {
+    "tagline": "Holloway & Fife — small bronze, since 2016.",
+    "address": "47 Canal Lane, Northbridge",
+    "email": "shed@holloway-fife.example",
+    "columns": [
+      {
+        "heading": "Site",
+        "links": [
+          { "label": "About", "url": "/about" },
+          { "label": "Services", "url": "/services" },
+          { "label": "Team", "url": "/team" },
+          { "label": "Journal", "url": "/blog" }
+        ]
+      },
+      {
+        "heading": "Services",
+        "links": [
+          { "label": "Restoration casting", "url": "/services/restoration" },
+          { "label": "Pattern-making", "url": "/services/pattern-making" },
+          { "label": "Commissions", "url": "/services/commissions" },
+          { "label": "Repairs", "url": "/services/repairs" }
+        ]
+      },
+      {
+        "heading": "Contact",
+        "links": [
+          { "label": "Get a quote", "url": "/contact" },
+          { "label": "Visit the shed", "url": "/about" }
+        ]
+      }
+    ]
+  }
+}

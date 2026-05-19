@@ -1,0 +1,21 @@
+{
+  "@type": "ContactPage",
+  "title": "Contact",
+  "lede": "We answer email within two working days. We do not answer the phone during pour days.",
+  "email": "shed@holloway-fife.example",
+  "phone": "+44 (0)1234 567 890",
+  "address": {
+    "line1": "47 Canal Lane",
+    "city": "Northbridge",
+    "postcode": "NB4 7RW",
+    "country": "UK"
+  },
+  "hours": [
+    { "days": "Mon–Thu", "hours": "9:00–17:30" },
+    { "days": "Fri", "hours": "9:00–13:00 (pour day, no visitors)" },
+    { "days": "Sat–Sun", "hours": "Closed" }
+  ],
+  "meta": {
+    "description": "How to reach Holloway & Fife — email, phone, address, opening hours."
+  }
+}
