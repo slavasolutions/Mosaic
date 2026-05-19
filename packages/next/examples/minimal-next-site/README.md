@@ -23,7 +23,7 @@ npm run build --workspace=packages/next/examples/minimal-next-site
 ## Deploy
 
 The repo's `pages.yml` workflow builds this site with `GITHUB_PAGES_DEPLOY=1`
-and publishes the `out/` tree to `https://slavasolutions.github.io/mosaic/next-example/`.
+and publishes the `out/` tree to `https://slavasolutions.github.io/mosaic/next/`.
 
 ## File layout
 

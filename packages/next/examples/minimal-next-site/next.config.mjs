@@ -1,9 +1,9 @@
 // When GITHUB_PAGES_DEPLOY=1 the GitHub Pages workflow builds for
-// https://slavasolutions.github.io/mosaic/next-example/ — Next needs both
+// https://slavasolutions.github.io/mosaic/next/ — Next needs both
 // `basePath` and `assetPrefix` for assets to resolve under the subpath.
 // Local dev / preview ignores these and serves at '/'.
 const isDeploy = process.env.GITHUB_PAGES_DEPLOY === '1';
-const basePath = isDeploy ? '/mosaic/next-example' : '';
+const basePath = isDeploy ? '/mosaic/next' : '';
 
 /** @type {import('next').NextConfig} */
 const config = {

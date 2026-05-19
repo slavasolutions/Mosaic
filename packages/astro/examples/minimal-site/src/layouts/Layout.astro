@@ -44,9 +44,9 @@ const resolvedJson = JSON.stringify(
   2,
 );
 
-// Devtool loads only when ?debug=1 is in the URL (dev override too). The
-// script lives at <pages-root>/_mosaic-devtool/mosaic-devtool.js — sibling
-// to `/example/` and `/next-example/` so both adapter sites share one copy.
+// Devtool loads on every page (set `?nodebug=1` on the URL to suppress).
+// The script lives at <pages-root>/_mosaic-devtool/mosaic-devtool.js —
+// sibling to `/astro/` and `/next/` so both adapter sites share one copy.
 const isDeploy = import.meta.env.GITHUB_PAGES_DEPLOY === '1' || process.env.GITHUB_PAGES_DEPLOY === '1';
 const devtoolSrc = isDeploy
   ? '/mosaic/_mosaic-devtool/mosaic-devtool.js'
@@ -444,12 +444,12 @@ if (schemaType) {
       Built with <a href="https://astro.build">Astro</a> and the <a href="https://github.com/slavasolutions/mosaic"><code>@ssolu/mosaic-astro</code></a> loader. Each page is a single static HTML file compiled from a folder of JSON. No runtime, no database, no engine.
     </footer>
 
-    <!-- @ssolu/mosaic-devtool inspector — load only when ?debug=1 is in the URL.
-         The devtool is a one-line opt-in: paint a tiny gate script that pulls
-         the IIFE bundle off the deployed site, no UI shipped unless asked. -->
+    <!-- @ssolu/mosaic-devtool inspector — loaded on every render.
+         Append `?nodebug=1` to any URL to suppress it. The gate script is
+         tiny; the IIFE bundle only pulls in when this script runs. -->
     <script is:inline define:vars={{ devtoolSrc }}>
       (function () {
-        if (location.search.indexOf('debug=1') === -1) return;
+        if (location.search.indexOf('nodebug=1') !== -1) return;
         var s = document.createElement('script');
         s.src = devtoolSrc;
         s.defer = true;

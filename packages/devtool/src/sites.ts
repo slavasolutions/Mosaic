@@ -24,11 +24,11 @@ export interface SiteEntry {
  * suffix, see `findActive`.
  */
 export const DEFAULT_SITES: SiteEntry[] = [
-  { label: 'Astro · home', url: '/mosaic/example/' },
-  { label: 'Astro · about', url: '/mosaic/example/about/' },
-  { label: 'Astro · blog', url: '/mosaic/example/blog/' },
-  { label: 'Astro · blog post', url: '/mosaic/example/blog/hello/' },
-  { label: 'Next · home', url: '/mosaic/next-example/' },
+  { label: 'Astro · home', url: '/mosaic/astro/' },
+  { label: 'Astro · about', url: '/mosaic/astro/about/' },
+  { label: 'Astro · blog', url: '/mosaic/astro/blog/' },
+  { label: 'Astro · blog post', url: '/mosaic/astro/blog/hello/' },
+  { label: 'Next · home', url: '/mosaic/next/' },
 ];
 
 export function readSitesData(doc: Document): SiteEntry[] | null {
@@ -62,11 +62,11 @@ export function readSitesData(doc: Document): SiteEntry[] | null {
 
 /**
  * Return the index of the entry that best matches `pathname`, or -1.
- * Tie-breaker: longest matching URL wins, so `/mosaic/example/blog/hello/`
+ * Tie-breaker: longest matching URL wins, so `/mosaic/astro/blog/hello/`
  * snaps to the blog-post entry instead of the blog-index entry.
  *
  * Also accepts a suffix match so local dev paths like `/example/` still
- * line up with the GH-Pages-prefixed `/mosaic/example/`.
+ * line up with the GH-Pages-prefixed `/mosaic/astro/`.
  */
 export function findActive(entries: SiteEntry[], pathname: string): number {
   let best = -1;
@@ -84,7 +84,7 @@ export function findActive(entries: SiteEntry[], pathname: string): number {
       continue;
     }
     // Suffix match for non-prefixed hosts: the entry URL is GH-Pages-
-    // prefixed (`/mosaic/example/blog/`) but the visitor is on local dev
+    // prefixed (`/mosaic/astro/blog/`) but the visitor is on local dev
     // (`/example/blog/`). Strip a leading `/<seg>` off `u` once and retry.
     const stripped = u.replace(/^\/[^/]+/, '');
     if (

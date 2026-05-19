@@ -36,13 +36,21 @@ The IIFE mounts on `DOMContentLoaded`. Calling the script twice is fine — it r
 
 ## Production toggle
 
-The devtool mounts unconditionally if its script is loaded. The convention is for adapters and example sites to gate the `<script src>` injection behind dev mode or a `?debug=1` query, e.g.:
+The devtool mounts unconditionally if its script is loaded. Example sites in this repo load the devtool on every render and let visitors opt out with `?nodebug=1` on the URL:
 
 ```astro
-{(import.meta.env.DEV || Astro.url.searchParams.has('debug')) && (
-  <script src={href('/mosaic-devtool.js')} defer></script>
-)}
+<script is:inline>
+  (function () {
+    if (location.search.indexOf('nodebug=1') !== -1) return;
+    var s = document.createElement('script');
+    s.src = '/_mosaic-devtool/mosaic-devtool.js';
+    s.defer = true;
+    document.head.appendChild(s);
+  })();
+</script>
 ```
+
+Adapters that prefer an opt-in gate can invert the check (e.g. require `?debug=1`) — the IIFE itself is unconditional once it loads.
 
 ## ESM API
 

@@ -50,7 +50,7 @@ function findActivePath(entry: MosaicEntry): string | undefined {
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 const href = (p: string): string => BASE + p;
 
-// Devtool URL — sibling to /example/ and /next-example/ at the Pages root.
+// Devtool URL — sibling to /astro/ and /next/ at the Pages root.
 // In deploy mode that's `/mosaic/_mosaic-devtool/mosaic-devtool.js`; in dev
 // (no basePath) it's `/_mosaic-devtool/mosaic-devtool.js`.
 const devtoolSrc = BASE
@@ -172,9 +172,8 @@ export default async function Page({ params }: PageProps) {
       </main>
 
       {/* Devtool data + gate. The JSON payload is always emitted (a few KB,
-          cached with the page). The actual devtool UI script is only fetched
-          when `?debug=1` is in the URL — kept opt-in to avoid shipping the
-          inspector to every visitor. */}
+          cached with the page). The devtool UI script loads on every render;
+          append `?nodebug=1` to any URL to suppress. */}
       <script
         type="application/json"
         id="mosaic-record"
@@ -189,7 +188,7 @@ export default async function Page({ params }: PageProps) {
       />
       <script
         dangerouslySetInnerHTML={{
-          __html: `(function(){if(location.search.indexOf('debug=1')===-1)return;var s=document.createElement('script');s.src=${JSON.stringify(devtoolSrc)};s.defer=true;document.head.appendChild(s);})();`,
+          __html: `(function(){if(location.search.indexOf('nodebug=1')!==-1)return;var s=document.createElement('script');s.src=${JSON.stringify(devtoolSrc)};s.defer=true;document.head.appendChild(s);})();`,
         }}
       />
     </>

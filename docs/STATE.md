@@ -30,13 +30,13 @@ A coordinated push across spec, core, adapters, devtool, examples, migration too
 | URL | What |
 |---|---|
 | https://slavasolutions.github.io/mosaic/ | Explainer (0.9.2, mobile-first, dark-mode) |
-| https://slavasolutions.github.io/mosaic/example/ | Astro example — `@ssolu/mosaic-astro` |
-| https://slavasolutions.github.io/mosaic/example/about/ | Sidecar pattern demo + French variant via Path A |
-| https://slavasolutions.github.io/mosaic/example/blog/ | Blog index, sorted by date |
-| https://slavasolutions.github.io/mosaic/example/blog/hello/ | Blog post — author resolved via `ref:/team/ada` |
-| https://slavasolutions.github.io/mosaic/next-example/ | Next.js example — `@ssolu/mosaic-next` (same folder, different adapter) |
+| https://slavasolutions.github.io/mosaic/astro/ | Astro example — `@ssolu/mosaic-astro` |
+| https://slavasolutions.github.io/mosaic/astro/about/ | Sidecar pattern demo + French variant via Path A |
+| https://slavasolutions.github.io/mosaic/astro/blog/ | Blog index, sorted by date |
+| https://slavasolutions.github.io/mosaic/astro/blog/hello/ | Blog post — author resolved via `ref:/team/ada` |
+| https://slavasolutions.github.io/mosaic/next/ | Next.js example — `@ssolu/mosaic-next` (same folder, different adapter) |
 
-Append `?debug=1` on any example route to overlay the `@ssolu/mosaic-devtool` JSON disclosure panel.
+Devtool overlay (`@ssolu/mosaic-devtool` JSON disclosure panel) loads on every example route by default. Append `?nodebug=1` to hide it.
 
 ## Test count
 
@@ -76,7 +76,7 @@ Append `?debug=1` on any example route to overlay the `@ssolu/mosaic-devtool` JS
 - **Browser validator polish** — `@ssolu/mosaic-validator-web` is built (task #19 in flight at session end). Final integration into the live explainer (replacing the `_coming_` row) needs a deploy round.
 - **HTML body fixture nav** — `examples/content/pages/legal.{json,html}` exists; if not visible from the example nav after #16 lands, add a link from one of the existing pages.
 - **Gallery of examples** — vision: a Mosaic-shaped index page at `/mosaic/gallery/` listing 2-3 featured + a long list of edge-case Mosaic folders (empty, refs-heavy, variant-heavy, collision, opaque payloads). Each is its own deployed Mosaic. Needs design decision on multi-site design sharing: (A) copy tokens, (B) `mosaic.json#extends`, (C) cross-folder refs. Recommend A first.
-- **Theme hot-swap demo** — duplicate `/example/` as `/example-dark/` with one cascade line changed (`defaults.theme: "ref:/tokens/dark"`). Proves hot-swap.
+- **Theme hot-swap demo** — duplicate `/astro/` as `/astro-dark/` with one cascade line changed (`defaults.theme: "ref:/tokens/dark"`). Proves hot-swap.
 - **Spec flatten** — merge `format/01-format.md` + `02-references.md` → single `format.md`. Flatten one-file subdirs (`tools/`, `schemas/`, `profiles/` with only `mosaic-web.md` + `mosaic-design-tokens.md`). Risky refactor — needs your eyes. Big diff.
 - **`rationale.md`** — the user's "I want to write the WHYs myself" doc. Skeleton headings only; user fills prose.
 

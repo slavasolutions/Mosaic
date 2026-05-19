@@ -50,13 +50,13 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html logo.svg _site/
-          mkdir -p _site/example
-          cp -r packages/astro/examples/minimal-site/dist/* _site/example/
-          mkdir -p _site/next-example
-          cp -r packages/next/examples/minimal-next-site/out/* _site/next-example/
-          # Devtool — opt-in inspector loaded by example pages when ?debug=1
-          # is in the URL. Lives one level above /example/ and /next-example/
-          # so both sites share one copy.
+          mkdir -p _site/astro
+          cp -r packages/astro/examples/minimal-site/dist/* _site/astro/
+          mkdir -p _site/next
+          cp -r packages/next/examples/minimal-next-site/out/* _site/next/
+          # Devtool — inspector loaded by example pages on every render
+          # (set `?nodebug=1` to hide). Lives one level above /astro/ and
+          # /next/ so both sites share one copy.
           mkdir -p _site/_mosaic-devtool
           cp packages/devtool/dist/mosaic-devtool.js _site/_mosaic-devtool/
           # Browser validator bundle — loaded by the explainer's

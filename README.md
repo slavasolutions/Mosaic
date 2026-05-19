@@ -5,7 +5,7 @@
 <p align="center"><strong>A folder format for structured content.</strong></p>
 
 <p align="center">
-  <a href="https://slavasolutions.github.io/mosaic/example/">Live example site</a>
+  <a href="https://slavasolutions.github.io/mosaic/astro/">Live example site</a>
   ·
   <a href="https://slavasolutions.github.io/mosaic/">Explainer</a>
   ·
@@ -24,7 +24,7 @@ Your content is a directory tree. JSON files are records. Subfolders are collect
 
 No database. No daemon. No engine. The filesystem is the database; the spec is the contract.
 
-**[Try the example site →](https://slavasolutions.github.io/mosaic/example/)**
+**[Try the example site →](https://slavasolutions.github.io/mosaic/astro/)**
 
 The pages you see there are literally the JSON files in [`examples/content/`](./examples/content/). Edit a file, the site updates. Move the folder anywhere — the site moves with it. Both the Astro and Next example apps read from this one folder — proof that the content is independent of the framework that renders it.
 

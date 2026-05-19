@@ -8,17 +8,17 @@ import {
 
 describe('findActive', () => {
   it('matches by exact pathname', () => {
-    const i = findActive(DEFAULT_SITES, '/mosaic/example/');
+    const i = findActive(DEFAULT_SITES, '/mosaic/astro/');
     expect(DEFAULT_SITES[i]!.label).toBe('Astro · home');
   });
 
   it('picks the longest matching prefix for nested routes', () => {
-    const i = findActive(DEFAULT_SITES, '/mosaic/example/blog/hello/');
+    const i = findActive(DEFAULT_SITES, '/mosaic/astro/blog/hello/');
     expect(DEFAULT_SITES[i]!.label).toBe('Astro · blog post');
   });
 
   it('falls back to suffix match for non-prefixed hosts (local dev)', () => {
-    const i = findActive(DEFAULT_SITES, '/example/blog/');
+    const i = findActive(DEFAULT_SITES, '/astro/blog/');
     expect(DEFAULT_SITES[i]!.label).toBe('Astro · blog');
   });
 
@@ -71,7 +71,7 @@ describe('renderSites', () => {
       container,
       DEFAULT_SITES,
       document,
-      '/mosaic/example/blog/hello/',
+      '/mosaic/astro/blog/hello/',
     );
     const items = container.querySelectorAll('.site-item');
     expect(items.length).toBe(DEFAULT_SITES.length);
