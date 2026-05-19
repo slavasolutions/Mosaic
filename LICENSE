@@ -1,0 +1,12 @@
+Mosaic is dual-licensed.
+
+- Code         — Apache License 2.0   →  see LICENSE-code
+- Spec text    — Creative Commons BY 4.0  →  see LICENSE-spec.md
+- Project marks (name, logo) — see TRADEMARK.md
+
+The NOTICE file lists copyright holders and required attribution
+notices per the Apache 2.0 license.
+
+Forks of the code or spec are welcome under the licenses above.
+"Mosaic" is the project's mark; forks MUST rename. Describe
+compatible implementations as "compatible with Mosaic".

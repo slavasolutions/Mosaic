@@ -2,7 +2,22 @@
 
 ## Unreleased
 
-### Licensing & marks
+### Root cleanup
+
+- `PRINCIPLES.md` removed — its content (three foundational claims, plain
+  language) merged into `README.md` as a new "Principles" section. The
+  normative version lives in `spec/format/01-format.md`.
+- `STATE.md` moved to `docs/STATE.md`. It's an internal working-notes
+  handoff doc, doesn't belong at the root.
+- Added a single root `/LICENSE` pointer file describing the dual-licensing
+  arrangement (`LICENSE-code` for code, `LICENSE-spec.md` for spec text,
+  `TRADEMARK.md` for project marks). Auto-detection tools that look for
+  a literal `LICENSE` file now find one.
+- `CONTRIBUTING.md` source-of-truth section refreshed — points at
+  `README.md`, `spec/format/`, `spec/profiles/`, `docs/adr/`; the old
+  `PRINCIPLES.md` / `SPEC.md` / `mips/` references are gone.
+
+### Licensing & marks (earlier this session)
 
 - Removed stale top-level `/LICENSE` (MIT). Dual licensing is now canonical:
   Apache 2.0 for code (`LICENSE-code`) + CC BY 4.0 for spec text
@@ -13,8 +28,8 @@
   to `Apache-2.0` to match the per-package metadata.
 - `NOTICE`, `LICENSE-code`, and `LICENSE-spec.md` refreshed to point at
   the current spec layout (`spec/format/`, `spec/profiles/`,
-  `spec/schemas/`, `PRINCIPLES.md`) — the old `SPEC.md` / `PHILOSOPHY.md`
-  / `mips/` paths no longer exist.
+  `spec/schemas/`) — the old `SPEC.md` / `PHILOSOPHY.md` / `mips/`
+  paths no longer exist.
 - `README.md` license section gained a TRADEMARK.md pointer.
 
 ## 0.9 — Realignment (2026-05-14)

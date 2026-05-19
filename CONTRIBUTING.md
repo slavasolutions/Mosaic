@@ -82,12 +82,13 @@ is a separate PR that references the accepted MIP.
 
 ## Source-of-truth layers
 
-Three docs, three jobs. If content overlaps between them, that is a
-bug — fix by deleting the duplicate.
+If content overlaps between layers, that is a bug — fix by deleting the
+duplicate.
 
-- **`PRINCIPLES.md`** — foundational claims. Plain language. No MUST/MAY.
-- **`SPEC.md`** — normative rules. RFC-2119 language.
-- **`mips/MIP-NNNN.md`** — decisions and alternatives. No normative language.
+- **`README.md`** — pitch, principles, getting started. Plain language. No MUST/MAY.
+- **`spec/format/`** — normative base format. RFC-2119 language.
+- **`spec/profiles/`** — profiles that layer on the base (web, design-tokens). Each MAY add rules, MUST NOT contradict the base.
+- **`docs/adr/`** — architectural decision records. Why a path was chosen.
 
 ## Spec style
 
@@ -120,7 +121,7 @@ bug — fix by deleting the duplicate.
 
 Mosaic is dual-licensed:
 
-- **Spec text** (`SPEC.md`, `PRINCIPLES.md`, `mips/`, schema annotations) — CC BY 4.0.
+- **Spec text** (`spec/**`, `README.md`, `docs/**`) — CC BY 4.0.
 - **Code** (validators, schema tooling, runnable examples, build
   scripts) — Apache License 2.0.
 

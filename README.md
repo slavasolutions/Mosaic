@@ -40,6 +40,20 @@ Who needs the `mosaic-web` profile:
 
 ---
 
+## Principles
+
+Three foundational claims. Every spec rule derives from one of them.
+
+**The folder is the website.** The filesystem is the source of truth; nothing else is canonical. `.json` files are records, folders are collections, the root `mosaic.json` holds the manifest.
+
+**Refs link records.** One `ref:` prefix, two anchor modes (absolute from root, `./` for relative), one optional JSON Pointer for inner values. Refs at any depth follow deeper-wins cascade plus deep-merge. Cycles are free.
+
+**Forward-safe.** Engines decide URLs. Writers preserve unknown fields. Extensions namespace themselves with `x-`. Records MAY declare `@type` for Schema.org alignment; engines that emit JSON-LD use it automatically.
+
+These hold; the rest is detail. See [`spec/format/01-format.md`](./spec/format/01-format.md) for the normative version.
+
+---
+
 ## The three rules
 
 | # | Rule | In English |

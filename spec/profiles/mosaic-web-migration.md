@@ -146,8 +146,7 @@ addressable home. Move them into `tokens/index.json`:
 
 Adapters that load the tokens profile inject these into the rendered
 output (CSS custom properties is the common shape). Changing one
-token in `tokens/index.json` flows through every page — the hot-swap
-demo in `STATE.md` showcases this.
+token in `tokens/index.json` flows through every page.
 
 See `spec/profiles/mosaic-design-tokens.md` for the normative profile.
 
