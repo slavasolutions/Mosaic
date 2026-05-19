@@ -151,13 +151,15 @@ is the record's body, addressable as a single field.
    bytes inside `body`. Markdown, HTML, plaintext, AsciiDoc, and any
    text format a future extension adds are all opaque UTF-8 to the
    base format. Interpretation (rendering, syntax highlighting,
-   sanitisation) is a profile or consumer concern.
+   sanitisation) is a profile or consumer concern. See
+   `docs/adr/0001-body-format-agnosticism.md` for the recorded
+   rationale.
 
 Exposing `body` is RECOMMENDED for general-purpose readers. A consumer
 that omits the field — for example, a structured-only validator that
 never inlines payloads — remains conforming.
 
-Sidecar precedence over `body` is specified in §8.4.
+Sidecar precedence over `body` is specified in §8.1.
 
 ## 6. Collections (Rule 2)
 

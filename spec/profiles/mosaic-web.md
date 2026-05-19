@@ -136,7 +136,11 @@ Resolved references inside a record (per `../format/02-references.md`
 §11.4) MAY be embedded directly in the JSON-LD output. For example, a
 `BlogPosting` whose `author` field resolves to a `Person` record can
 emit the resolved Person inline as the `author` value, producing a
-nested schema.org graph in one JSON-LD block.
+nested schema.org graph in one JSON-LD block. The block-composition
+pattern (an ordered `sections: [ref:…, ref:…]` array on a page record,
+each ref pointing at a section record with its own `@type`) produces a
+similar nested graph automatically; see
+`../../docs/adr/0002-block-composition.md` for the recorded pattern.
 
 Field-name mapping (Mosaic record fields → schema.org properties) is
 consumer-defined; profiles MAY codify common mappings. Consumers SHOULD
