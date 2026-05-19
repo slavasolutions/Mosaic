@@ -4,9 +4,12 @@ Copyright 2026 Slava Solutions and the Mosaic project contributors.
 This product includes software and a specification developed by
 Slava Solutions (https://github.com/slavasolutions/mosaic).
 
-Specification text (SPEC.md, PHILOSOPHY.md, mips/, schema annotations)
-is licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+Specification text (spec/format/, spec/profiles/, spec/schemas/ annotations,
+PRINCIPLES.md) is licensed under Creative Commons Attribution 4.0
+International (CC BY 4.0). See LICENSE-spec.md.
 
-Code (validators, schema tooling, examples that ship as runnable code)
-is licensed under the Apache License, Version 2.0.
+Code (packages/, spec/tools/, examples that ship as runnable code) is
+licensed under the Apache License, Version 2.0. See LICENSE-code.
+
+"Mosaic" and the Mosaic logos are project marks. See TRADEMARK.md.
 

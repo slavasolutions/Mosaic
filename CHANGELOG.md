@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### Licensing & marks
+
+- Removed stale top-level `/LICENSE` (MIT). Dual licensing is now canonical:
+  Apache 2.0 for code (`LICENSE-code`) + CC BY 4.0 for spec text
+  (`LICENSE-spec.md`).
+- Added `/TRADEMARK.md` — project marks policy (forks MUST rename; logos
+  are not covered by the code/spec licenses).
+- Root `package.json#license` switched from `SEE LICENSE IN ./LICENSE`
+  to `Apache-2.0` to match the per-package metadata.
+- `NOTICE`, `LICENSE-code`, and `LICENSE-spec.md` refreshed to point at
+  the current spec layout (`spec/format/`, `spec/profiles/`,
+  `spec/schemas/`, `PRINCIPLES.md`) — the old `SPEC.md` / `PHILOSOPHY.md`
+  / `mips/` paths no longer exist.
+- `README.md` license section gained a TRADEMARK.md pointer.
+
 ## 0.9 — Realignment (2026-05-14)
 
 Doc-layer realignment after drift accumulated through 0.8 → 0.8.1. No semantic spec changes; terminology renames (`record → entry`, `drift`, `tools → packages`) deferred to 0.10. Locks 1.0 scope.

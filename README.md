@@ -125,8 +125,7 @@ Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs,
 
 - Specification text — [CC BY 4.0](./LICENSE-spec.md). Attribution required, derivatives permitted.
 - Code (`spec/tools/`, `packages/`) — [Apache 2.0](./LICENSE-code), with explicit patent grant.
-
-Naming norm: describe implementations as *"compatible with Mosaic"*. Forks should use a different name. Community norm, not a trademark assertion.
+- Project marks — see [TRADEMARK.md](./TRADEMARK.md). Forks MUST rename; describe compatible implementations as *"compatible with Mosaic"*.
 
 ## Reporting security issues
 

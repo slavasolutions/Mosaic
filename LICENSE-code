@@ -1,9 +1,9 @@
 Code in this repository (validators, schema tooling, example runnable
-code, build scripts) is licensed as follows.
+code, build scripts, and the contents of `packages/` and `spec/tools/`)
+is licensed as follows.
 
-The normative specification text (SPEC.md, mips/, schema annotations,
-and PHILOSOPHY.md) is licensed separately under CC BY 4.0.
-See LICENSE-spec.md.
+The normative specification text (under `spec/`, plus `PRINCIPLES.md`) is
+licensed separately under CC BY 4.0. See LICENSE-spec.md.
 
 ================================================================================
 
