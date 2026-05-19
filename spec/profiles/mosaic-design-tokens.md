@@ -1,6 +1,6 @@
 # Mosaic Design Tokens — Profile Specification
 
-**Version:** 0.9.2 (draft, companion to the base format)
+**Version:** 0.9.4 (draft, companion to the base format)
 **Status:** Working Draft
 **Layer:** Profile. Depends on `../format/01-format.md` and
 `../format/02-references.md`. Independent of `mosaic-web.md`.
@@ -147,7 +147,7 @@ back to `$value` when encountering DTCG-typed objects.
 
 ## 8. What this profile does NOT define
 
-Out of scope for 0.9.2 of this profile. Each MAY return in a later
+Out of scope for 0.9.4 of this profile. Each MAY return in a later
 draft:
 
 - **Per-component overrides.** A record can have its own `theme` ref,
@@ -172,7 +172,7 @@ The two profiles do not interact at the spec level.
 
 ## 10. Status
 
-This is a 0.9.2 working draft. The headline concepts (a `tokens/`
+This is a 0.9.4 working draft. The headline concepts (a `tokens/`
 collection, `theme` as a cascading ref field, the strippability and
 hot-swap properties) are intended to be stable. The DTCG-typed value
 shapes in §7 may evolve as DTCG itself stabilises.

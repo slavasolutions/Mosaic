@@ -1,6 +1,6 @@
 # Mosaic Web — Profile Specification
 
-**Version:** 0.9.2 (draft, companion to the base format)
+**Version:** 0.9.4 (draft, companion to the base format)
 **Status:** Working Draft
 **Layer:** Profile. Depends on `../format/01-format.md` (the base) and
 `../format/02-references.md` (refs + cascade).
@@ -268,7 +268,7 @@ different audiences and remain independent.
 
 ## 8. What this profile does NOT define
 
-Out of scope for 0.9.2 of this profile. Each MAY return in a later draft:
+Out of scope for 0.9.4 of this profile. Each MAY return in a later draft:
 
 - **Redirects.** Older drafts declared redirects in the manifest with
   loop detection and 301 hints. Defer until a consumer needs them.
@@ -298,7 +298,7 @@ non-conforming. There is no looser "web-compatible" mode.
 
 ## 10. Status
 
-This is a 0.9.2 working draft. It deliberately covers the bare minimum
+This is a 0.9.4 working draft. It deliberately covers the bare minimum
 required for a consumer (an editor, a renderer, a static-site generator)
 to produce predictable URLs from a Mosaic folder. The deferred items in §8
 will return as the profile matures.

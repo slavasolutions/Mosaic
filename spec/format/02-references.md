@@ -1,6 +1,6 @@
 # Mosaic Format — References
 
-**Version:** 0.9.2 (draft) · companion to `01-format.md`
+**Version:** 0.9.4 (draft) · companion to `01-format.md`
 **Status:** Working Draft
 **Layer:** Base format. This document defines **content references** (§11)
 and the minimal **cascade** mechanism (§12). *Structural* relationships

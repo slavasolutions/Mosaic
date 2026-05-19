@@ -1,6 +1,23 @@
 # Mosaic Spec Changelog
 
-## Unreleased
+## 0.9.4 (2026-05-19) — adapter ecosystem
+
+Adapters are now first-class in the spec text. Filesystem, S3-compatible object storage, and (planned) git and in-memory backends all conform to the same pipeline contract.
+
+### Added
+
+- **Base format §10 — Adapters (informative).** Defines what makes a consumer a conforming adapter: produce a resolved record tree (`(identity, modifier-set) → Record`) from any backing store while honouring §§5–9. Two reference adapters in the wild today — filesystem (`readFolder`) and S3-compatible object storage (`readBucket`) — share a single `runPipeline` and are interchangeable on every spec fixture. Spec doesn't constrain how an adapter fetches bytes, only what shape it produces.
+
+### Changed
+
+- **Spec headers bumped 0.9.2 → 0.9.4 across `format/01-format.md`, `format/02-references.md`, `profiles/mosaic-web.md`, and `profiles/mosaic-design-tokens.md`.** Includes all 0.9.3 spec work (body field §5.2, sidecar precedence §8.1, mosaic-web meta clause §7, JSON-LD strip rule, SEO + migration explainers, ADRs 0001/0002/0003) plus the new §10 Adapters clause.
+- **§11 Out of Scope** was previously §10; renumbered to make room for §10 Adapters.
+
+---
+
+## 0.9.3 (2026-05-19) — body field, meta tags, adopter explainers
+
+Pulls in the format-level `body` field, the mosaic-web meta clause, and the first non-normative explainers (SEO + migration). Three ADRs land alongside.
 
 ### Added
 

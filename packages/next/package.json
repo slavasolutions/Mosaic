@@ -1,6 +1,6 @@
 {
   "name": "@ssolu/mosaic-next",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Next.js helpers for Mosaic folders. Read your content from a folder; let Next render it. App Router (primary) and Pages Router (fallback).",
   "type": "module",
   "main": "./dist/index.js",

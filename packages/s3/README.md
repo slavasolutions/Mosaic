@@ -15,7 +15,7 @@ Works against any S3 API:
 
 ## Status
 
-`0.1.0` — working draft. Tracks Mosaic spec 0.9.2 exactly the same way `@ssolu/mosaic-core`'s filesystem reader does. The two are interchangeable.
+`0.1.0` — working draft. Tracks Mosaic spec 0.9.4 exactly the same way `@ssolu/mosaic-core`'s filesystem reader does. The two are interchangeable.
 
 ## Install
 

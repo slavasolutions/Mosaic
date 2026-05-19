@@ -260,7 +260,41 @@ A conforming writer MUST round-trip JSON fields it does not recognize, and MUST
 NOT drop or destructively rewrite them when saving a record it has read. This
 guarantees forward compatibility across tool and profile versions.
 
-## 10. Out of Scope
+## 10. Adapters
+
+The base format is **source-agnostic**. A consumer that produces a
+resolved record tree conforming to §§5–9 from any backing store —
+filesystem, object storage, version-control repository, in-memory
+fixtures, networked content service — is a conforming **adapter**.
+
+A conforming adapter MUST:
+
+1. List every record in the source by §7 identity.
+2. Apply §8 sidecar merge and §9 unknown-field preservation.
+3. Produce the same `(identity, modifier-set) → Record` shape the base
+   format describes (variants surfaced, body extracted per §5.2 when
+   the paired content file is text — `TEXT_BODY_EXTENSIONS` is defined
+   by §5.2).
+
+An adapter MAY also:
+
+4. Apply profile-declared cascading (e.g. `theme` for the
+   mosaic-design-tokens profile, per `02-references.md` §12).
+5. Resolve references per `02-references.md` §11.
+6. Stream binary payloads lazily — bodies for binary content files MAY
+   be omitted; addressability of the underlying object is preserved.
+
+Two adapters are **interchangeable** when they produce byte-identical
+resolved trees from equivalent content. Reference adapters that
+demonstrate the contract include filesystem readers (e.g.
+`readFolder`) and S3-compatible object-storage readers (e.g.
+`readBucket`); both share a single spec pipeline.
+
+This section is informative — it does not constrain how an adapter
+fetches bytes, only what shape it MUST produce. The pipeline is the
+contract; the source layer is free.
+
+## 11. Out of Scope
 
 Explicitly **not** defined by the base format (left to a profile or consumer):
 references between records, cascade/inheritance, routing/URLs, validation

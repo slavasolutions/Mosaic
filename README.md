@@ -159,7 +159,7 @@ Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs,
 
 ## Status
 
-**Version 0.9.2** — working draft. The headline format is locked; details may still shift before 1.0. Packages aren't on npm yet; clone and `npm install` to use them. See [`spec/CHANGELOG.md`](./spec/CHANGELOG.md) for what changed since 0.9.1.
+**Version 0.9.4** — working draft. The headline format is locked; details may still shift before 1.0. Packages aren't on npm yet; clone and `npm install` to use them. See [`spec/CHANGELOG.md`](./spec/CHANGELOG.md) for what changed since 0.9.2.
 
 ## License
 

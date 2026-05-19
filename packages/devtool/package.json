@@ -1,6 +1,6 @@
 {
   "name": "@ssolu/mosaic-devtool",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Browser-side inspector for Mosaic-rendered pages. Drop-in <script src> reads the resolved record, the raw record, the JSON-LD subset, and the rendered <head>.",
   "type": "module",
   "main": "./dist/esm/index.js",

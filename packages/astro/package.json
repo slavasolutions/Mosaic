@@ -1,6 +1,6 @@
 {
   "name": "@ssolu/mosaic-astro",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Astro Content Layer loader for Mosaic folders. Read your content from a folder; let Astro render it.",
   "type": "module",
   "main": "./dist/index.js",
