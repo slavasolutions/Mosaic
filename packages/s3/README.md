@@ -172,6 +172,8 @@ The reader is stateless and cheap to re-run, so any of these wrap it the same wa
 - ListObjectsV2 returns up to 1000 keys per page. We paginate, so total object count is unbounded — but the spec pipeline holds the full file list in memory. For very large content sets (50k+ records), consider sharding by prefix.
 - JSON fetches are bounded by `concurrency` (default 32). Raise for high-latency endpoints, lower for tight rate limits.
 - Manifest is read only if exactly `{prefix}/mosaic.json` exists. Manifests in subdirectories are not recognised (matches base spec §7.2).
+- **No retry / backoff** on transient errors. A single 503 / 429 / network blip from the bucket fails the entire load. R2 occasionally throttles under burst. Production loaders should wrap `readBucket` with their own retry helper (exponential backoff, 3 attempts, jittered) until v0.2 ships one built-in.
+- **`cascadingKeys` is your responsibility** when wrapping `readBucket` inside the Astro/Next loader's `source` mode. The filesystem loader path injects `['theme']` automatically; the source-mode path does not. Pass `cascadingKeys: ['theme']` to `readBucket` for mosaic-web sites or the design-tokens cascade is silently disabled.
 
 ## License
 

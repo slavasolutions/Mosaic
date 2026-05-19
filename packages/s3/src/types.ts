@@ -30,7 +30,12 @@ export interface ReadBucketOptions {
   prefix?: string;
   /**
    * Profile-declared cascading keys. Mirrors the same option on
-   * `@ssolu/mosaic-core`'s `readFolder`.
+   * `@ssolu/mosaic-core`'s `readFolder`. Defaults to `[]` (no cascading).
+   *
+   * For mosaic-web sites consumed through the Astro loader's `source` mode,
+   * pass `['theme']` here — the filesystem loader injects that key
+   * automatically, but source-mode adapters must opt in. Mismatching this
+   * silently disables the design-tokens cascade.
    */
   cascadingKeys?: string[];
   /**

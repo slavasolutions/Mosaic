@@ -100,13 +100,43 @@ interface AstroLoader {
  * Create an Astro Content Layer loader that sources entries from a Mosaic
  * folder.
  *
- * @example
+ * Two modes:
+ *
+ * - **Filesystem (`root`)** — loader calls `readFolder(root, { cascadingKeys: ['theme'] })`
+ *   under the hood. The `['theme']` cascade is wired automatically so the
+ *   mosaic-design-tokens profile works out of the box.
+ *
+ * - **Custom source (`source`)** — loader calls your async function and
+ *   expects it to return a mosaic-core `Resolution`. The loader does NOT
+ *   inject `cascadingKeys` here; the adapter you wrap must pass them
+ *   itself. For mosaic-web sites that means passing `cascadingKeys: ['theme']`
+ *   to `readBucket` / `readGit` / whatever backend you use, otherwise the
+ *   design-tokens cascade is silently disabled.
+ *
+ * @example Filesystem
  * ```ts
  * import { defineCollection } from 'astro:content';
  * import { mosaicLoader } from '@ssolu/mosaic-astro';
  *
  * export const collections = {
  *   pages: defineCollection({ loader: mosaicLoader({ root: './content' }) }),
+ * };
+ * ```
+ *
+ * @example S3 / R2 (custom source — note `cascadingKeys`)
+ * ```ts
+ * import { mosaicLoader } from '@ssolu/mosaic-astro';
+ * import { readBucket } from '@ssolu/mosaic-s3';
+ *
+ * export const collections = {
+ *   pages: defineCollection({
+ *     loader: mosaicLoader({
+ *       source: () => readBucket({
+ *         client, bucket: 'my-content',
+ *         cascadingKeys: ['theme'],   // ← required for mosaic-web sites
+ *       }),
+ *     }),
+ *   }),
  * };
  * ```
  */

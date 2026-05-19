@@ -56,13 +56,16 @@ export async function readBucket(opts: ReadBucketOptions): Promise<Resolution> {
   const prefix = normalisePrefix(opts.prefix ?? '');
   const concurrency = Math.max(1, opts.concurrency ?? 32);
 
-  // 1. List all keys under prefix (paginated).
-  const keys = await listAllKeys(client, bucket, prefix);
+  // 1. List all keys under prefix (paginated). Materialise as a Set so
+  //    membership checks (manifest lookup, future O(1) probes) are constant
+  //    time instead of O(n) over 1000+ keys.
+  const keyList = await listAllKeys(client, bucket, prefix);
+  const keys = new Set(keyList);
 
   // 2. Load the manifest if present at the prefix root.
   let manifest: Manifest | null = null;
   const manifestKey = prefix + MANIFEST_KEY;
-  if (keys.includes(manifestKey)) {
+  if (keys.has(manifestKey)) {
     try {
       const parsed = await getJsonObject(client, bucket, manifestKey);
       manifest = { raw: parsed };
@@ -75,7 +78,7 @@ export async function readBucket(opts: ReadBucketOptions): Promise<Resolution> {
   // 3. Convert keys → FileEntry[]. Skip hidden (§7.2), the manifest, and
   //    §7 name violations. `validate()` flags the violations separately.
   const files: FileEntry[] = [];
-  for (const key of keys) {
+  for (const key of keyList) {
     if (key === manifestKey) continue;
     if (!key.startsWith(prefix)) continue;
     const rel = key.slice(prefix.length);
@@ -90,37 +93,40 @@ export async function readBucket(opts: ReadBucketOptions): Promise<Resolution> {
     files.push({ rel, parts, base, modifiers, ext, ident });
   }
 
-  // 4. Build a parallel, bounded fetcher cache so the pipeline's
-  //    fetchJson calls don't re-fetch the same key twice (a sidecar is
-  //    read by the pipeline for the entry that owns it; same key may
-  //    appear as a content file's sidecar across the run).
-  const cache = new Map<string, Promise<JsonObject>>();
+  // 4. Build parallel, bounded, cached fetchers so the pipeline's
+  //    repeat reads of the same key (sidecars referenced across the run,
+  //    or future features that re-fetch bodies) hit network exactly once.
+  const jsonCache = new Map<string, Promise<JsonObject>>();
+  const bodyCache = new Map<string, Promise<string>>();
   const inflight = new Set<Promise<unknown>>();
+
+  async function gated<T>(make: () => Promise<T>): Promise<T> {
+    while (inflight.size >= concurrency) {
+      await Promise.race(inflight);
+    }
+    const p = make();
+    inflight.add(p);
+    p.finally(() => inflight.delete(p));
+    return p;
+  }
 
   async function fetchJson(rel: string): Promise<JsonObject> {
     const key = prefix + rel;
-    let p = cache.get(key);
+    let p = jsonCache.get(key);
     if (!p) {
-      // Concurrency gate.
-      while (inflight.size >= concurrency) {
-        await Promise.race(inflight);
-      }
-      p = getJsonObject(client, bucket, key);
-      cache.set(key, p);
-      inflight.add(p);
-      p.finally(() => inflight.delete(p!));
+      p = gated(() => getJsonObject(client, bucket, key));
+      jsonCache.set(key, p);
     }
     return p;
   }
 
   async function fetchBody(rel: string): Promise<string> {
     const key = prefix + rel;
-    while (inflight.size >= concurrency) {
-      await Promise.race(inflight);
+    let p = bodyCache.get(key);
+    if (!p) {
+      p = gated(() => getObjectText(client, bucket, key));
+      bodyCache.set(key, p);
     }
-    const p = getObjectText(client, bucket, key);
-    inflight.add(p);
-    p.finally(() => inflight.delete(p));
     return p;
   }
 
