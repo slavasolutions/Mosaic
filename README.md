@@ -48,7 +48,7 @@ Who needs the `mosaic-web` profile:
 | 2 | A folder is a collection | Folders nest. `index.{json,md,…}` is the folder itself as a record. |
 | 3 | The filename is the contract | `name[.modifier]*.ext`. Identity is form-independent — `about.json` and `about/index.json` are the same record. |
 
-That's the base. [`spec/`](./spec/) extends these with refs (`ref:team/ada` and a JSON Pointer for inner values), a minimal cascade (one inheritable key — `locale` — plus profile-declared), and the optional [`mosaic-web` profile](./spec/profiles/mosaic-web.md) for routing. See [`mosaic-web-seo.md`](./spec/profiles/mosaic-web-seo.md) for how the web profile produces crawler-friendly output. All of it small and frozen.
+That's the base. [`spec/`](./spec/) extends these with refs (`ref:team/ada` and a JSON Pointer for inner values), a minimal cascade (one inheritable key — `locale` — plus profile-declared), and the optional [`mosaic-web` profile](./spec/profiles/mosaic-web.md) for routing. See [`mosaic-web-seo.md`](./spec/profiles/mosaic-web-seo.md) for how the web profile produces crawler-friendly output, and [`mosaic-web-migration.md`](./spec/profiles/mosaic-web-migration.md) for moving an existing site into Mosaic. All of it small and frozen.
 
 ---
 

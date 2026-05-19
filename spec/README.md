@@ -52,6 +52,7 @@ Git-friendly content stores keep reinventing the same handful of folder, naming,
 | `examples/` | Four worked examples (identity, sidecars, cascade, the Mosaic Web profile shape). |
 | `profiles/mosaic-web.md` | The first profile spec — routing, configurable root, URL derivation. Layers on the base; does not change it. |
 | `profiles/mosaic-web-seo.md` | Non-normative explainer — how URL derivation, Schema.org JSON-LD, and HTML meta tags combine for SEO. |
+| `profiles/mosaic-web-migration.md` | Non-normative explainer — moving an existing site (HTML, CMS, SSG, JSX) into Mosaic. Pairs with `@ssolu/mosaic-migrate`. |
 | `CHANGELOG.md` | What changed between drafts. |
 
 ## The three structural rules (headline)

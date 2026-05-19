@@ -47,7 +47,8 @@ whose `body` fields are HTML or plaintext is equally conforming. The
 SEO surfaces below — JSON-LD, meta tags, sitemap — are independent of
 which text format you choose for `body`. See
 `../../docs/adr/0001-body-format-agnosticism.md` for the recorded
-rationale.
+rationale, and `mosaic-web-migration.md` if you are bringing an
+existing HTML-bodied site into Mosaic.
 
 ## 2. Structured data — Schema.org via `@type`
 
