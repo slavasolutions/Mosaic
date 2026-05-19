@@ -54,10 +54,10 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^20.19.41",
+    "@types/node": "^25.9.0",
     "astro": "^6.3.5",
-    "typescript": "^5.9.3",
-    "vitest": "^1.6.1"
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=18.17.0"

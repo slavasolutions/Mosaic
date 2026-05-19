@@ -28,15 +28,21 @@ jobs:
       - name: Install workspaces
         run: npm install
 
-      - name: Build core + astro packages
+      - name: Build core + framework adapter packages
         run: |
           npm run build --workspace=packages/core
           npm run build --workspace=packages/astro
+          npm run build --workspace=packages/next
 
       - name: Build Astro example site
         env:
           GITHUB_PAGES_DEPLOY: '1'
         run: npx --workspace=packages/astro/examples/minimal-site astro build
+
+      - name: Build Next example site
+        env:
+          GITHUB_PAGES_DEPLOY: '1'
+        run: npx --workspace=packages/next/examples/minimal-next-site next build
 
       - name: Assemble Pages output
         run: |
@@ -44,6 +50,8 @@ jobs:
           cp index.html logo.svg _site/
           mkdir -p _site/example
           cp -r packages/astro/examples/minimal-site/dist/* _site/example/
+          mkdir -p _site/next-example
+          cp -r packages/next/examples/minimal-next-site/out/* _site/next-example/
 
       - uses: actions/upload-pages-artifact@v3
         with:
