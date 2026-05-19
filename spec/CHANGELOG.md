@@ -4,6 +4,7 @@
 
 ### Added
 
+- **`profiles/mosaic-web-seo.md` — SEO explainer (non-normative).** New companion to `mosaic-web.md`. Walks through what the format gives crawlers for free, how §6 JSON-LD and §7 meta tags combine, canonical URLs and locale variants, sitemap synthesis from §3, the static-output advantage, and explicit non-goals. Cross-linked from `README.md`, `spec/README.md`, and `mosaic-web.md` §1.
 - **mosaic-web §7 — HTML meta tags (RECOMMENDED).** New normative clause covering page-level `<meta>` / OpenGraph / Twitter Card emission. Reserves the record field name `meta` with sub-fields `description`, `robots`, `canonical`, and nested `og.*` / `twitter.*` groups. Same RECOMMENDED posture as §6 Schema.org: consumers MAY emit or omit and still conform. Includes sensible-defaults guidance (§7.1, informative), a worked `BlogPosting` example (§7.2), and an explicit independence rule against §6 JSON-LD (§7.3).
 - **D-web fixture exercises §7 end-to-end.** `pages/index.json` (new home record), `pages/about.json`, `pages/blog/hello.json`, plus a new French sidecar variant `pages/blog/hello.fr.json` now carry `meta` blocks demonstrating OpenGraph, Twitter Card, canonical, robots, and per-variant locale switching.
 

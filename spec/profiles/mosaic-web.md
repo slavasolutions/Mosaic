@@ -23,6 +23,11 @@ Mosaic Web describes how a Mosaic folder is read as a **website**. It defines:
 It does **not** redefine any base-format rule. It adds a single conceptual
 layer — *identity → URL* — and otherwise leaves the folder alone.
 
+For SEO context — how the URL derivation in §3, the Schema.org clause
+in §6, and the meta-tags clause in §7 combine to produce
+crawler-friendly output — see the non-normative companion
+`mosaic-web-seo.md`.
+
 ## 2. Detection
 
 A consumer MAY treat a folder as a Mosaic Web site when its root

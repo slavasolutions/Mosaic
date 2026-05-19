@@ -51,6 +51,7 @@ Git-friendly content stores keep reinventing the same handful of folder, naming,
 | `tools/validate.py` | Reference validator — Python stdlib, runs the spec rules against any folder. |
 | `examples/` | Four worked examples (identity, sidecars, cascade, the Mosaic Web profile shape). |
 | `profiles/mosaic-web.md` | The first profile spec — routing, configurable root, URL derivation. Layers on the base; does not change it. |
+| `profiles/mosaic-web-seo.md` | Non-normative explainer — how URL derivation, Schema.org JSON-LD, and HTML meta tags combine for SEO. |
 | `CHANGELOG.md` | What changed between drafts. |
 
 ## The three structural rules (headline)
