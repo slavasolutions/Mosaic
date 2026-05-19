@@ -1,0 +1,9 @@
+<p>This page's body is authored as raw HTML and rendered through <code>@ssolu/mosaic-{astro,next}</code>'s HTML pipeline (<code>rehype-parse</code> &rarr; <code>rehype-sanitize</code> &rarr; <code>rehype-stringify</code>).</p>
+<p>Inline elements like <strong>bold</strong>, <em>italic</em>, and <a href="/about">links</a> survive sanitisation; scripts, inline event handlers, and <code>&lt;style&gt;</code> blocks do not.</p>
+<h2>What this proves</h2>
+<ul>
+  <li>A record's body format is determined by the <em>extension of the paired content file</em>, not by content sniffing.</li>
+  <li>Markdown remains the default; HTML is an opt-in by saving the body as <code>legal.html</code> instead of <code>legal.md</code>.</li>
+  <li>The same record metadata (<code>legal.json</code>) drives the layout regardless of body format.</li>
+</ul>
+<p>This is also why <code>@type</code>, <code>title</code>, and <code>lede</code> still render at the top of the page — the sidecar JSON handles the structured parts; the HTML file handles the prose.</p>

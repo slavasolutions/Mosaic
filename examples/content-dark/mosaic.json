@@ -1,0 +1,7 @@
+{
+  "mosaic": "0.9",
+  "profiles": {
+    "web": { "root": "pages" },
+    "design-tokens": {}
+  }
+}

@@ -53,12 +53,14 @@ const devtoolSrc = isDeploy
   : '/_mosaic-devtool/mosaic-devtool.js';
 
 // === File tree (devtool Tree tab) ============================================
-// Walks examples/content/ at SSG and emits the flat shape devtool's
+// Walks examples/<contentDir>/ at SSG and emits the flat shape devtool's
 // tree.ts accepts. activePath is the canonical source file (entry.filePath)
 // for the record being rendered. Devtool hides the tab when the script is
-// absent, so emitting it unconditionally is fine.
-const contentRoot = fileURLToPath(new URL('../../../../../../examples/content/', import.meta.url));
-const treePayload = buildTree(contentRoot, 'content');
+// absent, so emitting it unconditionally is fine. Matrix variants drive
+// `MOSAIC_CONTENT_DIR` to point at content-dark / content-minimal.
+const contentDir = process.env.MOSAIC_CONTENT_DIR ?? 'content';
+const contentRoot = fileURLToPath(new URL(`../../../../../../examples/${contentDir}/`, import.meta.url));
+const treePayload = buildTree(contentRoot, contentDir);
 if (entry.filePath) {
   const ap = toTreePath(entry.filePath, contentRoot);
   if (ap) treePayload.activePath = ap;

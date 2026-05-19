@@ -36,34 +36,55 @@ jobs:
           npm run build --workspace=packages/astro
           npm run build --workspace=packages/next
 
-      - name: Build Astro example site
+      - name: Assemble Pages output — root explainer + shared bundles
+        run: |
+          mkdir -p _site
+          cp index.html logo.svg _site/
+          cp -r explore _site/
+          mkdir -p _site/_mosaic-devtool
+          cp packages/devtool/dist/mosaic-devtool.js _site/_mosaic-devtool/
+          mkdir -p _site/_mosaic-validator
+          cp packages/validator-web/dist/mosaic-validator-web.js _site/_mosaic-validator/
+
+      - name: Build Astro variant — default theme, default content
         env:
           GITHUB_PAGES_DEPLOY: '1'
-        run: npx --workspace=packages/astro/examples/minimal-site astro build
+          MOSAIC_VARIANT: astro
+          MOSAIC_CONTENT_DIR: content
+        run: |
+          npx --workspace=packages/astro/examples/minimal-site astro build
+          mkdir -p _site/astro
+          cp -r packages/astro/examples/minimal-site/dist/* _site/astro/
+
+      - name: Build Astro variant — dark theme, default content
+        env:
+          GITHUB_PAGES_DEPLOY: '1'
+          MOSAIC_VARIANT: astro-dark
+          MOSAIC_CONTENT_DIR: content-dark
+        run: |
+          rm -rf packages/astro/examples/minimal-site/dist packages/astro/examples/minimal-site/.astro
+          npx --workspace=packages/astro/examples/minimal-site astro build
+          mkdir -p _site/astro-dark
+          cp -r packages/astro/examples/minimal-site/dist/* _site/astro-dark/
+
+      - name: Build Astro variant — no tokens, minimal content
+        env:
+          GITHUB_PAGES_DEPLOY: '1'
+          MOSAIC_VARIANT: astro-minimal
+          MOSAIC_CONTENT_DIR: content-minimal
+        run: |
+          rm -rf packages/astro/examples/minimal-site/dist packages/astro/examples/minimal-site/.astro
+          npx --workspace=packages/astro/examples/minimal-site astro build
+          mkdir -p _site/astro-minimal
+          cp -r packages/astro/examples/minimal-site/dist/* _site/astro-minimal/
 
       - name: Build Next example site
         env:
           GITHUB_PAGES_DEPLOY: '1'
-        run: npx --workspace=packages/next/examples/minimal-next-site next build
-
-      - name: Assemble Pages output
         run: |
-          mkdir -p _site
-          cp index.html logo.svg _site/
-          mkdir -p _site/astro
-          cp -r packages/astro/examples/minimal-site/dist/* _site/astro/
+          npx --workspace=packages/next/examples/minimal-next-site next build
           mkdir -p _site/next
           cp -r packages/next/examples/minimal-next-site/out/* _site/next/
-          # Devtool — inspector loaded by example pages on every render
-          # (set `?nodebug=1` to hide). Lives one level above /astro/ and
-          # /next/ so both sites share one copy.
-          mkdir -p _site/_mosaic-devtool
-          cp packages/devtool/dist/mosaic-devtool.js _site/_mosaic-devtool/
-          # Browser validator bundle — loaded by the explainer's
-          # "Validate a folder" section. Sits alongside _mosaic-devtool/
-          # so paths are stable across deployments.
-          mkdir -p _site/_mosaic-validator
-          cp packages/validator-web/dist/mosaic-validator-web.js _site/_mosaic-validator/
 
       - uses: actions/upload-pages-artifact@v5
         with:
