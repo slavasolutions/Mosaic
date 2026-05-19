@@ -4,7 +4,25 @@
 
 **Version:** 0.9.2 (draft — format locked, not 1.0)
 **Status:** Working Draft
-**Scope:** the base format only. Profiles (e.g. a future Mosaic Web spec for routing) layer on top in separate documents.
+**Scope:** the base format. Profiles (e.g. the `mosaic-web` profile for routing) layer on top in separate documents and never modify the base.
+
+### Two-layer model
+
+The spec is organised in **two layers** so each consumer pays only for what it needs:
+
+```
+   ┌──────────────────────────────────────────────────────┐
+   │  Profiles   →  mosaic-web (routing), future feed,    │
+   │                future archive…                        │
+   ├──────────────────────────────────────────────────────┤
+   │  Base       →  records, collections, identity,        │
+   │                sidecars, refs, cascade (§§5–12)       │
+   └──────────────────────────────────────────────────────┘
+```
+
+A folder MUST conform to the base. Profiles are OPTIONAL — they add per-domain rules (URL derivation, feed-shape, etc.) that domain-specific consumers care about. The base spec never mentions URLs; that talk lives entirely in the web profile.
+
+Concrete: an RSS reader, an AI ingest tool, or an archive index only needs the base. An Astro/Next/static-site-generator engine needs the base plus `mosaic-web`.
 
 ---
 

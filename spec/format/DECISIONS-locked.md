@@ -10,8 +10,9 @@ each option *looks like as files*, what it resolves to, the recommendation
 that was taken, and the original decision checkbox. The matching folders are
 in `examples/`.
 
-You can run `python3 ../../apps/folderdb/validate.py examples/A-identity/content`
-etc. to see behaviour live.
+You can run `python3 ../tools/validate.py ../examples/A-identity/content`
+etc. (or `node ../../packages/core/dist/cli.js validate ../examples/A-identity/content`)
+to see behaviour live.
 
 ---
 
