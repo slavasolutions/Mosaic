@@ -113,11 +113,23 @@ export async function readBucket(opts: ReadBucketOptions): Promise<Resolution> {
     return p;
   }
 
+  async function fetchBody(rel: string): Promise<string> {
+    const key = prefix + rel;
+    while (inflight.size >= concurrency) {
+      await Promise.race(inflight);
+    }
+    const p = getObjectText(client, bucket, key);
+    inflight.add(p);
+    p.finally(() => inflight.delete(p));
+    return p;
+  }
+
   const input: PipelineInput = {
     files,
     manifest,
     rootId: `s3://${bucket}/${prefix}`,
     fetchJson,
+    fetchBody,
   };
 
   return runPipeline(input, {
@@ -164,14 +176,7 @@ async function getJsonObject(
   bucket: string,
   key: string,
 ): Promise<JsonObject> {
-  const r = (await client.send(
-    new GetObjectCommand({ Bucket: bucket, Key: key }),
-  )) as GetObjectCommandOutput;
-
-  if (!r.Body) {
-    throw new Error(`s3 GetObject ${bucket}/${key}: empty body`);
-  }
-  const text = await streamToString(r.Body);
+  const text = await getObjectText(client, bucket, key);
   const parsed = JSON.parse(text);
   if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
     throw new Error(
@@ -179,6 +184,20 @@ async function getJsonObject(
     );
   }
   return parsed as JsonObject;
+}
+
+async function getObjectText(
+  client: S3ClientLike,
+  bucket: string,
+  key: string,
+): Promise<string> {
+  const r = (await client.send(
+    new GetObjectCommand({ Bucket: bucket, Key: key }),
+  )) as GetObjectCommandOutput;
+  if (!r.Body) {
+    throw new Error(`s3 GetObject ${bucket}/${key}: empty body`);
+  }
+  return streamToString(r.Body);
 }
 
 /**
