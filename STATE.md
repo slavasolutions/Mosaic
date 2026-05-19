@@ -18,7 +18,7 @@ Main HEAD when written: `be6c3d5`.
 - **Node CLI** in mosaic-core: `mosaic validate` / `mosaic read`.
 - **Test workflow** (`.github/workflows/test.yml`) + **Dependabot** (`.github/dependabot.yml`) — weekly grouped npm updates + monthly Actions updates.
 - **Index.json `.gitignore` bug fixed** — 0.5-era ignored `index.json` files (folder-form records). 9 formerly-ignored files added back.
-- **Designer explainer rewrite** — `index.html` shrunk 611 → 361 words. 10 logo variants in `brand/logos/`. Icon sprite at `brand/icons.svg`. Recommended logo: `headline.svg` (set as repo root `logo.svg`).
+- **Designer explainer rewrite** — `index.html` shrunk 611 → 361 words. Icon sprite at `brand/icons.svg`. Logo: `brand/logos/four-corners.svg` (the only one — copied to repo root `logo.svg` and both example sites' `public/logo.svg`).
 - **UX polish** from live-site feedback — banner shortened to one line + horizontal scroll, logo added to each example's `public/`, lorem ipsum bodies, "(Resolved from ref)" inline annotation removed.
 
 ## Live URLs
@@ -68,9 +68,8 @@ Main HEAD when written: `be6c3d5`.
 ### Open questions to resolve next session
 1. Cross-folder design sharing approach — A/B/C.
 2. Should the gallery be its own Mosaic folder (dogfood) or a hand-rolled static page?
-3. Logo pick — user has 10 to choose from. Recommended `headline.svg` is current `/logo.svg`.
-4. License — keep current dual (Apache + CC BY + stale MIT to delete), or consolidate to Apache 2.0 only?
-5. Render the spec text itself as a Mosaic site (deeper dogfood)?
+3. License — keep current dual (Apache + CC BY + stale MIT to delete), or consolidate to Apache 2.0 only?
+4. Render the spec text itself as a Mosaic site (deeper dogfood)?
 
 ## How to pick this up cleanly
 
