@@ -1,1 +1,5 @@
-{ "name": "Ada — a record, but NOT a web route (not under pages/)." }
+{
+  "name": "Ada Lovelace",
+  "role": "Pattern-maker",
+  "bio": "Joined Acme in 2018. Restorer of brass, painter of moths."
+}
