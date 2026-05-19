@@ -28,9 +28,10 @@ jobs:
       - name: Install workspaces
         run: npm install
 
-      - name: Build core + framework adapter packages
+      - name: Build core + devtool + framework adapter packages
         run: |
           npm run build --workspace=packages/core
+          npm run build --workspace=packages/devtool
           npm run build --workspace=packages/astro
           npm run build --workspace=packages/next
 
