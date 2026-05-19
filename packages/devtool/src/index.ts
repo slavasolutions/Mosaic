@@ -17,3 +17,12 @@ export type { MountOptions } from './mount.js';
 export { buildJsonLd } from './jsonld.js';
 export type { MosaicLikeRecord } from './jsonld.js';
 export { prettyJson, formatHead } from './format.js';
+export { buildTree, readTreeData, renderTree } from './tree.js';
+export type { TreeData, TreeNode, FlatTreeData, NestedTreeData } from './tree.js';
+export {
+  DEFAULT_SITES,
+  findActive,
+  readSitesData,
+  renderSites,
+} from './sites.js';
+export type { SiteEntry } from './sites.js';

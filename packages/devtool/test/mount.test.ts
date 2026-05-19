@@ -94,4 +94,69 @@ describe('mount', () => {
     (root.querySelector('button.tab[data-tab="raw"]') as HTMLButtonElement).click();
     expect(root.querySelector('.body pre')!.textContent).toContain('"Raw"');
   });
+
+  it('hides the Tree tab when the mosaic-tree script is absent', () => {
+    setBody('<script type="application/json" id="mosaic-record">{"id":"x"}</script>');
+    mount();
+    const root = document.getElementById('mosaic-devtool-host')!.shadowRoot!;
+    expect(root.querySelector('button.tab[data-tab="tree"]')).toBeNull();
+  });
+
+  it('shows the Tree tab and renders the folder structure when mosaic-tree is present', () => {
+    setBody(
+      '<script type="application/json" id="mosaic-record">{"id":"x"}</script>' +
+        '<script type="application/json" id="mosaic-tree">' +
+        JSON.stringify({
+          entries: [{ path: 'pages/about.json' }, { path: 'index.json' }],
+          activePath: 'pages/about.json',
+        }) +
+        '</script>',
+    );
+    mount();
+    const root = document.getElementById('mosaic-devtool-host')!.shadowRoot!;
+    (root.querySelector('.fab') as HTMLButtonElement).click();
+    const treeTab = root.querySelector(
+      'button.tab[data-tab="tree"]',
+    ) as HTMLButtonElement;
+    expect(treeTab).not.toBeNull();
+    treeTab.click();
+    const labels = Array.from(root.querySelectorAll('.tree-label')).map(
+      (n) => n.textContent,
+    );
+    expect(labels).toContain('pages');
+    expect(labels).toContain('about.json');
+    expect(labels).toContain('index.json');
+    expect(root.querySelector('.tree-node.is-active .tree-label')!.textContent).toBe(
+      'about.json',
+    );
+  });
+
+  it('always shows the Sites tab with default routes', () => {
+    setBody('<script type="application/json" id="mosaic-record">{"id":"x"}</script>');
+    mount();
+    const root = document.getElementById('mosaic-devtool-host')!.shadowRoot!;
+    (root.querySelector('.fab') as HTMLButtonElement).click();
+    const sitesTab = root.querySelector(
+      'button.tab[data-tab="sites"]',
+    ) as HTMLButtonElement;
+    expect(sitesTab).not.toBeNull();
+    sitesTab.click();
+    expect(root.querySelectorAll('.site-item').length).toBe(5);
+  });
+
+  it('allows the host to override the sites list via mosaic-sites', () => {
+    setBody(
+      '<script type="application/json" id="mosaic-record">{"id":"x"}</script>' +
+        '<script type="application/json" id="mosaic-sites">' +
+        JSON.stringify([{ label: 'Only', url: '/only/' }]) +
+        '</script>',
+    );
+    mount();
+    const root = document.getElementById('mosaic-devtool-host')!.shadowRoot!;
+    (root.querySelector('.fab') as HTMLButtonElement).click();
+    (root.querySelector('button.tab[data-tab="sites"]') as HTMLButtonElement).click();
+    const items = root.querySelectorAll('.site-item');
+    expect(items.length).toBe(1);
+    expect(items[0]!.querySelector('.site-label')!.textContent).toBe('Only');
+  });
 });

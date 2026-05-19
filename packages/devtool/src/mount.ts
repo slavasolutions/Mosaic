@@ -1,6 +1,6 @@
 /**
- * Mount the Mosaic devtool: a floating button + a slide-up panel with
- * four tabs (Resolved, Raw, JSON-LD, HTML head).
+ * Mount the Mosaic devtool: a floating button + a slide-up panel with up
+ * to six tabs (Resolved, Raw, JSON-LD, HTML head, Tree, Sites).
  *
  * The panel lives in a shadow root attached to a `<div>` we own, so its
  * CSS is fully isolated from the host page.
@@ -8,6 +8,8 @@
  * Inputs (all optional, sniffed from the document):
  *   - `<script type="application/json" id="mosaic-record">`     — resolved record
  *   - `<script type="application/json" id="mosaic-raw-record">` — raw, pre-cascade record
+ *   - `<script type="application/json" id="mosaic-tree">`       — file-tree payload
+ *   - `<script type="application/json" id="mosaic-sites">`      — site-switcher entries
  *
  * The `mount()` call is idempotent: calling twice replaces the existing
  * UI rather than stacking two.
@@ -16,16 +18,28 @@
 import { buildJsonLd, type MosaicLikeRecord } from './jsonld.js';
 import { prettyJson, formatHead } from './format.js';
 import { STYLES } from './styles.js';
+import { readTreeData, renderTree, type TreeData } from './tree.js';
+import {
+  readSitesData,
+  renderSites,
+  DEFAULT_SITES,
+  type SiteEntry,
+} from './sites.js';
 
 const HOST_ID = 'mosaic-devtool-host';
 const LS_KEY = 'mosaic-devtool.tab';
 
-type TabId = 'resolved' | 'raw' | 'jsonld' | 'head';
+type TabId = 'resolved' | 'raw' | 'jsonld' | 'head' | 'tree' | 'sites';
+
+type TabBody =
+  | { kind: 'text'; text: string }
+  | { kind: 'empty'; text: string }
+  | { kind: 'dom'; render: (el: HTMLElement) => void };
 
 interface Tab {
   id: TabId;
   label: string;
-  body: () => { kind: 'text'; text: string } | { kind: 'empty'; text: string };
+  body: () => TabBody;
 }
 
 function readJsonScript(id: string): MosaicLikeRecord | null {
@@ -57,6 +71,13 @@ export function mount(opts: MountOptions = {}): void {
 
   const resolved = readJsonScript('mosaic-record');
   const rawRecord = readJsonScript('mosaic-raw-record');
+  const treeData: TreeData | null = readTreeData(doc);
+  const sitesOverride: SiteEntry[] | null = readSitesData(doc);
+  const sites: SiteEntry[] = sitesOverride ?? DEFAULT_SITES;
+  const pathname =
+    typeof location !== 'undefined' && typeof location.pathname === 'string'
+      ? location.pathname
+      : '/';
 
   const tabs: Tab[] = [
     {
@@ -75,29 +96,21 @@ export function mount(opts: MountOptions = {}): void {
           ? { kind: 'text', text: prettyJson(rawRecord) }
           : {
               kind: 'empty',
-              text:
-                'No <script id="mosaic-raw-record"> on this page. Add one to see the ' +
-                'pre-cascade record alongside the resolved one.',
+              text: 'No <script id="mosaic-raw-record"> on this page.',
             },
     },
     {
       id: 'jsonld',
       label: 'JSON-LD',
       body: () => {
-        if (!resolved) {
-          return {
-            kind: 'empty',
-            text: 'No record to derive JSON-LD from.',
-          };
-        }
+        if (!resolved) return { kind: 'empty', text: 'No record.' };
         const ld = buildJsonLd(resolved);
         return ld
           ? { kind: 'text', text: prettyJson(ld) }
           : {
               kind: 'empty',
               text:
-                'This record has no `@type` field, so it does not opt in to JSON-LD ' +
-                'emission (mosaic-web §6).',
+                'This record has no `@type`, so it does not opt in to JSON-LD (mosaic-web §6).',
             };
       },
     },
@@ -107,6 +120,26 @@ export function mount(opts: MountOptions = {}): void {
       body: () => ({ kind: 'text', text: formatHead(doc.head.innerHTML) }),
     },
   ];
+
+  if (treeData) {
+    tabs.push({
+      id: 'tree',
+      label: 'Tree',
+      body: () => ({
+        kind: 'dom',
+        render: (el) => renderTree(el, treeData, doc),
+      }),
+    });
+  }
+
+  tabs.push({
+    id: 'sites',
+    label: 'Sites',
+    body: () => ({
+      kind: 'dom',
+      render: (el) => renderSites(el, sites, doc, pathname),
+    }),
+  });
 
   const host = doc.createElement('div');
   host.id = HOST_ID;
@@ -123,9 +156,7 @@ export function mount(opts: MountOptions = {}): void {
   fab.type = 'button';
   fab.setAttribute('aria-label', 'Open the Mosaic devtool');
   fab.innerHTML =
-    '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
-    '<path d="M5 2 H3 a1 1 0 0 0 -1 1 V13 a1 1 0 0 0 1 1 H5 M11 2 H13 a1 1 0 0 1 1 1 V13 a1 1 0 0 1 -1 1 H11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
-    '</svg> JSON';
+    '<svg viewBox="0 0 16 16"><path d="M5 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2M11 2h2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-2"/></svg> JSON';
 
   const modal = doc.createElement('div');
   modal.className = 'modal';
@@ -137,9 +168,6 @@ export function mount(opts: MountOptions = {}): void {
 
   const panel = doc.createElement('div');
   panel.className = 'panel';
-  panel.setAttribute('role', 'dialog');
-  panel.setAttribute('aria-modal', 'true');
-  panel.setAttribute('aria-label', 'Mosaic devtool');
 
   const head = doc.createElement('div');
   head.className = 'head';
@@ -158,7 +186,6 @@ export function mount(opts: MountOptions = {}): void {
 
   const tabBar = doc.createElement('div');
   tabBar.className = 'tabs';
-  tabBar.setAttribute('role', 'tablist');
   head.append(headRow, tabBar);
 
   const body = doc.createElement('div');
@@ -167,17 +194,18 @@ export function mount(opts: MountOptions = {}): void {
   const note = doc.createElement('div');
   note.className = 'note';
   note.innerHTML =
-    'Source: <code>&lt;script id="mosaic-record"&gt;</code> + ' +
-    '<code>&lt;script id="mosaic-raw-record"&gt;</code> + ' +
-    '<code>document.head</code>. Powered by <code>@ssolu/mosaic-devtool</code>.';
+    '<code>@ssolu/mosaic-devtool</code> · reads <code>#mosaic-{record,raw-record,tree,sites}</code>.';
 
   panel.append(head, body, note);
   modal.append(backdrop, panel);
   root.append(fab, modal);
 
-  // Tab state.
+  // Tab state. If the persisted tab no longer exists (e.g. user previously
+  // landed on 'tree' but the host stopped injecting the tree script), fall
+  // back to the first tab.
+  const persisted = readPersistedTab() as TabId | null;
   let active: TabId =
-    (readPersistedTab() as TabId | null) ?? 'resolved';
+    persisted && tabs.some((t) => t.id === persisted) ? persisted : tabs[0]!.id;
 
   function renderTabs(): void {
     tabBar.innerHTML = '';
@@ -187,7 +215,6 @@ export function mount(opts: MountOptions = {}): void {
       b.type = 'button';
       b.textContent = t.label;
       b.dataset.tab = t.id;
-      b.setAttribute('role', 'tab');
       b.setAttribute('aria-selected', t.id === active ? 'true' : 'false');
       b.addEventListener('click', () => {
         active = t.id;
@@ -212,6 +239,10 @@ export function mount(opts: MountOptions = {}): void {
       div.className = 'empty';
       div.textContent = out.text;
       body.appendChild(div);
+      return;
+    }
+    if (out.kind === 'dom') {
+      out.render(body);
       return;
     }
     const pre = doc.createElement('pre');

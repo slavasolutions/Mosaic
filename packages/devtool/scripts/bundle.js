@@ -19,6 +19,10 @@ await build({
   target: ['es2020'],
   platform: 'browser',
   minify: true,
+  minifyIdentifiers: true,
+  minifySyntax: true,
+  minifyWhitespace: true,
+  treeShaking: true,
   sourcemap: false,
   legalComments: 'none',
   banner: {
