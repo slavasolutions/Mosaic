@@ -28,11 +28,17 @@ No database. No daemon. No engine. The filesystem is the database; the spec is t
 
 The pages you see there are literally the JSON files in [`packages/astro/examples/minimal-site/content/`](./packages/astro/examples/minimal-site/content/). Edit a file, the site updates. Move the folder anywhere — the site moves with it.
 
-## Why does this exist
+### About the "website" framing
 
-Every git-friendly content store reinvents the same handful of folder, naming, and metadata rules — incompatibly. Tools written against one set don't work against another. Authors get locked into a CMS that owns their schema.
+Mosaic is a folder format for **content**. Websites are the headline use case — there's a small `mosaic-web` profile that adds URL routing for that case — but the base format is **web-agnostic**. The base spec never mentions URLs. A Mosaic folder is just as valid as a feed source, an AI ingest, or an archive; other profiles (feeds, archives) can layer on later.
 
-Mosaic is that rule set, frozen and specified. Three structural rules, a naming grammar, a sidecar convention, and a small reference grammar — nothing more. Any tool that follows the rules can read any folder that follows them.
+Who needs the `mosaic-web` profile:
+
+- ✅ Engines that turn a folder into a rendered site (Astro adapter, Next adapter, static-site generators)
+- ✅ Validators that want to assert "this folder produces clean URLs"
+- ❌ Anything that just reads records (RSS, indexers, AI tools) — they only need the base
+
+---
 
 ## The three rules
 
@@ -42,9 +48,34 @@ Mosaic is that rule set, frozen and specified. Three structural rules, a naming 
 | 2 | A folder is a collection | Folders nest. `index.{json,md,…}` is the folder itself as a record. |
 | 3 | The filename is the contract | `name[.modifier]*.ext`. Identity is form-independent — `about.json` and `about/index.json` are the same record. |
 
-That's the base. [`spec/`](./spec/) extends these with refs (`ref:team/ada` and a JSON Pointer for inner values), a minimal cascade (one inheritable key — `locale` — plus profile-declared), and a `web` profile for routing. All of it small and frozen.
+That's the base. [`spec/`](./spec/) extends these with refs (`ref:team/ada` and a JSON Pointer for inner values), a minimal cascade (one inheritable key — `locale` — plus profile-declared), and the optional [`mosaic-web` profile](./spec/profiles/mosaic-web.md) for routing. All of it small and frozen.
 
-## Use it
+---
+
+## Validate a folder
+
+Three ways to check a folder against the spec. Same answer from each — errors, warnings, exit code.
+
+| | Command | Notes |
+|---|---|---|
+| **Node CLI** | `node packages/core/dist/cli.js validate <path>` | Once on npm: `npx @ssolu/mosaic-core validate <path>`. Covers §§5–9; also `mosaic read <path>` for the full pipeline (refs §11 + cascade §12). |
+| **Python** | `python3 spec/tools/validate.py <path>` | Stdlib only. No install. Base §§5–9 only. |
+| **Browser** | _coming_ | Drag a folder onto the live explainer. Same logic, no terminal. |
+
+Try it against the four spec examples:
+
+```bash
+node packages/core/dist/cli.js validate spec/examples/A-identity/content   # FAILS (intentional collision)
+node packages/core/dist/cli.js validate spec/examples/B-sidecars/content   # OK + 1 warning
+node packages/core/dist/cli.js validate spec/examples/C-cascade/content    # OK
+node packages/core/dist/cli.js validate spec/examples/D-web/content        # OK
+```
+
+Both validators are 1:1 ports of the spec rules. Exit codes match. Either tool is a faithful read of §§5–9.
+
+---
+
+## Use it in code
 
 **In an Astro site** (this is the entire integration):
 
@@ -57,17 +88,7 @@ export const collections = {
 };
 ```
 
-Tell Astro that `./content/` is a Mosaic folder. Astro now reads its `mosaic.json`, walks the tree, resolves sidecars, refs, and cascade, and hands you a normal Astro content collection — query it with `getCollection('pages')`, render with any Astro template. A runnable demo lives at [`packages/astro/examples/minimal-site/`](./packages/astro/examples/minimal-site/).
-
-**From the command line:**
-
-```bash
-git clone https://github.com/slavasolutions/mosaic && cd mosaic && npm install
-node packages/core/dist/cli.js validate spec/examples/C-cascade/content
-node packages/core/dist/cli.js read    spec/examples/D-web/content | jq '.records'
-```
-
-The `mosaic` binary will be the install once the packages are on npm; for now the local path above does the same thing. Outputs `OK` / `FAIL`, exits non-zero on error.
+Astro now reads `./content/mosaic.json`, walks the tree, resolves sidecars/refs/cascade, and hands you a normal Astro collection. A runnable demo lives at [`packages/astro/examples/minimal-site/`](./packages/astro/examples/minimal-site/).
 
 **From any Node program:**
 
@@ -76,7 +97,9 @@ import { readFolder } from '@ssolu/mosaic-core';
 const { records, manifest } = await readFolder('./content');
 ```
 
-`records` is a `Map<identity, ResolvedRecord>` — sidecars merged, cascade applied, refs resolved per the spec pipeline.
+`records` is a `Map<identity, ResolvedRecord>` — sidecars merged, cascade applied, refs resolved per the spec pipeline. Zero runtime deps.
+
+---
 
 ## What's in this repository
 
@@ -87,9 +110,9 @@ const { records, manifest } = await readFolder('./content');
 | [`spec/examples/`](./spec/examples/) | Four worked examples: identity, sidecars, cascade, web profile. |
 | [`spec/schemas/`](./spec/schemas/) | JSON Schema 2020-12 for `mosaic.json` manifests. |
 | [`spec/tools/validate.py`](./spec/tools/validate.py) | Python reference validator. Stdlib only. |
-| [`spec/profiles/mosaic-web.md`](./spec/profiles/mosaic-web.md) | Web profile (routing). |
-| [`packages/core/`](./packages/core/) | Reference Node reader. Zero-dep TypeScript. Exposes `readFolder`, `validate`, and the `mosaic` CLI. |
-| [`packages/astro/`](./packages/astro/) | Astro Content Layer loader. |
+| [`spec/profiles/mosaic-web.md`](./spec/profiles/mosaic-web.md) | Web profile (routing). One of N future profiles. |
+| [`packages/core/`](./packages/core/) | Reference Node reader (`@ssolu/mosaic-core`). Zero-dep TypeScript. Exposes `readFolder`, `validate`, and the `mosaic` CLI. |
+| [`packages/astro/`](./packages/astro/) | Astro Content Layer loader (`@ssolu/mosaic-astro`). |
 | [`index.html`](./index.html) | Visual explainer (hosted at the [explainer link above](https://slavasolutions.github.io/mosaic/)). |
 
 Historic and superseded material — pre-0.9 example sites, the 14 retired MIPs, the 0.8.x monolithic spec, session artefacts, heavier 0.9.1 fixtures — lives in a sibling folder at `../mosaic-archive/` (not part of this repository).

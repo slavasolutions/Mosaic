@@ -43,7 +43,9 @@ If any of these matter for your engine, build them as engine extensions. Forward
 ## How this file relates to the rest
 
 - **This file (`PRINCIPLES.md`)** — foundational claims. Plain language. No MUST/MAY.
-- **`SPEC.md`** — the precise rules that implement these claims. RFC-2119 language.
-- **`mips/MIP-NNNN.md`** — the decisions and alternatives behind each rule. Historical record.
+- **`spec/format/01-format.md`** — the precise base-format rules that implement these claims. RFC-2119 language.
+- **`spec/format/02-references.md`** — the reference grammar and cascade rules. RFC-2119 language.
+- **`spec/profiles/`** — profiles that layer on the base (currently `mosaic-web.md` for routing). Each MAY add rules but MUST NOT contradict the base.
+- **`spec/format/DECISIONS-locked.md`** — the resolved 0.9.x forks, kept as the historical record of how the base settled.
 
 If the same fact lives in two of these files, that is a bug. Delete one.
