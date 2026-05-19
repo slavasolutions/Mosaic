@@ -30,6 +30,7 @@ const NAV: Array<{ label: string; url: string }> = [
   { label: 'Home', url: '/' },
   { label: 'About', url: '/about' },
   { label: 'Blog', url: '/blog' },
+  { label: 'Legal', url: '/legal' },
 ];
 
 function isActive(linkUrl: string, currentPath: string): boolean {
@@ -209,7 +210,7 @@ function GenericPageBody({ entry }: { entry: MosaicEntry }) {
   const data = entry.data as Record<string, unknown>;
   const title = String(data.title ?? entry.id);
   const lede = typeof data.lede === 'string' ? data.lede : null;
-  const bodyHtml = renderBody(entry.body);
+  const bodyHtml = renderBody(entry.body, entry.bodyExt);
 
   return (
     <section>
@@ -240,7 +241,7 @@ function BlogIndexBody({
 }) {
   const title = String(data.title ?? entry.id);
   const lede = typeof data.lede === 'string' ? data.lede : null;
-  const bodyHtml = renderBody(entry.body);
+  const bodyHtml = renderBody(entry.body, entry.bodyExt);
 
   const posts: PostListItem[] = routedEntries
     .filter((e) => typeof e.url === 'string' && e.url.startsWith('/blog/') && e.url !== '/blog')
@@ -291,7 +292,7 @@ function PostBody({ entry }: { entry: MosaicEntry }) {
   const authorRole = typeof authorObj?.role === 'string' ? (authorObj.role as string) : null;
   const authorBio = typeof authorObj?.bio === 'string' ? (authorObj.bio as string) : null;
 
-  const bodyHtml = renderBody(entry.body);
+  const bodyHtml = renderBody(entry.body, entry.bodyExt);
 
   return (
     <article>

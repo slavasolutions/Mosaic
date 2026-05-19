@@ -52,6 +52,8 @@ export interface MosaicEntry {
   data: Record<string, unknown>;
   /** Opaque content body, if any (e.g. the bytes of a `.md` file). */
   body?: string;
+  /** Lower-case extension of the file that supplied `body` (e.g. `"md"`, `"html"`). */
+  bodyExt?: string;
   /** Mosaic identity (always — no modifier suffix), doubles as the slug. */
   slug: string;
   /** Web profile URL — only set for the canonical variant under the profile root. */
@@ -86,6 +88,8 @@ export interface MosaicCoreRecord {
   data: Record<string, unknown>;
   /** Opaque content bytes as a UTF-8 string, when the record has a non-JSON body. */
   body?: string;
+  /** Lower-case extension of the file that supplied `body`. */
+  bodyExt?: string;
   /** Absolute (or root-relative) path of the source file. Used for watch. */
   filePath?: string;
   /** Modifier-set for this variant; empty = canonical. */

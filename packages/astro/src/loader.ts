@@ -58,6 +58,7 @@ interface DataStore {
     id: string;
     data: Record<string, unknown>;
     body?: string;
+    bodyExt?: string;
     digest?: string;
     rendered?: { html: string };
     filePath?: string;
@@ -235,18 +236,21 @@ async function loadOnce(args: LoadOnceArgs): Promise<void> {
     const variants: Array<{
       data: Record<string, unknown>;
       body?: string;
+      bodyExt?: string;
       filePath?: string;
       modifiers?: string[];
     }> = Array.isArray(variantsOrRecord)
       ? (variantsOrRecord as Array<{
           data: Record<string, unknown>;
           body?: string;
+          bodyExt?: string;
           filePath?: string;
           modifiers?: string[];
         }>)
       : [variantsOrRecord as {
           data: Record<string, unknown>;
           body?: string;
+          bodyExt?: string;
           filePath?: string;
           modifiers?: string[];
         }];
@@ -283,6 +287,12 @@ async function loadOnce(args: LoadOnceArgs): Promise<void> {
         modifiers,
       };
       if (url !== null) baseData.url = url;
+      // `bodyExt` rides alongside `body` so consumers can dispatch on body
+      // format (markdown vs HTML vs txt). Astro's DataStore strips unknown
+      // top-level entry fields, so we pin it onto `data` where the
+      // passthrough schema keeps it. Mirror at the entry level too for
+      // typed-entry consumers.
+      if (record.bodyExt !== undefined) baseData.bodyExt = record.bodyExt;
 
       let validated: Record<string, unknown>;
       try {
@@ -312,6 +322,7 @@ async function loadOnce(args: LoadOnceArgs): Promise<void> {
         digest,
       };
       if (record.body !== undefined) entry.body = record.body;
+      if (record.bodyExt !== undefined) entry.bodyExt = record.bodyExt;
       if (record.filePath) entry.filePath = record.filePath;
       if (url !== null) entry.url = url;
 

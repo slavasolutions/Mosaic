@@ -98,6 +98,7 @@ export async function readMosaic(
         modifiers,
       };
       if (record.body !== undefined) entry.body = record.body;
+      if (record.bodyExt !== undefined) entry.bodyExt = record.bodyExt;
       if (url !== null) entry.url = url;
 
       entries.push(entry);

@@ -75,7 +75,7 @@ function href(p: string): string {
       <h1 style="font-family: ui-serif, Georgia, serif; font-size: clamp(26px, 3.5vw, 36px); line-height: 1.2; margin: 0 0 12px;">{data.title}</h1>
       {data.lede && <p style="font-size: 17px; color: var(--ink-soft); margin: 0 0 28px;">{data.lede}</p>}
 
-      {entry.body && <div class="body-block" set:html={renderBody(entry.body)}></div>}
+      {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
 
       {isBlogIndex && (
         <ul style="list-style: none; padding: 0; margin: 24px 0 0;">
@@ -99,7 +99,7 @@ function href(p: string): string {
         {data.publishedAt}{authorObj ? ` · by ${authorObj.name}` : ''}
         {authorObj?.role && ` (${authorObj.role})`}
       </div>
-      {entry.body && <div class="body-block" set:html={renderBody(entry.body)}></div>}
+      {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
       {authorObj?.bio && (
         <div style="margin-top: 36px; padding: 16px; background: var(--code-bg); border-radius: 8px; font-size: 14px; color: var(--ink-soft);">
           <strong style="color: var(--ink);">About {authorObj.name}</strong> — {authorObj.bio}

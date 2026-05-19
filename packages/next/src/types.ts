@@ -26,6 +26,8 @@ export interface MosaicEntry {
   data: Record<string, unknown>;
   /** Opaque content body, if any (e.g. the bytes of a `.md` file). */
   body?: string;
+  /** Lower-case extension of the file that supplied `body` (e.g. `"md"`, `"html"`). */
+  bodyExt?: string;
   /** True when the source file is non-JSON (an opaque payload). */
   opaque: boolean;
   /** Modifier-set for this variant; empty = canonical. */
@@ -81,6 +83,8 @@ export interface MosaicCoreRecord {
   data: Record<string, unknown>;
   /** Opaque content bytes as a UTF-8 string, when the record has a non-JSON body. */
   body?: string;
+  /** Lower-case extension of the file that supplied `body`. */
+  bodyExt?: string;
   /** Whether the underlying source is non-JSON (opaque). */
   opaque?: boolean;
   /** Modifier-set for this variant; empty = canonical. */
