@@ -6,8 +6,9 @@ node_modules/
 
 # Mosaic-generated artifacts
 .mosaic/
-index.json
-index.db
+# NOTE: do NOT ignore index.json — in 0.9.2 it is a meaningful filename
+# (a folder's collection record, per base format Rule 2). The 0.5-era
+# convention treated it as a generated index and was wrong here.
 
 # Renderer output
 out/
