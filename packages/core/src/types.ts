@@ -52,6 +52,18 @@ export interface Record {
    * the content file's bytes (sidecar wins, per §8 precedence).
    */
   body?: string;
+  /**
+   * The lower-case extension of the content file `body` was read from
+   * (`"md"`, `"txt"`, `"html"`, `"adoc"`). Absent when `body` is absent
+   * or when `body` came from a sidecar literal rather than a file (in
+   * which case the source format is by convention markdown — adapters
+   * that need stricter behaviour should require an explicit format
+   * field on the sidecar JSON).
+   *
+   * Adapter renderers dispatch on this to pick the right pipeline
+   * (markdown → remark, HTML → rehype-parse pass-through, etc.).
+   */
+  bodyExt?: string;
 }
 
 /**

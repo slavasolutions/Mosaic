@@ -1,0 +1,5 @@
+{
+  "@type": "WebPage",
+  "title": "Legal",
+  "lede": "Boilerplate copy delivered as raw HTML — the adapter dispatches on the .html extension and runs a rehype-sanitize pass-through instead of remark."
+}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderBody } from '../src/markdown.js';
 
-describe('renderBody', () => {
+describe('renderBody — markdown (default)', () => {
   it('returns empty string for empty/undefined input', () => {
     expect(renderBody('')).toBe('');
     expect(renderBody(undefined)).toBe('');
@@ -47,5 +47,59 @@ describe('renderBody', () => {
     const html = renderBody('<script>alert(1)</script>\n\nhello');
     expect(html).not.toContain('<script');
     expect(html).toContain('hello');
+  });
+
+  it('treats explicit bodyExt="md" the same as default', () => {
+    const a = renderBody('## Hi', 'md');
+    const b = renderBody('## Hi');
+    expect(a).toBe(b);
+  });
+});
+
+describe('renderBody — html (rehype pass-through, sanitised)', () => {
+  it('returns a sanitised HTML fragment', () => {
+    const html = renderBody('<p>Hello <strong>world</strong>.</p>', 'html');
+    expect(html).toContain('<p>Hello <strong>world</strong>.</p>');
+  });
+
+  it('strips <script> tags from HTML body', () => {
+    const html = renderBody(
+      '<p>safe</p><script>alert(1)</script>',
+      'html',
+    );
+    expect(html).not.toContain('<script');
+    expect(html).toContain('<p>safe</p>');
+  });
+
+  it('strips inline event handlers from HTML body', () => {
+    const html = renderBody('<a href="/x" onclick="boom()">click</a>', 'html');
+    expect(html).not.toContain('onclick');
+    expect(html).toContain('click');
+  });
+
+  it('strips <style> tags by default (rehype-sanitize)', () => {
+    const html = renderBody(
+      '<style>p{color:red}</style><p>x</p>',
+      'html',
+    );
+    expect(html).not.toContain('<style');
+    expect(html).toContain('<p>x</p>');
+  });
+});
+
+describe('renderBody — txt (pre-wrapped, escaped)', () => {
+  it('wraps text in <pre> and escapes HTML', () => {
+    const html = renderBody('line 1\nline 2 <not a tag>', 'txt');
+    expect(html).toBe('<pre>line 1\nline 2 &lt;not a tag&gt;</pre>');
+  });
+
+  it('escapes ampersands', () => {
+    expect(renderBody('a & b', 'txt')).toBe('<pre>a &amp; b</pre>');
+  });
+});
+
+describe('renderBody — adoc (deferred)', () => {
+  it('throws a clear error for .adoc bodies', () => {
+    expect(() => renderBody('= heading', 'adoc')).toThrow(/AsciiDoc/);
   });
 });

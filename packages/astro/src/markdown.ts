@@ -1,39 +1,67 @@
 /**
- * Markdown → HTML for Mosaic record bodies.
+ * Render a Mosaic record body to a sanitised HTML fragment.
  *
- * Adapters consume Mosaic records whose `body` is a markdown string. This
- * helper renders that string to a sanitised HTML fragment that can be
- * dropped into a template via Astro's `set:html`.
+ * Dispatches on the source-file extension (`bodyExt` on a Mosaic record):
  *
- * Pipeline: remark-parse → remark-gfm → remark-rehype → rehype-sanitize
- *           → rehype-stringify.
+ *   - `md`    — remark-parse → remark-gfm → remark-rehype → rehype-sanitize
+ *               → rehype-stringify. GFM (tables, task lists, strikethrough).
+ *   - `html`  — rehype-parse (fragment) → rehype-sanitize → rehype-stringify.
+ *               Pass-through with sanitisation; raw `<script>` / `<style>` /
+ *               event handlers are stripped by rehype-sanitize defaults.
+ *   - `txt`   — escaped + wrapped in `<pre>`. Whitespace preserved verbatim.
+ *   - `adoc`  — not yet supported; throws.
+ *   - default (unknown / missing ext) — falls back to the markdown pipeline,
+ *               which is also the convention for sidecar-provided body
+ *               literals (no source file → no extension).
  *
- * GFM is on, so tables, task lists and strikethrough are supported. The
- * sanitiser uses unified's defaults (rehype-sanitize) — no raw HTML or
- * scripts can survive a round-trip, even if a Mosaic record contains
- * untrusted content.
- *
- * Sync wrapper: unified's process is async, but the underlying parsers
- * are synchronous, so we expose a `renderBody` that uses `processSync`.
- * Astro server components are async-tolerant, but a sync API is simpler
- * to drop into a template expression.
+ * Output is HTML safe to drop into Astro's `set:html`.
  */
 
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
+import rehypeParse from 'rehype-parse';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
 
-const processor = unified()
+const markdownProcessor = unified()
   .use(remarkParse)
   .use(remarkGfm)
   .use(remarkRehype)
   .use(rehypeSanitize)
   .use(rehypeStringify);
 
-export function renderBody(body: string | undefined | null): string {
+const htmlProcessor = unified()
+  .use(rehypeParse, { fragment: true })
+  .use(rehypeSanitize)
+  .use(rehypeStringify);
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+export function renderBody(
+  body: string | undefined | null,
+  bodyExt?: string,
+): string {
   if (!body) return '';
-  return String(processor.processSync(body));
+  const ext = (bodyExt ?? '').toLowerCase();
+  switch (ext) {
+    case 'html':
+      return String(htmlProcessor.processSync(body));
+    case 'txt':
+      return `<pre>${escapeHtml(body)}</pre>`;
+    case 'adoc':
+      throw new Error(
+        'mosaic-astro: AsciiDoc (.adoc) bodies are not yet supported.',
+      );
+    case '':
+    case 'md':
+    default:
+      return String(markdownProcessor.processSync(body));
+  }
 }
