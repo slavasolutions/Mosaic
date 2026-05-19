@@ -1,0 +1,9 @@
+{
+  "title": "Acme Foundry",
+  "tagline": "We make small, sharp things.",
+  "intro": "Every page on this site is a JSON file in a folder. There is no database. There is no CMS. The Next adapter reads the folder, resolves the spec rules, and Next compiles each route to a static HTML file you can drop on any host.",
+  "homeLinks": [
+    { "label": "About us", "url": "/about" },
+    { "label": "Our blog", "url": "/blog" }
+  ]
+}

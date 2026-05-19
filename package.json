@@ -11,7 +11,8 @@
   },
   "workspaces": [
     "packages/*",
-    "packages/astro/examples/minimal-site"
+    "packages/astro/examples/minimal-site",
+    "packages/next/examples/minimal-next-site"
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",
