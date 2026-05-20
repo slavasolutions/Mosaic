@@ -32,6 +32,7 @@
 import { resolve as pathResolve } from 'node:path';
 import { readFolder } from '@ssolu/mosaic-core';
 import { deriveUrl, getWebProfileRoot } from './url.js';
+import { renderBody } from './markdown.js';
 import type {
   MosaicCoreReadResult,
   MosaicLoaderOptions,
@@ -364,6 +365,23 @@ async function loadOnce(args: LoadOnceArgs): Promise<void> {
       if (record.bodyExt !== undefined) entry.bodyExt = record.bodyExt;
       if (record.filePath) entry.filePath = record.filePath;
       if (url !== null) entry.url = url;
+
+      // Pre-render the body to sanitised HTML so consumers can use
+      //   const { Content } = await render(entry); <Content />
+      // — the canonical Astro idiom — instead of reaching for `set:html`
+      // with an ad-hoc renderer. Dispatches on `bodyExt` (md / html / txt).
+      if (record.body) {
+        try {
+          const html = renderBody(record.body, record.bodyExt);
+          if (html) entry.rendered = { html };
+        } catch (err) {
+          logger.warn(
+            `mosaic-astro: renderBody failed for "${entryId}": ${
+              err instanceof Error ? err.message : String(err)
+            } (entry.body is still available raw)`,
+          );
+        }
+      }
 
       store.set(entry);
       emitted++;

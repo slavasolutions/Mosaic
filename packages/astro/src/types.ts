@@ -87,6 +87,13 @@ export interface MosaicEntry {
   digest?: string;
   /** Original file path the content came from, for the watcher's filterUpdate. */
   filePath?: string;
+  /**
+   * Pre-rendered, sanitised HTML for the entry body (populated by the loader
+   * via `renderBody`). When set, callers can use Astro's canonical
+   * `const { Content } = await render(entry); <Content />` pattern instead of
+   * reaching for `set:html`.
+   */
+  rendered?: { html: string };
 }
 
 /**

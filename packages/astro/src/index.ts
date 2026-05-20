@@ -8,6 +8,29 @@
 export { mosaicLoader } from './loader.js';
 export { deriveUrl, getWebProfileRoot } from './url.js';
 export { renderBody } from './markdown.js';
+export {
+  refSchema,
+  bodyExtSchema,
+  colorSchema,
+  heroSchema,
+  ruleCardsSchema,
+  journalPreviewSchema,
+  blockSchema,
+  pageSchema,
+  tokensSchema,
+  manifestSchema,
+} from './schemas.js';
+export type {
+  Ref,
+  BodyExt,
+  HeroBlock,
+  RuleCardsBlock,
+  JournalPreviewBlock,
+  Block,
+  Page,
+  Tokens,
+  Manifest,
+} from './schemas.js';
 export type {
   MosaicLoaderOptions,
   MosaicEntry,
