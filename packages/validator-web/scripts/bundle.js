@@ -21,9 +21,31 @@ await build({
   minify: true,
   sourcemap: false,
   legalComments: 'none',
-  // node:fs is fs-coupled validate(); the browser bundle only uses validateFiles.
-  // Exclude it explicitly so esbuild doesn't try to polyfill.
-  external: ['node:fs', 'node:path'],
+  // node:fs / node:path leak in from @ssolu/mosaic-core's fs-coupled validate().
+  // The browser bundle only uses validateFiles, but esbuild can't tree-shake the
+  // top-level import. Resolve them to a tiny no-op stub so the runtime doesn't
+  // throw "Dynamic require of 'node:fs' is not supported".
+  plugins: [{
+    name: 'stub-node-builtins',
+    setup(b) {
+      b.onResolve({ filter: /^node:(fs|path)$/ }, () => ({
+        path: 'noop',
+        namespace: 'stub-node',
+      }));
+      b.onLoad({ filter: /.*/, namespace: 'stub-node' }, () => ({
+        contents:
+          'const noop = () => { throw new Error("node:* not available in browser bundle"); };' +
+          'export default {};' +
+          'export const promises = new Proxy({}, { get: () => noop });' +
+          'export const sep = "/";' +
+          'export const join = (...p) => p.join("/");' +
+          'export const dirname = (p) => p.split("/").slice(0, -1).join("/");' +
+          'export const basename = (p) => p.split("/").pop();' +
+          'export const resolve = (...p) => p.join("/");',
+        loader: 'js',
+      }));
+    },
+  }],
   banner: {
     js:
       '/* @ssolu/mosaic-validator-web — Apache-2.0 — ' +
