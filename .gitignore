@@ -22,3 +22,16 @@ dist/
 .idea/
 *.swp
 .omc/
+
+# CI-generated deploy targets (built by pages.yml from package dist/)
+/_mosaic-devtool/
+/_mosaic-validator/
+/demo-blog/
+/demo-single/
+/demo-full/
+/demo-blog-next/
+/demo-single-next/
+/demo-full-next/
+# Site-build is the CF Pages target; its dist/ is built by CI not source
+/site-build/dist/
+/site-build/.astro/
