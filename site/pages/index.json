@@ -1,0 +1,11 @@
+{
+  "$schema": "https://mosaic.ssolu.dev/page.schema.json",
+  "title": "Mosaic — a folder format for structured content",
+  "description": "A folder format for structured content. Three rules. Any conforming reader turns the folder into a site.",
+  "shape": "home",
+  "sections": [
+    "ref:/snippets/hero-home",
+    "ref:/snippets/three-rules",
+    "ref:/snippets/journal-preview"
+  ]
+}

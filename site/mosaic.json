@@ -1,0 +1,22 @@
+{
+  "$schema": "https://mosaic.ssolu.dev/mosaic.schema.json",
+  "version": "0.9",
+  "title": "Mosaic",
+  "description": "A folder format for structured content. Three rules. Any conforming reader turns the folder into a site.",
+  "site": "https://mosaic.ssolu.dev",
+  "locales": { "default": "en", "supported": ["en"] },
+  "nav": [
+    { "href": "/explore",  "label": "Explore" },
+    { "href": "/spec",     "label": "Spec" },
+    { "href": "/astro",    "label": "Astro" },
+    { "href": "https://github.com/slavasolutions/mosaic", "label": "GitHub", "external": true }
+  ],
+  "brand": {
+    "logo": "/brand-mark-192.png",
+    "wordmark": "Mosaic",
+    "version": "0.9.4"
+  },
+  "profiles": {
+    "mosaic-web": { "root": "/pages" }
+  }
+}

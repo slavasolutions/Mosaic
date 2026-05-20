@@ -1,0 +1,22 @@
+{
+  "@type": "rule-cards",
+  "eyebrow": "The spec",
+  "heading": "Three rules. Nothing more.",
+  "items": [
+    {
+      "label": "Rule 01",
+      "title": "A file is a record.",
+      "body": ".json files hold structure. .md, .pdf, .png are opaque payloads. Metadata goes in a same-named .json sidecar."
+    },
+    {
+      "label": "Rule 02",
+      "title": "A folder is a collection.",
+      "body": "Any directory is a collection. Folders nest freely. index.json inside a folder is that folder's record."
+    },
+    {
+      "label": "Rule 03",
+      "title": "The filename is the contract.",
+      "body": "Names follow name[.modifier]*.ext. File form and folder form are the same identity — no rename, no broken refs."
+    }
+  ]
+}

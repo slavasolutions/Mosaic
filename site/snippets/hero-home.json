@@ -1,0 +1,16 @@
+{
+  "@type": "hero",
+  "title": "The folder IS the website.",
+  "titleHighlight": "website",
+  "lede": "A folder format for structured content. Three rules. Any conforming reader turns the folder into a site.",
+  "ctas": [
+    { "label": "Explore the matrix", "href": "/explore", "primary": true },
+    { "label": "Read the spec",      "href": "/spec",    "primary": false }
+  ],
+  "art": {
+    "src": "/hero-art-1280.png",
+    "alt": "",
+    "anchor": "bottom-right",
+    "overflow": { "bottom": 200, "right": 180 }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://mosaic.ssolu.dev/tokens.schema.json",
+  "color": {
+    "bg":         "#F5F2EA",
+    "bg-elev":    "#FFFFFF",
+    "bg-sunk":    "#EFEBDF",
+    "ink":        "#2A2A24",
+    "ink-soft":   "#4A4A40",
+    "ink-mute":   "#7B776C",
+    "line":       "#E0DCC9",
+    "accent":     "#7B86D6",
+    "accent-soft":"#ECEEF9",
+    "accent-ink": "#4853A8",
+    "peach":      "#F0A586",
+    "sage":       "#9CC4A2",
+    "mustard":    "#F4D58D",
+    "lilac":      "#C3B0DE"
+  },
+  "font": {
+    "display": "Spectral, ui-serif, Georgia, serif",
+    "body":    "Instrument Sans, system-ui, -apple-system, Segoe UI, sans-serif",
+    "mono":    "JetBrains Mono, ui-monospace, Menlo, monospace"
+  },
+  "radius": { "sm": "6px",  "md": "10px", "lg": "14px", "xl": "20px", "pill": "999px" },
+  "space":  { "1": "4px", "2": "8px", "3": "12px", "4": "16px", "5": "24px", "6": "32px", "7": "48px", "8": "72px" },
+  "layout": { "max-width": "980px", "rail-gap": "1px" }
+}

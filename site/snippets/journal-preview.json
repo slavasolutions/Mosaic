@@ -1,0 +1,12 @@
+{
+  "@type": "journal-preview",
+  "eyebrow": "Latest",
+  "heading": "Notes from the build.",
+  "viewAllLabel": "View journal",
+  "viewAllHref": "/blog",
+  "items": [
+    { "title": "Why the folder is the contract", "date": "2026-05-19", "href": "/blog/folder-is-contract" },
+    { "title": "Refs in one screen",             "date": "2026-05-17", "href": "/blog/refs-explained" },
+    { "title": "0.9 → 1.0 — what's locking",     "date": "2026-05-14", "href": "/blog/road-to-1-0" }
+  ]
+}
