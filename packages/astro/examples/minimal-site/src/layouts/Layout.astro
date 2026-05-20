@@ -171,7 +171,7 @@ if (schemaType) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href={href('/logo.svg')} />
-    <style>
+    <style is:global>
       :root {
         --bg: #faf6ee;
         --bg-elev: #ffffff;
@@ -609,7 +609,7 @@ if (schemaType) {
       <script type="application/ld+json" set:html={jsonLd}></script>
     )}
     <script type="application/json" id="mosaic-record" set:html={resolvedJson}></script>
-    <script type="application/json" id="mosaic-tree" set:html={treeJson}></script>
+    <script type="application/json" id="mosaic-tree" is:inline set:html={treeJson}></script>
     <script type="application/json" id="mosaic-sites" set:html={SITE_LIST}></script>
 
     <!-- Theme bootstrap — runs before <body> paints to avoid a flash. Reads
