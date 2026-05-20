@@ -3,317 +3,584 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mosaic — explore the matrix</title>
-<meta name="description" content="Three content shapes × two framework adapters. Six deployed Mosaic sites built from the same spec.">
+<title>Mosaic · Studio — live token editor</title>
+<meta name="description" content="A live editor for Mosaic. Pick adapter and content shape; tweak design tokens; see the change instantly.">
 <link rel="icon" type="image/svg+xml" href="../logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --c-bg:         #fafaf7;
-  --c-bg-elev:    #ffffff;
-  --c-bg-sunk:    #f1f0ea;
-  --c-ink:        #15161a;
-  --c-ink-soft:   #3a3c44;
-  --c-ink-mute:   #6b6e78;
-  --c-line:       #e4e2d8;
-  --c-accent:     #2b56d4;
-  --c-accent-ink: #1b3aa0;
+  --bg:        #fafaf7;
+  --bg-elev:   #ffffff;
+  --bg-sunk:   #f1f0ea;
+  --ink:       #15161a;
+  --ink-soft:  #3a3c44;
+  --ink-mute:  #6b6e78;
+  --line:      #e4e2d8;
+  --accent:    #2b56d4;
+  --accent-soft: #e7edff;
+  --accent-ink:  #1b3aa0;
   --f-display: "DM Serif Display", ui-serif, Georgia, serif;
   --f-mono:    "DM Mono", ui-monospace, "Menlo", monospace;
   --f-sans:    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px;
-  --r-md: 10px; --r-lg: 14px;
 }
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --c-bg:         #0d0f13;
-    --c-bg-elev:    #14171c;
-    --c-bg-sunk:    #0a0c10;
-    --c-ink:        #ecedf0;
-    --c-ink-soft:   #b8bbc4;
-    --c-ink-mute:   #7d818d;
-    --c-line:       #23262e;
-    --c-accent:     #7da3ff;
-    --c-accent-ink: #b9cbff;
+    --bg:       #0d0f13;
+    --bg-elev:  #14171c;
+    --bg-sunk:  #0a0c10;
+    --ink:      #ecedf0;
+    --ink-soft: #b8bbc4;
+    --ink-mute: #7d818d;
+    --line:     #23262e;
+    --accent:   #7da3ff;
+    --accent-soft: #182142;
+    --accent-ink:  #b9cbff;
   }
 }
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-html { scrollbar-gutter: stable; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
 body {
   font-family: var(--f-sans);
-  background: var(--c-bg);
-  color: var(--c-ink);
-  font-size: 16px;
-  line-height: 1.6;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
-a { color: var(--c-accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
+.layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  grid-template-rows: 52px 1fr;
+  height: 100vh;
+}
 
-.wrap { max-width: 1240px; margin: 0 auto; padding: 0 var(--s-4); }
-@media (min-width: 600px) { .wrap { padding: 0 var(--s-5); } }
-
-header.top { border-bottom: 1px solid var(--c-line); background: var(--c-bg); }
-.top-inner {
+.topbar {
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--s-3) var(--s-4);
-  max-width: 1240px;
-  margin: 0 auto;
-  gap: var(--s-4);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
 }
 .brand {
-  display: flex; align-items: center; gap: var(--s-2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--f-display);
-  color: var(--c-ink);
   font-size: 17px;
-}
-.brand img { width: 20px; height: 20px; }
-.crumb {
-  font-family: var(--f-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--c-ink-mute);
-  text-transform: uppercase;
-}
-
-main { padding: var(--s-7) 0; }
-.hero { margin-bottom: var(--s-7); }
-.eyebrow {
-  font-family: var(--f-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--c-ink-mute);
-  margin: 0 0 var(--s-3) 0;
-}
-h1 {
-  font-family: var(--f-display);
-  font-weight: 400;
-  font-size: clamp(28px, 5vw, 44px);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin: 0 0 var(--s-3) 0;
-}
-.lede {
-  font-size: clamp(15px, 2vw, 17px);
-  color: var(--c-ink-soft);
-  max-width: 60ch;
-  margin: 0;
-}
-
-h2.section {
-  font-family: var(--f-display);
-  font-weight: 400;
-  font-size: 24px;
-  letter-spacing: -0.01em;
-  margin: var(--s-6) 0 var(--s-3);
-  padding-top: var(--s-5);
-  border-top: 1px solid var(--c-line);
-}
-h2.section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
-.section-lede { color: var(--c-ink-soft); margin: 0 0 var(--s-4); max-width: 60ch; }
-
-.pair {
-  display: grid;
-  gap: var(--s-4);
-  grid-template-columns: 1fr;
-  margin-bottom: var(--s-6);
-}
-@media (min-width: 720px) { .pair { grid-template-columns: 1fr 1fr; } }
-
-.card {
-  background: var(--c-bg-elev);
-  border: 1px solid var(--c-line);
-  border-radius: var(--r-lg);
-  padding: var(--s-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
+  color: var(--ink);
   text-decoration: none;
-  color: var(--c-ink);
-  transition: border-color 0.15s, transform 0.08s;
 }
-.card:hover {
-  border-color: var(--c-accent);
-  text-decoration: none;
-  transform: translateY(-1px);
-}
-.card-title {
-  font-family: var(--f-display);
-  font-size: 20px;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  margin: 0;
-}
-.card-desc {
-  font-size: 14px;
-  color: var(--c-ink-soft);
-  margin: 0;
-}
-.meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2);
-}
-.chip {
+.brand-mark { width: 22px; height: 22px; }
+.brand-version {
   font-family: var(--f-mono);
   font-size: 10px;
-  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  background: var(--bg-sunk);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 4px;
+}
+.topnav {
+  display: flex;
+  gap: 18px;
+  font-size: 13px;
+}
+.topnav a {
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.topnav a:hover { color: var(--ink); }
+.topnav a.current { color: var(--accent); }
+
+.sidebar {
+  border-right: 1px solid var(--line);
+  background: var(--bg);
+  overflow-y: auto;
+  padding: 18px 18px 24px;
+  scrollbar-gutter: stable;
+}
+.section { margin-bottom: 22px; }
+.section-label {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 3px 8px;
+  color: var(--ink-mute);
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-label .meta {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--ink-mute);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.pill-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.pill {
+  appearance: none;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--c-bg-sunk);
-  color: var(--c-ink-mute);
-  border: 1px solid var(--c-line);
-}
-.chip.adapter { color: var(--c-accent-ink); border-color: color-mix(in srgb, var(--c-accent) 30%, var(--c-line)); }
-.card-link {
-  font-size: 13px;
-  color: var(--c-accent);
-  margin-top: auto;
+  padding: 6px 12px;
+  font-size: 12px;
   font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.pill:hover { border-color: var(--ink-mute); color: var(--ink); }
+.pill.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 
-footer {
-  border-top: 1px solid var(--c-line);
-  padding: var(--s-5) 0;
-  color: var(--c-ink-mute);
-  font-size: 13px;
-  margin-top: var(--s-7);
+.routes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.footer-inner { display: flex; gap: var(--s-4); flex-wrap: wrap; justify-content: space-between; }
-
-.note {
-  margin-top: var(--s-6);
-  padding: var(--s-4);
-  background: var(--c-bg-sunk);
-  border: 1px solid var(--c-line);
-  border-radius: var(--r-md);
-  font-size: 13px;
-  color: var(--c-ink-soft);
-}
-.note code {
+.route {
+  appearance: none;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 6px 10px;
   font-family: var(--f-mono);
   font-size: 12px;
-  background: var(--c-bg-elev);
-  padding: 1px 5px;
-  border-radius: 3px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  width: 100%;
+}
+.route:hover { background: var(--bg-sunk); color: var(--ink); }
+.route.active {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.token {
+  display: grid;
+  grid-template-columns: 80px 1fr 50px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.token-label {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.token input[type="color"] {
+  width: 100%;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg-elev);
+  cursor: pointer;
+}
+.token input[type="range"] {
+  width: 100%;
+}
+.token-value {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--ink-mute);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+.actions .pill {
+  flex: 1;
+  text-align: center;
+}
+.actions .pill.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.actions .pill.primary:hover {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+  color: #fff;
+}
+
+.preview {
+  position: relative;
+  background: var(--bg-sunk);
+  overflow: hidden;
+}
+.preview iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: var(--bg);
+  display: block;
+}
+.preview-bar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.url-pill {
+  background: color-mix(in srgb, var(--bg-elev) 86%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  pointer-events: auto;
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--f-mono);
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  z-index: 100;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 720px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 52px auto 1fr;
+  }
+  .sidebar {
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
 }
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="top-inner">
+<div class="layout">
+
+  <div class="topbar">
     <a class="brand" href="../">
-      <img src="../logo.svg" alt="">
+      <img class="brand-mark" src="../logo.svg" alt="Mosaic">
       <span>Mosaic</span>
+      <span class="brand-version">Studio</span>
     </a>
-    <span class="crumb">Explore the matrix</span>
+    <nav class="topnav">
+      <a href="../">Home</a>
+      <a class="current" href="./">Studio</a>
+      <a href="../spec/README.md">Spec</a>
+      <a href="https://github.com/slavasolutions/mosaic">GitHub</a>
+    </nav>
   </div>
-</header>
 
-<main>
-  <div class="wrap">
-    <section class="hero">
-      <p class="eyebrow">Three shapes. Two adapters. Six sites.</p>
-      <h1>Same spec, every shape, both adapters.</h1>
-      <p class="lede">Each row below is a content <em>shape</em> — a single page, a small blog, or a ten-plus-page site — rendered twice: once by the Astro adapter and once by the Next adapter. Same Mosaic folder, same records, same URLs. The page bytes differ because the framework differs; everything underneath is identical.</p>
-    </section>
+  <aside class="sidebar">
 
-    <h2 class="section">Single — one page</h2>
-    <p class="section-lede">The smallest viable Mosaic site. One route, no nav, no tokens. The adapter still walks the folder, still derives <code>/</code> from <code>pages/index</code>, still emits <code>index.html</code>.</p>
-    <div class="pair">
-      <a class="card" href="../demo-single/">
-        <h2 class="card-title">Single · Astro</h2>
-        <div class="meta-row">
-          <span class="chip adapter">Astro</span>
-          <span class="chip">1 page</span>
-          <span class="chip">no tokens</span>
-        </div>
-        <p class="card-desc">Rendered by <code>@ssolu/mosaic-astro</code> from <code>examples/content-single/</code>.</p>
-        <span class="card-link">Open →</span>
-      </a>
-      <a class="card" href="../demo-single-next/">
-        <h2 class="card-title">Single · Next</h2>
-        <div class="meta-row">
-          <span class="chip adapter">Next</span>
-          <span class="chip">1 page</span>
-          <span class="chip">no tokens</span>
-        </div>
-        <p class="card-desc">Rendered by <code>@ssolu/mosaic-next</code> from the same folder. Identical URLs, different framework.</p>
-        <span class="card-link">Open →</span>
-      </a>
+    <div class="section">
+      <p class="section-label">Adapter</p>
+      <div class="pill-row" data-group="adapter">
+        <button class="pill active" data-value="astro">Astro</button>
+        <button class="pill" data-value="next">Next</button>
+      </div>
     </div>
 
-    <h2 class="section">Blog — three pages + a journal</h2>
-    <p class="section-lede">Home, about, blog. A French sidecar variant of the about page. Four posts. A <code>tokens/</code> collection that feeds the theme. The "real small site" middle.</p>
-    <div class="pair">
-      <a class="card" href="../demo-blog/">
-        <h2 class="card-title">Blog · Astro</h2>
-        <div class="meta-row">
-          <span class="chip adapter">Astro</span>
-          <span class="chip">3 pages + journal</span>
-          <span class="chip">tokens + variants</span>
-        </div>
-        <p class="card-desc">Rendered by <code>@ssolu/mosaic-astro</code> from <code>examples/content-blog/</code>.</p>
-        <span class="card-link">Open →</span>
-      </a>
-      <a class="card" href="../demo-blog-next/">
-        <h2 class="card-title">Blog · Next</h2>
-        <div class="meta-row">
-          <span class="chip adapter">Next</span>
-          <span class="chip">3 pages + journal</span>
-          <span class="chip">tokens + variants</span>
-        </div>
-        <p class="card-desc">Same folder, Next's App Router. URL shapes match; records match.</p>
-        <span class="card-link">Open →</span>
-      </a>
+    <div class="section">
+      <p class="section-label">Shape <span class="meta" id="shape-meta">3 pages + journal</span></p>
+      <div class="pill-row" data-group="shape">
+        <button class="pill" data-value="single">Single</button>
+        <button class="pill active" data-value="blog">Blog</button>
+        <button class="pill" data-value="full">Full</button>
+      </div>
     </div>
 
-    <h2 class="section">Full — twelve-plus pages, nav, sub-pages, blog</h2>
-    <p class="section-lede">Home with a hero and featured cards. About with a French variant. Services index with four sub-pages. Team with three person records. A blog with five posts. A contact card. Image URLs throughout. This is what the format looks like at scale.</p>
-    <div class="pair">
-      <a class="card" href="../demo-full/">
-        <h2 class="card-title">Full · Astro</h2>
-        <div class="meta-row">
-          <span class="chip adapter">Astro</span>
-          <span class="chip">12+ pages</span>
-          <span class="chip">nav · sub-pages · images</span>
-        </div>
-        <p class="card-desc">Rendered by <code>@ssolu/mosaic-astro</code> from <code>examples/content-full/</code>.</p>
-        <span class="card-link">Open →</span>
-      </a>
-      <a class="card" href="../demo-full-next/">
-        <h2 class="card-title">Full · Next</h2>
-        <div class="meta-row">
-          <span class="chip adapter">Next</span>
-          <span class="chip">12+ pages</span>
-          <span class="chip">nav · sub-pages · images</span>
-        </div>
-        <p class="card-desc">Same folder under Next. The catch-all route handles every record.</p>
-        <span class="card-link">Open →</span>
-      </a>
+    <div class="section">
+      <p class="section-label">Route</p>
+      <div class="routes" id="routes"></div>
     </div>
 
-    <div class="note">
-      Every deployed page ships with the Mosaic devtool — open the floating <code>JSON</code> button to inspect the resolved record, the file tree, and the adapter switcher (which is the same six-site list as this page). Theme is in the footer; language is in the header where the record has an <code>.fr</code> variant.
+    <div class="section">
+      <p class="section-label">Theme</p>
+      <div class="pill-row" data-group="theme">
+        <button class="pill active" data-value="light">Light</button>
+        <button class="pill" data-value="dark">Dark</button>
+      </div>
     </div>
+
+    <div class="section">
+      <p class="section-label">Tokens <span class="meta">live edit</span></p>
+
+      <div class="token">
+        <span class="token-label">color.bg</span>
+        <input type="color" data-token="color.bg" value="#faf6ee">
+        <span class="token-value" data-token-value="color.bg">#faf6ee</span>
+      </div>
+
+      <div class="token">
+        <span class="token-label">color.ink</span>
+        <input type="color" data-token="color.ink" value="#15161a">
+        <span class="token-value" data-token-value="color.ink">#15161a</span>
+      </div>
+
+      <div class="token">
+        <span class="token-label">color.accent</span>
+        <input type="color" data-token="color.accent" value="#2b56d4">
+        <span class="token-value" data-token-value="color.accent">#2b56d4</span>
+      </div>
+
+      <div class="token">
+        <span class="token-label">color.bg-sunk</span>
+        <input type="color" data-token="color.bg-sunk" value="#f1f0ea">
+        <span class="token-value" data-token-value="color.bg-sunk">#f1f0ea</span>
+      </div>
+
+      <div class="token">
+        <span class="token-label">color.line</span>
+        <input type="color" data-token="color.line" value="#e4e2d8">
+        <span class="token-value" data-token-value="color.line">#e4e2d8</span>
+      </div>
+
+      <div class="token">
+        <span class="token-label">radius.md</span>
+        <input type="range" data-token="radius.md" min="0" max="24" value="10">
+        <span class="token-value" data-token-value="radius.md">10px</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="pill" id="reset">Reset</button>
+      <button class="pill primary" id="export">Export JSON</button>
+    </div>
+
+    <p class="section-label" style="margin-top: 24px; color: var(--ink-mute); font-size: 10px; line-height: 1.5; letter-spacing: 0; text-transform: none;">
+      Edits never leave the browser. Token changes apply via <code>postMessage</code> to the iframe; the preview site swaps CSS variables in place. No rebuild, no server.
+    </p>
+
+  </aside>
+
+  <div class="preview">
+    <div class="preview-bar">
+      <span class="url-pill" id="url-pill">/demo-blog/</span>
+    </div>
+    <iframe id="frame" src="../demo-blog/" title="Live preview"></iframe>
   </div>
-</main>
 
-<footer>
-  <div class="wrap">
-    <div class="footer-inner">
-      <div>Mosaic 0.9.4 — working draft.</div>
-      <div><a href="../">Back to explainer</a> · <a href="https://github.com/slavasolutions/mosaic">GitHub</a></div>
-    </div>
-  </div>
-</footer>
+</div>
+
+<div class="toast" id="toast">Saved tokens.json</div>
+
+<script>
+(() => {
+  const state = {
+    adapter: 'astro',
+    shape: 'blog',
+    route: '/',
+    theme: 'light',
+    tokens: {},
+  };
+
+  const SHAPE_ROUTES = {
+    single: [
+      { path: '/', label: '/' },
+    ],
+    blog: [
+      { path: '/', label: '/' },
+      { path: '/about/', label: '/about' },
+      { path: '/blog/', label: '/blog' },
+      { path: '/blog/hello/', label: '/blog/hello' },
+    ],
+    full: [
+      { path: '/', label: '/' },
+      { path: '/about/', label: '/about' },
+      { path: '/services/', label: '/services' },
+      { path: '/team/', label: '/team' },
+      { path: '/blog/', label: '/blog' },
+      { path: '/blog/hello/', label: '/blog/hello' },
+      { path: '/contact/', label: '/contact' },
+    ],
+  };
+
+  const SHAPE_META = {
+    single: '1 page',
+    blog:   '3 pages + journal',
+    full:   '12+ pages',
+  };
+
+  const frame = document.getElementById('frame');
+  const urlPill = document.getElementById('url-pill');
+  const routesEl = document.getElementById('routes');
+  const shapeMeta = document.getElementById('shape-meta');
+  const toast = document.getElementById('toast');
+
+  function variantSlug() {
+    const adapter = state.adapter === 'next' ? '-next' : '';
+    return 'demo-' + state.shape + adapter;
+  }
+  function frameUrl() {
+    return '../' + variantSlug() + state.route;
+  }
+
+  function renderRoutes() {
+    const routes = SHAPE_ROUTES[state.shape] || [];
+    if (!routes.find((r) => r.path === state.route)) {
+      state.route = '/';
+    }
+    routesEl.innerHTML = '';
+    routes.forEach((r) => {
+      const b = document.createElement('button');
+      b.className = 'route' + (state.route === r.path ? ' active' : '');
+      b.textContent = r.label;
+      b.dataset.path = r.path;
+      b.addEventListener('click', () => {
+        state.route = r.path;
+        renderRoutes();
+        loadFrame();
+      });
+      routesEl.appendChild(b);
+    });
+  }
+
+  function loadFrame() {
+    urlPill.textContent = '/' + variantSlug() + state.route;
+    frame.src = frameUrl();
+  }
+
+  document.querySelectorAll('.pill-row').forEach((row) => {
+    const group = row.dataset.group;
+    row.querySelectorAll('.pill').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        row.querySelectorAll('.pill').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        state[group] = btn.dataset.value;
+        if (group === 'shape') {
+          shapeMeta.textContent = SHAPE_META[state.shape];
+          renderRoutes();
+          loadFrame();
+        } else if (group === 'adapter') {
+          loadFrame();
+        } else if (group === 'theme') {
+          postToFrame({ type: 'mosaic-theme', theme: state.theme });
+        }
+      });
+    });
+  });
+
+  function postToFrame(msg) {
+    try {
+      frame.contentWindow && frame.contentWindow.postMessage(msg, '*');
+    } catch (_) {}
+  }
+
+  function updateTokenValueDisplay(key, raw) {
+    const el = document.querySelector('[data-token-value="' + key + '"]');
+    if (el) el.textContent = key === 'radius.md' ? raw + 'px' : raw;
+  }
+
+  function emitTokens() {
+    postToFrame({ type: 'mosaic-tokens', tokens: state.tokens });
+  }
+
+  document.querySelectorAll('[data-token]').forEach((input) => {
+    const key = input.dataset.token;
+    state.tokens[key] = key === 'radius.md' ? input.value + 'px' : input.value;
+    input.addEventListener('input', () => {
+      const raw = input.value;
+      state.tokens[key] = key === 'radius.md' ? raw + 'px' : raw;
+      updateTokenValueDisplay(key, raw);
+      emitTokens();
+    });
+  });
+
+  frame.addEventListener('load', () => {
+    postToFrame({ type: 'mosaic-theme', theme: state.theme });
+    emitTokens();
+  });
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  document.getElementById('reset').addEventListener('click', () => {
+    document.querySelectorAll('[data-token]').forEach((input) => {
+      input.value = input.defaultValue;
+      const key = input.dataset.token;
+      state.tokens[key] = key === 'radius.md' ? input.defaultValue + 'px' : input.defaultValue;
+      updateTokenValueDisplay(key, input.defaultValue);
+    });
+    state.theme = 'light';
+    document.querySelectorAll('[data-group="theme"] .pill').forEach((b) => {
+      b.classList.toggle('active', b.dataset.value === 'light');
+    });
+    postToFrame({ type: 'mosaic-theme', theme: 'light' });
+    emitTokens();
+    showToast('Reset to defaults');
+  });
+
+  document.getElementById('export').addEventListener('click', () => {
+    const json = JSON.stringify({
+      '@type': 'TokenSet',
+      tokens: state.tokens,
+    }, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tokens.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Downloaded tokens.json');
+  });
+
+  renderRoutes();
+})();
+</script>
 
 </body>
 </html>

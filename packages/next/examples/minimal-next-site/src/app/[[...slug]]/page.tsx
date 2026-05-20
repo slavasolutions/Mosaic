@@ -217,9 +217,20 @@ export default async function Page({ params }: PageProps) {
         id="mosaic-sites"
         dangerouslySetInnerHTML={{ __html: SITE_LIST }}
       />
+      {/* Studio bridge — receives postMessage from the /explore/ playground
+          so a parent iframe can drive theme + token values live. */}
       <script
         dangerouslySetInnerHTML={{
-          __html: `(function(){if(location.search.indexOf('nodebug=1')!==-1)return;var s=document.createElement('script');s.src=${JSON.stringify(devtoolSrc)};s.defer=true;document.head.appendChild(s);})();`,
+          __html:
+            `(function(){var M={'color.bg':'--bg','color.ink':'--ink','color.accent':'--accent','color.bg-sunk':'--bg-sunk','color.bg-elev':'--bg-elev','color.line':'--line','color.ink-soft':'--ink-soft','color.ink-mute':'--ink-mute','radius.md':'--radius-md'};` +
+            `window.addEventListener('message',function(e){var d=e&&e.data;if(!d||typeof d!=='object')return;` +
+            `if(d.type==='mosaic-theme'){var p=d.theme;if(p==='light'||p==='dark')document.documentElement.setAttribute('data-theme',p);else document.documentElement.removeAttribute('data-theme');}` +
+            `if(d.type==='mosaic-tokens'&&d.tokens){Object.keys(d.tokens).forEach(function(k){var v=M[k];if(v)document.documentElement.style.setProperty(v,d.tokens[k]);});}});})();`,
+        }}
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `(function(){if(location.search.indexOf('nodebug=1')!==-1)return;if(window.top!==window.self)return;var s=document.createElement('script');s.src=${JSON.stringify(devtoolSrc)};s.defer=true;document.head.appendChild(s);})();`,
         }}
       />
     </>

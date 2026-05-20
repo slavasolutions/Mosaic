@@ -750,11 +750,53 @@ if (schemaType) {
       })();
     </script>
 
+    <!-- Studio bridge — listens for postMessage from the /explore/ playground
+         so a parent iframe can drive theme + token values live. No effect
+         when the page is opened directly (no parent posting messages). -->
+    <script is:inline>
+      (function () {
+        // map editor token keys → CSS custom-property names in this layout
+        var TOKEN_TO_CSS = {
+          'color.bg':       '--bg',
+          'color.ink':      '--ink',
+          'color.accent':   '--accent',
+          'color.bg-sunk':  '--bg-sunk',
+          'color.bg-elev':  '--bg-elev',
+          'color.line':     '--line',
+          'color.ink-soft': '--ink-soft',
+          'color.ink-mute': '--ink-mute',
+          'radius.md':      '--radius-md',
+        };
+        window.addEventListener('message', function (ev) {
+          var data = ev && ev.data;
+          if (!data || typeof data !== 'object') return;
+          if (data.type === 'mosaic-theme') {
+            var p = data.theme;
+            if (p === 'light' || p === 'dark') {
+              document.documentElement.setAttribute('data-theme', p);
+            } else {
+              document.documentElement.removeAttribute('data-theme');
+            }
+          }
+          if (data.type === 'mosaic-tokens' && data.tokens) {
+            Object.keys(data.tokens).forEach(function (k) {
+              var cssVar = TOKEN_TO_CSS[k];
+              if (cssVar) {
+                document.documentElement.style.setProperty(cssVar, data.tokens[k]);
+              }
+            });
+          }
+        });
+      })();
+    </script>
+
     <!-- @ssolu/mosaic-devtool inspector — loaded on every render.
-         Append `?nodebug=1` to any URL to suppress. -->
+         Append `?nodebug=1` to any URL to suppress. Suppressed automatically
+         inside the Studio iframe to avoid duplicate panels. -->
     <script is:inline define:vars={{ devtoolSrc }}>
       (function () {
         if (location.search.indexOf('nodebug=1') !== -1) return;
+        if (window.top !== window.self) return; // inside an iframe (Studio)
         var s = document.createElement('script');
         s.src = devtoolSrc;
         s.defer = true;
