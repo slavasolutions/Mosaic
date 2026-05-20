@@ -168,7 +168,7 @@ export default async function Page({ params }: PageProps) {
       <header className="site">
         <div className="nav-inner">
           <a className="brand" href={href('/')}>
-            <img src={href('/logo.svg')} alt="" />
+            <img src={href('/logo.png')} alt="" />
             {title.split(' — ')[0] || 'Mosaic'}
           </a>
           {navItems.length > 0 && (
