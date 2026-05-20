@@ -2,6 +2,79 @@
 
 ## Unreleased
 
+### `@ssolu/mosaic-astro@0.4.0`
+
+**Added**
+
+- Publishes Zod schemas for the Mosaic Web profile so example sites no
+  longer cast `entry.data as any`: `pageSchema`, `heroSchema`,
+  `ruleCardsSchema`, `journalPreviewSchema`, `blockSchema`, `tokensSchema`,
+  `manifestSchema` + inferred TypeScript types (`Page`, `HeroBlock`, …).
+  Pass them straight to `defineCollection({ schema })`.
+- Loader now populates `entry.rendered.html` via `renderBody()` at load
+  time. Consumers can use the canonical Astro idiom
+  `const { Content } = await render(entry); <Content />` instead of
+  reaching for `set:html`. Dispatches on `bodyExt` (md / html / txt).
+
+**Dependencies**
+
+- Added `zod ^3.23.0 || ^4.0.0` — peer-compatible with Astro's content
+  collection machinery.
+
+### `@ssolu/mosaic-validator-web@0.1.1`
+
+**Fixed**
+
+- Drop-in browser bundle no longer throws
+  `Dynamic require of "node:fs" is not supported` at startup. The
+  fs-coupled paths from `@ssolu/mosaic-core`'s `validate()` are now
+  resolved to an inline no-op shim via an esbuild resolve plugin; the
+  browser bundle keeps the no-runtime-deps guarantee (no external
+  polyfills added).
+
+### Marketing site moves to a Mosaic folder (dogfood)
+
+- New `/site/` folder is the Mosaic source for `mosaic.ssolu.dev`:
+  `mosaic.json` (manifest with mosaic-web profile + brand + nav),
+  `pages/` (route records), `snippets/` (reusable blocks),
+  `tokens/index.json` (design tokens — single source of truth),
+  `images/` (brand assets).
+- New `/site-build/` Astro project consumes `/site/` via
+  `mosaicLoader({ root: '../site', includeNonRouteRecords: false })`,
+  parses entries with the published Zod schemas, and emits static HTML
+  to `site-build/dist/`. Block resolution uses a discriminated union on
+  `@type` (hero / rule-cards / journal-preview); design tokens live in
+  one `tokens.css` referenced by every component (no inline literals).
+- Cloudflare Pages config (`wrangler.toml`) replaces the GitHub Pages
+  deploy path. CI build target:
+  `cd site-build && npm install && npm run build`, output dir
+  `site-build/dist`. Custom domain `mosaic.ssolu.dev` flips via DNS once
+  the Pages project is created in the CF dashboard.
+- Repo `/index.html` and root favicon set stay intact; the GH Pages
+  deploy remains valid until DNS flips. After the CF Pages deploy is
+  verified the root-level marketing site will be removed in a follow-up.
+
+### Adapter side-effects
+
+- `@ssolu/mosaic-astro` example layouts (`Layout.astro`,
+  `[[...slug]]/page.tsx`) now point at `/logo.png` (rendered globe)
+  instead of the deprecated `/logo.svg` (four-corners mark). Each
+  adapter package ships a matching `logo.png` so the brand mark is
+  consistent across `packages/{astro,core,next}` READMEs.
+- Site-wide QA: a Playwright pass (`scripts/qa-playwright.mjs`) checks
+  `/`, `/explore/`, `/spec/`, and all six demo variants at mobile /
+  tablet / desktop viewports for console errors + 4xx/5xx responses.
+  Latest run is 27/27 clean against the local preview build.
+
+### Repository housekeeping
+
+- `.gitignore` now excludes CI deploy targets the workflow generates
+  from each package's `dist/`: `_mosaic-devtool/`, `_mosaic-validator/`,
+  `demo-blog/`, `demo-single/`, `demo-full/`, `demo-blog-next/`,
+  `demo-single-next/`, `demo-full-next/`, and Astro build outputs under
+  `site-build/dist/` + `site-build/.astro/`. These were never meant to
+  be source-tracked; the workflow rebuilds them on every push.
+
 ### README + repo presentation
 
 - Version sprawl reconciled — every file now reads **0.9.4** (root README,

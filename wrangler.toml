@@ -1,0 +1,9 @@
+# Cloudflare Pages — mosaic.ssolu.dev
+# Site is built from the Astro adapter pointed at site/ as a Mosaic folder.
+name = "mosaic-ssolu-dev"
+compatibility_date = "2026-05-20"
+
+pages_build_output_dir = "dist"
+
+[vars]
+MOSAIC_VARIANT = "site"
