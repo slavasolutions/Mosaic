@@ -1,0 +1,18 @@
+{
+  "name": "mosaic-site-build",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Astro build for mosaic.ssolu.dev — consumes ../site as a Mosaic folder via @ssolu/mosaic-astro.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@ssolu/mosaic-astro": "*",
+    "@ssolu/mosaic-core": "*",
+    "astro": "^6.3.5"
+  }
+}

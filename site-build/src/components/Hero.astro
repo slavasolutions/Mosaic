@@ -1,0 +1,119 @@
+---
+import type { HeroBlock } from '@ssolu/mosaic-astro';
+interface Props { block: HeroBlock }
+const { block } = Astro.props;
+const title = block.title.split(block.titleHighlight ?? '');
+---
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        {block.eyebrow && <p class="eyebrow">{block.eyebrow}</p>}
+        <h1 class="hero-title">
+          {block.titleHighlight
+            ? <>{title[0]}<span class="hl">{block.titleHighlight}</span>{title[1]}</>
+            : block.title}
+        </h1>
+        {block.lede && <p class="hero-lede">{block.lede}</p>}
+        {block.ctas && (
+          <div class="hero-cta">
+            {block.ctas.map((cta) => (
+              <a class={cta.primary ? 'btn btn-primary' : 'btn'} href={cta.href}>
+                {cta.label}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {block.art && (
+        <div class="hero-globe" aria-hidden="true">
+          <img
+            class="hero-globe-img"
+            src={block.art.src}
+            alt={block.art.alt}
+            width="640"
+            height="640"
+            loading="eager"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+.hero { padding: 48px 0 0; overflow: hidden; }
+@media (min-width: 860px) { .hero { padding: 80px 0 0; } }
+
+.hero-inner {
+  position: relative;
+  padding: 0 0 60px;
+  min-height: 420px;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+}
+@media (min-width: 860px) { .hero-inner { padding-bottom: 120px; min-height: 480px; } }
+
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 540px;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--type-display);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  margin: 0 0 var(--space-5);
+}
+.hero-title .hl { color: var(--color-accent); font-style: italic; }
+
+.hero-lede {
+  font-size: var(--type-body);
+  color: var(--color-ink-soft);
+  max-width: 42ch;
+  margin: 0 0 var(--space-5);
+}
+
+.hero-cta {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.hero-globe {
+  position: absolute;
+  bottom: -200px;
+  right: -180px;
+  width: 760px;
+  height: 760px;
+  max-width: 80%;
+  z-index: 1;
+  pointer-events: none;
+}
+.hero-globe-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 3;
+}
+
+@media (max-width: 720px) {
+  .hero-globe {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+    bottom: auto;
+    right: auto;
+    margin: var(--space-5) auto 0;
+  }
+  .hero-cta { flex-direction: column; align-items: stretch; }
+}
+</style>

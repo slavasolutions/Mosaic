@@ -12,7 +12,8 @@
   "workspaces": [
     "packages/*",
     "packages/astro/examples/minimal-site",
-    "packages/next/examples/minimal-next-site"
+    "packages/next/examples/minimal-next-site",
+    "site-build"
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",
@@ -22,5 +23,8 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
   }
 }

@@ -1,0 +1,56 @@
+/* Design tokens — single source of truth.
+ *
+ * Mirrors /site/tokens/index.json. The adapter will auto-emit this file
+ * in a later pass; for now we hand-author and the JSON is the contract.
+ */
+:root {
+  /* color */
+  --color-bg:          #F5F2EA;
+  --color-bg-elev:     #FFFFFF;
+  --color-bg-sunk:     #EFEBDF;
+  --color-ink:         #2A2A24;
+  --color-ink-soft:    #4A4A40;
+  --color-ink-mute:    #7B776C;
+  --color-line:        #E0DCC9;
+  --color-accent:      #7B86D6;
+  --color-accent-soft: #ECEEF9;
+  --color-accent-ink:  #4853A8;
+  --color-peach:       #F0A586;
+  --color-sage:        #9CC4A2;
+  --color-mustard:     #F4D58D;
+  --color-lilac:       #C3B0DE;
+
+  /* font */
+  --font-display: "Spectral", ui-serif, Georgia, serif;
+  --font-body:    "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "Menlo", monospace;
+
+  /* radius */
+  --radius-sm:   6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-pill: 999px;
+
+  /* space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+
+  /* layout */
+  --layout-max-width: 980px;
+
+  /* type scale (clamp() ramp) */
+  --type-display: clamp(48px, 8vw, 84px);
+  --type-h1:      clamp(36px, 5vw, 56px);
+  --type-h2:      clamp(28px, 3.5vw, 38px);
+  --type-h3:      clamp(20px, 2.5vw, 24px);
+  --type-body:    clamp(15px, 1.8vw, 17px);
+  --type-small:   13px;
+  --type-mono:    13px;
+}

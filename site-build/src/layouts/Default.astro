@@ -1,0 +1,68 @@
+---
+/**
+ * Site chrome — topbar + footer + wireframe rails. Content slots in.
+ *
+ * Brand metadata is imported statically from /site/mosaic.json so Astro/Vite
+ * resolves the path at build time; no fs reads at render time (which break
+ * once chunks are relocated under dist/.prerender/).
+ */
+import '../styles/tokens.css';
+import '../styles/global.css';
+import manifest from '../../../site/mosaic.json';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = manifest.title ?? 'Mosaic',
+  description = manifest.description ?? '',
+} = Astro.props;
+
+const brand = manifest.brand ?? {};
+const nav = manifest.nav ?? [];
+---
+
+<!doctype html>
+<html lang={manifest.locales?.default ?? 'en'}>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+<link rel="apple-touch-icon" href="/favicon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        {brand.logo ? <img class="brand-mark" src={brand.logo} alt={brand.wordmark ?? 'Mosaic'} /> : null}
+        <span class="brand-name">{brand.wordmark ?? 'Mosaic'}</span>
+        {brand.version ? <span class="brand-version">{brand.version}</span> : null}
+      </a>
+      <nav class="topnav" aria-label="Site navigation">
+        {nav.map((item) => (
+          item.external
+            ? <a href={item.href} rel="noopener" target="_blank">{item.label}</a>
+            : <a href={item.href}>{item.label}</a>
+        ))}
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      <small>© 2026 Slava Solutions. Apache-2.0 (code) · CC BY 4.0 (spec)</small>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,43 @@
+---
+/**
+ * Universal page route. Every Mosaic page record under /site/pages/ becomes
+ * a static HTML page here. Sections are resolved from the page's `sections`
+ * array — each entry is either a ref (string) or an inline block. The
+ * adapter resolves refs at load time, so we always receive resolved blocks.
+ */
+import { getCollection, render } from 'astro:content';
+import Default from '../layouts/Default.astro';
+import Hero from '../components/Hero.astro';
+import RuleCards from '../components/RuleCards.astro';
+import JournalPreview from '../components/JournalPreview.astro';
+import type { Block } from '@ssolu/mosaic-astro';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('pages', (entry) => Boolean(entry.data.url));
+  return pages.map((entry) => ({
+    params: { slug: entry.data.url === '/' ? undefined : entry.data.url?.replace(/^\//, '') },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const sections = (entry.data.sections ?? []) as Block[];
+
+const componentFor = (b: Block) => {
+  switch (b['@type']) {
+    case 'hero':              return Hero;
+    case 'rule-cards':        return RuleCards;
+    case 'journal-preview':   return JournalPreview;
+    default:                  return null;
+  }
+};
+---
+
+<Default title={entry.data.title} description={entry.data.description}>
+  {sections.map((block) => {
+    const C = componentFor(block);
+    return C ? <C block={block} /> : null;
+  })}
+  {entry.body && <article class="wrap"><Content /></article>}
+</Default>

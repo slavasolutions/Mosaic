@@ -1,0 +1,54 @@
+---
+import type { RuleCardsBlock } from '@ssolu/mosaic-astro';
+interface Props { block: RuleCardsBlock }
+const { block } = Astro.props;
+---
+
+<section>
+  <div class="wrap">
+    {block.eyebrow && <p class="eyebrow">{block.eyebrow}</p>}
+    <h2 class="section-h2">{block.heading}</h2>
+    <div class="rule-grid">
+      {block.items.map((item) => (
+        <article class="rule-card">
+          {item.label && <p class="rule-label">{item.label}</p>}
+          <h3 class="rule-title">{item.title}</h3>
+          <p class="rule-body">{item.body}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.rule-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.rule-card {
+  background: var(--color-bg-elev);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+.rule-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-mono);
+  color: var(--color-ink-mute);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-3);
+}
+.rule-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--type-h3);
+  margin: 0 0 var(--space-3);
+}
+.rule-body {
+  font-size: var(--type-body);
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+</style>
