@@ -128,19 +128,23 @@ function v(key: string, fallback: string): string {
 // user can switch via the footer toggle (data-theme on <html>); without
 // an override prefers-color-scheme picks.
 const lightTokenCss = `:root {
-  --bg: ${v('color.bg', '#faf6ee')};
-  --bg-elev: ${v('color.bg-elev', '#ffffff')};
-  --bg-sunk: ${v('color.bg-sunk', '#f2ede1')};
-  --ink: ${v('color.ink', '#2a2620')};
-  --ink-soft: ${v('color.ink-soft', '#5a544a')};
-  --ink-mute: ${v('color.ink-mute', '#8a8278')};
-  --line: ${v('color.line', '#e8e0cc')};
-  --accent: ${v('color.accent', '#4a9b7a')};
-  --accent-soft: ${v('color.accent-soft', '#d6ecdf')};
-  --accent-ink: ${v('color.accent-ink', '#2d6b54')};
-  --banner-bg: ${v('color.banner-bg', '#fbeec2')};
-  --banner-ink: ${v('color.banner-ink', '#6a4d10')};
-  --banner-line: ${v('color.banner-line', '#e8d49a')};
+  --bg: ${v('color.bg', '#F5F2EA')};
+  --bg-elev: ${v('color.bg-elev', '#FFFFFF')};
+  --bg-sunk: ${v('color.bg-sunk', '#EFEBDF')};
+  --ink: ${v('color.ink', '#2A2A24')};
+  --ink-soft: ${v('color.ink-soft', '#4A4A40')};
+  --ink-mute: ${v('color.ink-mute', '#7B776C')};
+  --line: ${v('color.line', '#E0DCC9')};
+  --accent: ${v('color.accent', '#7B86D6')};
+  --accent-soft: ${v('color.accent-soft', '#ECEEF9')};
+  --accent-ink: ${v('color.accent-ink', '#4853A8')};
+  --banner-bg: ${v('color.banner-bg', '#F4D58D')};
+  --banner-ink: ${v('color.banner-ink', '#5A4A1A')};
+  --banner-line: ${v('color.banner-line', '#D9B85F')};
+  --font-body: ${v('font.body', '"Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif')};
+  --font-serif: ${v('font.serif', '"Spectral", ui-serif, Georgia, "Times New Roman", serif')};
+  --font-mono: ${v('font.mono', '"JetBrains Mono", ui-monospace, "SF Mono", "Menlo", "Consolas", monospace')};
+  --radius-md: ${v('radius.md', '8px')};
 }`;
 
 // === JSON-LD (mosaic-web profile §6) =========================================
@@ -171,78 +175,85 @@ if (schemaType) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href={href('/logo.svg')} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <style is:global>
       :root {
-        --bg: #faf6ee;
-        --bg-elev: #ffffff;
-        --bg-sunk: #f2ede1;
-        --ink: #2a2620;
-        --ink-soft: #5a544a;
-        --ink-mute: #8a8278;
-        --line: #e8e0cc;
-        --accent: #4a9b7a;
-        --accent-soft: #d6ecdf;
-        --accent-ink: #2d6b54;
-        --banner-bg: #fbeec2;
-        --banner-ink: #6a4d10;
-        --banner-line: #e8d49a;
+        --bg: #F5F2EA;
+        --bg-elev: #FFFFFF;
+        --bg-sunk: #EFEBDF;
+        --ink: #2A2A24;
+        --ink-soft: #4A4A40;
+        --ink-mute: #7B776C;
+        --line: #E0DCC9;
+        --accent: #7B86D6;
+        --accent-soft: #ECEEF9;
+        --accent-ink: #4853A8;
+        --banner-bg: #F4D58D;
+        --banner-ink: #5A4A1A;
+        --banner-line: #D9B85F;
+        --font-body: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        --font-serif: "Spectral", ui-serif, Georgia, "Times New Roman", serif;
+        --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        --radius-md: 8px;
       }
       /* OS-preference fallback. User pick via data-theme on <html> wins,
          see `html[data-theme="dark"]` block below. */
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #15130f;
-          --bg-elev: #1e1b15;
-          --bg-sunk: #100e0b;
-          --ink: #ecead8;
-          --ink-soft: #b8b3a0;
-          --ink-mute: #7d7868;
-          --line: #2a261d;
-          --accent: #88c4a8;
-          --accent-soft: #1d3329;
-          --accent-ink: #b8e0cd;
-          --banner-bg: #2b240f;
-          --banner-ink: #e8d49a;
-          --banner-line: #524515;
+          --bg: #1A1A1F;
+          --bg-elev: #232329;
+          --bg-sunk: #14141A;
+          --ink: #ECEAE0;
+          --ink-soft: #BCB8AC;
+          --ink-mute: #7A776C;
+          --line: #2E2E36;
+          --accent: #9CA6E2;
+          --accent-soft: #2A2D52;
+          --accent-ink: #C5CCEC;
+          --banner-bg: #2E2410;
+          --banner-ink: #F4D58D;
+          --banner-line: #5A4A1A;
         }
       }
       /* User-picked dark — overrides OS pref. */
       html[data-theme="dark"] {
-        --bg: #15130f;
-        --bg-elev: #1e1b15;
-        --bg-sunk: #100e0b;
-        --ink: #ecead8;
-        --ink-soft: #b8b3a0;
-        --ink-mute: #7d7868;
-        --line: #2a261d;
-        --accent: #88c4a8;
-        --accent-soft: #1d3329;
-        --accent-ink: #b8e0cd;
-        --banner-bg: #2b240f;
-        --banner-ink: #e8d49a;
-        --banner-line: #524515;
+        --bg: #1A1A1F;
+        --bg-elev: #232329;
+        --bg-sunk: #14141A;
+        --ink: #ECEAE0;
+        --ink-soft: #BCB8AC;
+        --ink-mute: #7A776C;
+        --line: #2E2E36;
+        --accent: #9CA6E2;
+        --accent-soft: #2A2D52;
+        --accent-ink: #C5CCEC;
+        --banner-bg: #2E2410;
+        --banner-ink: #F4D58D;
+        --banner-line: #5A4A1A;
       }
       /* User-picked light — overrides OS pref. */
       html[data-theme="light"] {
-        --bg: #faf6ee;
-        --bg-elev: #ffffff;
-        --bg-sunk: #f2ede1;
-        --ink: #2a2620;
-        --ink-soft: #5a544a;
-        --ink-mute: #8a8278;
-        --line: #e8e0cc;
-        --accent: #4a9b7a;
-        --accent-soft: #d6ecdf;
-        --accent-ink: #2d6b54;
-        --banner-bg: #fbeec2;
-        --banner-ink: #6a4d10;
-        --banner-line: #e8d49a;
+        --bg: #F5F2EA;
+        --bg-elev: #FFFFFF;
+        --bg-sunk: #EFEBDF;
+        --ink: #2A2A24;
+        --ink-soft: #4A4A40;
+        --ink-mute: #7B776C;
+        --line: #E0DCC9;
+        --accent: #7B86D6;
+        --accent-soft: #ECEEF9;
+        --accent-ink: #4853A8;
+        --banner-bg: #F4D58D;
+        --banner-ink: #5A4A1A;
+        --banner-line: #D9B85F;
       }
       *, *::before, *::after { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
       html { scrollbar-gutter: stable; }
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        font-family: var(--font-body, "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif);
         background: var(--bg);
         color: var(--ink);
         line-height: 1.6;
@@ -276,7 +287,7 @@ if (schemaType) {
       }
       .meta-banner-label {
         flex-shrink: 0;
-        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-family: var(--font-mono);
         font-size: 10px;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -304,7 +315,7 @@ if (schemaType) {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-family: ui-serif, Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 18px;
         font-weight: 500;
         color: var(--ink);
@@ -330,7 +341,7 @@ if (schemaType) {
         border: 1px solid var(--line);
         border-radius: 999px;
         background: var(--bg-elev);
-        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-family: var(--font-mono);
         font-size: 11px;
       }
       .locale-switch a {
@@ -375,7 +386,7 @@ if (schemaType) {
         .footer-inner { grid-template-columns: 1.4fr repeat(3, 1fr); }
       }
       .footer-col h4 {
-        font-family: ui-mono, ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 11px;
         letter-spacing: 0.08em;
         text-transform: uppercase;
@@ -415,7 +426,7 @@ if (schemaType) {
         border: 1px solid var(--line);
         border-radius: 999px;
         background: var(--bg-elev);
-        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-family: var(--font-mono);
         font-size: 11px;
       }
       .theme-switch button {
@@ -437,14 +448,14 @@ if (schemaType) {
       .body-block { color: var(--ink-soft); }
       .body-block p { margin: 0 0 1em; }
       .body-block h2 {
-        font-family: ui-serif, Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 22px;
         color: var(--ink);
         margin: 32px 0 12px;
         line-height: 1.25;
       }
       .body-block h3 {
-        font-family: ui-serif, Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 18px;
         color: var(--ink);
         margin: 24px 0 10px;
@@ -462,7 +473,7 @@ if (schemaType) {
       .body-block blockquote p { margin: 0 0 0.5em; }
       .body-block blockquote p:last-child { margin-bottom: 0; }
       .body-block code {
-        font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+        font-family: var(--font-mono);
         font-size: 0.9em;
         background: var(--bg-sunk);
         padding: 1px 5px;
@@ -498,7 +509,7 @@ if (schemaType) {
 
       /* ----- Home / page / post helpers ----- */
       .home-h1 {
-        font-family: ui-serif, Georgia, serif;
+        font-family: var(--font-serif);
         font-size: clamp(28px, 4vw, 44px);
         line-height: 1.15;
         letter-spacing: -0.01em;
@@ -542,11 +553,11 @@ if (schemaType) {
       }
       .featured-card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; }
       .featured-card-body { padding: 14px 16px 18px; }
-      .featured-card h3 { font-family: ui-serif, Georgia, serif; margin: 0 0 6px; font-size: 18px; }
+      .featured-card h3 { font-family: var(--font-serif); margin: 0 0 6px; font-size: 18px; }
       .featured-card p { margin: 0; font-size: 14px; color: var(--ink-soft); }
 
       .page-h1 {
-        font-family: ui-serif, Georgia, serif;
+        font-family: var(--font-serif);
         font-size: clamp(26px, 3.5vw, 36px);
         line-height: 1.2;
         margin: 0 0 12px;

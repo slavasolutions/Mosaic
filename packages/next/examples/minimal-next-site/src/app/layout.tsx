@@ -62,19 +62,23 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const tok = tokensRecord?.tokens ?? {};
   const v = (k: string, fallback: string) => tok[k] ?? fallback;
   const lightTokenCss = `:root {
-  --bg: ${v('color.bg', '#faf6ee')};
-  --bg-elev: ${v('color.bg-elev', '#ffffff')};
-  --bg-sunk: ${v('color.bg-sunk', '#f2ede1')};
-  --ink: ${v('color.ink', '#2a2620')};
-  --ink-soft: ${v('color.ink-soft', '#5a544a')};
-  --ink-mute: ${v('color.ink-mute', '#8a8278')};
-  --line: ${v('color.line', '#e8e0cc')};
-  --accent: ${v('color.accent', '#4a9b7a')};
-  --accent-soft: ${v('color.accent-soft', '#d6ecdf')};
-  --accent-ink: ${v('color.accent-ink', '#2d6b54')};
-  --banner-bg: ${v('color.banner-bg', '#fbeec2')};
-  --banner-ink: ${v('color.banner-ink', '#6a4d10')};
-  --banner-line: ${v('color.banner-line', '#e8d49a')};
+  --bg: ${v('color.bg', '#F5F2EA')};
+  --bg-elev: ${v('color.bg-elev', '#FFFFFF')};
+  --bg-sunk: ${v('color.bg-sunk', '#EFEBDF')};
+  --ink: ${v('color.ink', '#2A2A24')};
+  --ink-soft: ${v('color.ink-soft', '#4A4A40')};
+  --ink-mute: ${v('color.ink-mute', '#7B776C')};
+  --line: ${v('color.line', '#E0DCC9')};
+  --accent: ${v('color.accent', '#7B86D6')};
+  --accent-soft: ${v('color.accent-soft', '#ECEEF9')};
+  --accent-ink: ${v('color.accent-ink', '#4853A8')};
+  --banner-bg: ${v('color.banner-bg', '#F4D58D')};
+  --banner-ink: ${v('color.banner-ink', '#5A4A1A')};
+  --banner-line: ${v('color.banner-line', '#D9B85F')};
+  --font-body: ${v('font.body', '"Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif')};
+  --font-serif: ${v('font.serif', '"Spectral", ui-serif, Georgia, "Times New Roman", serif')};
+  --font-mono: ${v('font.mono', '"JetBrains Mono", ui-monospace, "SF Mono", "Menlo", "Consolas", monospace')};
+  --radius-md: ${v('radius.md', '8px')};
 }`;
 
   // Theme bootstrap — applied before paint to avoid a flash. Reads
@@ -87,6 +91,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        />
         <style dangerouslySetInnerHTML={{ __html: lightTokenCss }} />
         <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
       </head>
