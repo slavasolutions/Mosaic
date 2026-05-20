@@ -3,41 +3,51 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mosaic · Studio — live token editor</title>
-<meta name="description" content="A live editor for Mosaic. Pick adapter and content shape; tweak design tokens; see the change instantly.">
+<title>Mosaic Studio — live playground</title>
+<meta name="description" content="A live playground for Mosaic. Pick a site, browse its folder, tweak design tokens, see the change instantly.">
 <link rel="icon" type="image/svg+xml" href="../logo.svg">
+<link rel="alternate icon" href="../favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* Brand palette + Studio chrome */
 :root {
-  --bg:        #fafaf7;
-  --bg-elev:   #ffffff;
-  --bg-sunk:   #f1f0ea;
-  --ink:       #15161a;
-  --ink-soft:  #3a3c44;
-  --ink-mute:  #6b6e78;
-  --line:      #e4e2d8;
-  --accent:    #2b56d4;
-  --accent-soft: #e7edff;
-  --accent-ink:  #1b3aa0;
-  --f-display: "DM Serif Display", ui-serif, Georgia, serif;
-  --f-mono:    "DM Mono", ui-monospace, "Menlo", monospace;
-  --f-sans:    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
+  --c-bg:        #F5F2EA;
+  --c-bg-elev:   #FFFFFF;
+  --c-bg-sunk:   #EFEBDF;
+  --c-ink:       #2A2A24;
+  --c-ink-soft:  #4A4A40;
+  --c-ink-mute:  #7B776C;
+  --c-line:      #E0DCC9;
+  --c-accent:      #7B86D6;
+  --c-accent-soft: #ECEEF9;
+  --c-accent-ink:  #4853A8;
+  --c-peach:  #F0A586;
+  --c-sage:   #9CC4A2;
+  --c-mustard:#F4D58D;
+  --c-lilac:  #C3B0DE;
 
+  --f-display: "Spectral", ui-serif, Georgia, serif;
+  --f-sans:    "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --f-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --rail: 48px;
+  --side: 320px;
+  --top:  44px;
+}
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:       #0d0f13;
-    --bg-elev:  #14171c;
-    --bg-sunk:  #0a0c10;
-    --ink:      #ecedf0;
-    --ink-soft: #b8bbc4;
-    --ink-mute: #7d818d;
-    --line:     #23262e;
-    --accent:   #7da3ff;
-    --accent-soft: #182142;
-    --accent-ink:  #b9cbff;
+    --c-bg:        #1A1A1F;
+    --c-bg-elev:   #232329;
+    --c-bg-sunk:   #14141A;
+    --c-ink:       #ECEAE0;
+    --c-ink-soft:  #BCB8AC;
+    --c-ink-mute:  #7A776C;
+    --c-line:      #2E2E36;
+    --c-accent:      #9CA6E2;
+    --c-accent-soft: #2A2D52;
+    --c-accent-ink:  #C5CCEC;
   }
 }
 
@@ -45,74 +55,101 @@
 html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
 body {
   font-family: var(--f-sans);
-  background: var(--bg);
-  color: var(--ink);
+  background: var(--c-bg);
+  color: var(--c-ink);
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-.layout {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  grid-template-rows: 52px 1fr;
-  height: 100vh;
-}
+button { font-family: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 1px; }
 
-.topbar {
-  grid-column: 1 / -1;
+/* ===== Layout shell ====================================================== */
+.app {
+  display: grid;
+  grid-template-columns: var(--side) 1fr;
+  height: 100vh;
+  transition: grid-template-columns 0.22s ease;
+}
+.app.rail { grid-template-columns: var(--rail) 1fr; }
+.app.collapsed { grid-template-columns: 0 1fr; }
+
+/* ===== Sidebar =========================================================== */
+.sidebar {
+  background: var(--c-bg);
+  border-right: 1px solid var(--c-line);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+.sidebar-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--line);
-  background: var(--bg);
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--c-line);
+  min-height: var(--top);
 }
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
+  text-decoration: none;
+  color: var(--c-ink);
+  flex: 1;
+  min-width: 0;
+}
+.brand img { width: 26px; height: 26px; display: block; flex-shrink: 0; }
+.brand-text {
   font-family: var(--f-display);
   font-size: 17px;
-  color: var(--ink);
-  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
-.brand-mark { width: 22px; height: 22px; }
-.brand-version {
+.brand-tag {
   font-family: var(--f-mono);
-  font-size: 10px;
-  color: var(--ink-soft);
-  background: var(--bg-sunk);
-  border: 1px solid var(--line);
-  border-radius: 4px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-ink-mute);
   padding: 2px 6px;
-  margin-left: 4px;
+  border-radius: 4px;
+  background: var(--c-bg-sunk);
+  border: 1px solid var(--c-line);
 }
-.topnav {
-  display: flex;
-  gap: 18px;
-  font-size: 13px;
+.icon-btn {
+  width: 28px; height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--c-ink-soft);
+  padding: 0;
 }
-.topnav a {
-  color: var(--ink-soft);
-  text-decoration: none;
-}
-.topnav a:hover { color: var(--ink); }
-.topnav a.current { color: var(--accent); }
+.icon-btn:hover { background: var(--c-bg-sunk); color: var(--c-ink); border-color: var(--c-line); }
+.icon-btn svg { width: 16px; height: 16px; }
 
-.sidebar {
-  border-right: 1px solid var(--line);
-  background: var(--bg);
+.sidebar-body {
+  flex: 1;
   overflow-y: auto;
-  padding: 18px 18px 24px;
+  padding: 14px 14px 24px;
   scrollbar-gutter: stable;
 }
-.section { margin-bottom: 22px; }
+.app.rail .sidebar-body, .app.rail .brand-text, .app.rail .brand-tag { display: none; }
+.app.rail .brand { justify-content: center; }
+.app.rail .sidebar-head { padding: 12px 0; }
+
+.section { margin-bottom: 20px; }
 .section-label {
   font-family: var(--f-mono);
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-mute);
+  color: var(--c-ink-mute);
   margin: 0 0 8px 0;
   display: flex;
   align-items: center;
@@ -121,160 +158,239 @@ body {
 .section-label .meta {
   font-family: var(--f-mono);
   font-size: 10px;
-  color: var(--ink-mute);
-  text-transform: none;
+  color: var(--c-ink-mute);
   letter-spacing: 0;
+  text-transform: none;
 }
 
-.pill-row {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
+/* pills */
+.pill-row { display: flex; gap: 6px; flex-wrap: wrap; }
 .pill {
   appearance: none;
-  background: var(--bg-elev);
-  border: 1px solid var(--line);
+  background: var(--c-bg-elev);
+  border: 1px solid var(--c-line);
   border-radius: 999px;
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 500;
-  color: var(--ink-soft);
-  cursor: pointer;
-  font-family: inherit;
+  color: var(--c-ink-soft);
   transition: border-color 0.12s, background 0.12s, color 0.12s;
 }
-.pill:hover { border-color: var(--ink-mute); color: var(--ink); }
+.pill:hover { border-color: var(--c-ink-mute); color: var(--c-ink); }
 .pill.active {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  color: var(--accent-ink);
+  background: var(--c-accent-soft);
+  border-color: var(--c-accent);
+  color: var(--c-accent-ink);
 }
+.pill.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 
-.routes {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.route {
-  appearance: none;
-  text-align: left;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  padding: 6px 10px;
+/* file tree */
+.tree {
   font-family: var(--f-mono);
   font-size: 12px;
-  color: var(--ink-soft);
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--c-line);
+  border-radius: 8px;
+  padding: 6px 0;
+  background: var(--c-bg-elev);
+}
+.tree-empty {
+  padding: 14px;
+  color: var(--c-ink-mute);
+  font-style: italic;
+  font-family: var(--f-sans);
+  font-size: 12px;
+  text-align: center;
+}
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 3px var(--indent, 8px);
+  color: var(--c-ink-soft);
   cursor: pointer;
-  width: 100%;
+  user-select: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
-.route:hover { background: var(--bg-sunk); color: var(--ink); }
-.route.active {
-  background: var(--accent-soft);
-  color: var(--accent-ink);
-}
+.tree-node:hover { background: var(--c-bg-sunk); color: var(--c-ink); }
+.tree-node.active { background: var(--c-accent-soft); color: var(--c-accent-ink); }
+.tree-node.dir { font-weight: 500; color: var(--c-ink); }
+.tree-node.dir .twist { color: var(--c-ink-mute); width: 12px; display: inline-block; flex-shrink: 0; }
+.tree-node.file .twist { width: 12px; display: inline-block; flex-shrink: 0; opacity: 0; }
+.tree-node .icon { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.75; }
+.tree-node .name { overflow: hidden; text-overflow: ellipsis; }
+.tree-node.file.routable { color: var(--c-ink); }
+.tree-node.file:not(.routable) { cursor: default; }
+.tree-node.file:not(.routable):hover { background: transparent; color: var(--c-ink-soft); }
+.tree-children.collapsed { display: none; }
 
+/* tokens */
 .token {
   display: grid;
-  grid-template-columns: 80px 1fr 50px;
+  grid-template-columns: 90px 1fr 56px;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .token-label {
   font-family: var(--f-mono);
   font-size: 11px;
-  color: var(--ink-soft);
+  color: var(--c-ink-soft);
 }
 .token input[type="color"] {
   width: 100%;
-  height: 26px;
+  height: 24px;
   padding: 0;
-  border: 1px solid var(--line);
+  border: 1px solid var(--c-line);
   border-radius: 4px;
-  background: var(--bg-elev);
+  background: var(--c-bg-elev);
   cursor: pointer;
 }
-.token input[type="range"] {
-  width: 100%;
-}
+.token input[type="range"] { width: 100%; }
 .token-value {
   font-family: var(--f-mono);
   font-size: 10px;
-  color: var(--ink-mute);
+  color: var(--c-ink-mute);
   text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.token-group-head {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--c-ink-mute);
+  margin: 12px 0 6px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--c-line);
+}
+.token-group-head:first-child { border-top: none; padding-top: 0; margin-top: 0; }
 
-.actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 16px;
-}
-.actions .pill {
-  flex: 1;
-  text-align: center;
-}
+/* actions */
+.actions { display: flex; gap: 8px; margin-top: 12px; }
+.actions .pill { flex: 1; text-align: center; }
 .actions .pill.primary {
-  background: var(--accent);
+  background: var(--c-accent);
   color: #fff;
-  border-color: var(--accent);
+  border-color: var(--c-accent);
 }
 .actions .pill.primary:hover {
-  background: var(--accent-ink);
-  border-color: var(--accent-ink);
+  background: var(--c-accent-ink);
+  border-color: var(--c-accent-ink);
   color: #fff;
 }
 
+.sidebar-foot {
+  border-top: 1px solid var(--c-line);
+  padding: 10px 14px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--c-ink-mute);
+  background: var(--c-bg-sunk);
+}
+.sidebar-foot a { color: var(--c-ink-soft); text-decoration: none; }
+.sidebar-foot a:hover { color: var(--c-ink); text-decoration: underline; }
+.sidebar-foot-links { display: flex; gap: 12px; margin-bottom: 4px; }
+
+/* ===== Preview ============================================================ */
 .preview {
+  display: grid;
+  grid-template-rows: var(--top) 1fr;
+  background: var(--c-bg-sunk);
+  min-width: 0;
   position: relative;
-  background: var(--bg-sunk);
+}
+.preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--c-line);
+  background: var(--c-bg);
+  min-width: 0;
+}
+.crumb {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--c-ink-soft);
+  background: var(--c-bg-sunk);
+  border: 1px solid var(--c-line);
+  border-radius: 999px;
+  padding: 5px 14px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.crumb-site { color: var(--c-ink-mute); }
+.crumb-path { color: var(--c-ink); }
+
+.preview-frame-wrap {
+  position: relative;
   overflow: hidden;
 }
 .preview iframe {
   width: 100%;
   height: 100%;
   border: none;
-  background: var(--bg);
+  background: var(--c-bg);
   display: block;
 }
-.preview-bar {
+.frame-loading {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  z-index: 10;
+  inset: 0;
+  background: color-mix(in srgb, var(--c-bg) 92%, transparent);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  z-index: 5;
 }
-.url-pill {
-  background: color-mix(in srgb, var(--bg-elev) 86%, transparent);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--line);
+.frame-loading.show { opacity: 1; }
+.frame-loading-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--c-bg-elev);
+  border: 1px solid var(--c-line);
   border-radius: 999px;
-  padding: 6px 14px;
   font-family: var(--f-mono);
   font-size: 11px;
-  color: var(--ink-soft);
-  pointer-events: auto;
-  max-width: 70%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--c-ink-soft);
+  box-shadow: 0 4px 16px -8px rgba(0,0,0,0.18);
 }
+.spinner {
+  width: 12px; height: 12px;
+  border: 2px solid var(--c-line);
+  border-top-color: var(--c-accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .toast {
   position: fixed;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--c-ink);
+  color: var(--c-bg);
   padding: 10px 18px;
   border-radius: 8px;
   font-size: 13px;
@@ -289,125 +405,131 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
+/* mobile */
 @media (max-width: 720px) {
-  .layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: 52px auto 1fr;
-  }
-  .sidebar {
-    max-height: 40vh;
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-  }
+  .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .app.rail, .app.collapsed { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .sidebar { max-height: 50vh; border-right: none; border-bottom: 1px solid var(--c-line); }
+  .app.collapsed .sidebar { display: none; }
 }
+
 </style>
 </head>
 <body>
 
-<div class="layout">
+<div class="app" id="app">
 
-  <div class="topbar">
-    <a class="brand" href="../">
-      <img class="brand-mark" src="../logo.svg" alt="Mosaic">
-      <span>Mosaic</span>
-      <span class="brand-version">Studio</span>
-    </a>
-    <nav class="topnav">
-      <a href="../">Home</a>
-      <a class="current" href="./">Studio</a>
-      <a href="../spec/README.md">Spec</a>
-      <a href="https://github.com/slavasolutions/mosaic">GitHub</a>
-    </nav>
-  </div>
+  <aside class="sidebar" id="sidebar">
 
-  <aside class="sidebar">
-
-    <div class="section">
-      <p class="section-label">Adapter</p>
-      <div class="pill-row" data-group="adapter">
-        <button class="pill active" data-value="astro">Astro</button>
-        <button class="pill" data-value="next">Next</button>
-      </div>
+    <div class="sidebar-head">
+      <a class="brand" href="../">
+        <img src="../logo.svg" alt="Mosaic">
+        <span class="brand-text">Mosaic</span>
+        <span class="brand-tag">Studio</span>
+      </a>
+      <button class="icon-btn" id="collapse-btn" aria-label="Collapse sidebar" title="Collapse sidebar">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 6 8l4 4"/></svg>
+      </button>
     </div>
 
-    <div class="section">
-      <p class="section-label">Shape <span class="meta" id="shape-meta">3 pages + journal</span></p>
-      <div class="pill-row" data-group="shape">
-        <button class="pill" data-value="single">Single</button>
-        <button class="pill active" data-value="blog">Blog</button>
-        <button class="pill" data-value="full">Full</button>
+    <div class="sidebar-body">
+
+      <div class="section">
+        <p class="section-label">Site</p>
+        <div class="pill-row" data-group="site">
+          <button class="pill active" data-value="astro">Astro demo</button>
+          <button class="pill" data-value="next">Next demo</button>
+          <button class="pill" data-value="mosaic">Mosaic site</button>
+          <button class="pill" data-value="ssolu">ssolu.dev</button>
+        </div>
       </div>
+
+      <div class="section" id="shape-section">
+        <p class="section-label">Shape <span class="meta" id="shape-meta">3 pages + journal</span></p>
+        <div class="pill-row" data-group="shape">
+          <button class="pill" data-value="single">Single</button>
+          <button class="pill active" data-value="blog">Blog</button>
+          <button class="pill" data-value="full">Full</button>
+        </div>
+      </div>
+
+      <div class="section" id="files-section">
+        <p class="section-label">Files <span class="meta" id="tree-meta"></span></p>
+        <div class="tree" id="tree">
+          <div class="tree-empty">Loading…</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-label">Theme</p>
+        <div class="pill-row" data-group="theme">
+          <button class="pill active" data-value="light">Light</button>
+          <button class="pill" data-value="dark">Dark</button>
+          <button class="pill" data-value="system">System</button>
+        </div>
+      </div>
+
+      <div class="section" id="tokens-section">
+        <p class="section-label">Tokens <span class="meta">live edit</span></p>
+
+        <div class="token-group-head">Surface</div>
+        <div class="token"><span class="token-label">color.bg</span><input type="color" data-token="color.bg" value="#F5F2EA"><span class="token-value" data-tv="color.bg">#F5F2EA</span></div>
+        <div class="token"><span class="token-label">color.bg-elev</span><input type="color" data-token="color.bg-elev" value="#ffffff"><span class="token-value" data-tv="color.bg-elev">#ffffff</span></div>
+        <div class="token"><span class="token-label">color.bg-sunk</span><input type="color" data-token="color.bg-sunk" value="#EFEBDF"><span class="token-value" data-tv="color.bg-sunk">#EFEBDF</span></div>
+        <div class="token"><span class="token-label">color.line</span><input type="color" data-token="color.line" value="#E0DCC9"><span class="token-value" data-tv="color.line">#E0DCC9</span></div>
+
+        <div class="token-group-head">Ink</div>
+        <div class="token"><span class="token-label">color.ink</span><input type="color" data-token="color.ink" value="#2A2A24"><span class="token-value" data-tv="color.ink">#2A2A24</span></div>
+        <div class="token"><span class="token-label">color.ink-soft</span><input type="color" data-token="color.ink-soft" value="#4A4A40"><span class="token-value" data-tv="color.ink-soft">#4A4A40</span></div>
+        <div class="token"><span class="token-label">color.ink-mute</span><input type="color" data-token="color.ink-mute" value="#7B776C"><span class="token-value" data-tv="color.ink-mute">#7B776C</span></div>
+
+        <div class="token-group-head">Accent</div>
+        <div class="token"><span class="token-label">color.accent</span><input type="color" data-token="color.accent" value="#7B86D6"><span class="token-value" data-tv="color.accent">#7B86D6</span></div>
+        <div class="token"><span class="token-label">accent-soft</span><input type="color" data-token="color.accent-soft" value="#ECEEF9"><span class="token-value" data-tv="color.accent-soft">#ECEEF9</span></div>
+        <div class="token"><span class="token-label">accent-ink</span><input type="color" data-token="color.accent-ink" value="#4853A8"><span class="token-value" data-tv="color.accent-ink">#4853A8</span></div>
+
+        <div class="token-group-head">Shape</div>
+        <div class="token"><span class="token-label">radius.md</span><input type="range" data-token="radius.md" min="0" max="24" value="8"><span class="token-value" data-tv="radius.md">8px</span></div>
+      </div>
+
+      <div class="actions">
+        <button class="pill" id="reset">Reset</button>
+        <button class="pill primary" id="export">Export JSON</button>
+      </div>
+
     </div>
 
-    <div class="section">
-      <p class="section-label">Route</p>
-      <div class="routes" id="routes"></div>
+    <div class="sidebar-foot">
+      <div class="sidebar-foot-links">
+        <a href="../">Home</a>
+        <a href="../spec/">Spec</a>
+        <a href="https://github.com/slavasolutions/mosaic">GitHub</a>
+      </div>
+      <div>No server. No build. Edits stay in your browser.</div>
     </div>
-
-    <div class="section">
-      <p class="section-label">Theme</p>
-      <div class="pill-row" data-group="theme">
-        <button class="pill active" data-value="light">Light</button>
-        <button class="pill" data-value="dark">Dark</button>
-      </div>
-    </div>
-
-    <div class="section">
-      <p class="section-label">Tokens <span class="meta">live edit</span></p>
-
-      <div class="token">
-        <span class="token-label">color.bg</span>
-        <input type="color" data-token="color.bg" value="#faf6ee">
-        <span class="token-value" data-token-value="color.bg">#faf6ee</span>
-      </div>
-
-      <div class="token">
-        <span class="token-label">color.ink</span>
-        <input type="color" data-token="color.ink" value="#15161a">
-        <span class="token-value" data-token-value="color.ink">#15161a</span>
-      </div>
-
-      <div class="token">
-        <span class="token-label">color.accent</span>
-        <input type="color" data-token="color.accent" value="#2b56d4">
-        <span class="token-value" data-token-value="color.accent">#2b56d4</span>
-      </div>
-
-      <div class="token">
-        <span class="token-label">color.bg-sunk</span>
-        <input type="color" data-token="color.bg-sunk" value="#f1f0ea">
-        <span class="token-value" data-token-value="color.bg-sunk">#f1f0ea</span>
-      </div>
-
-      <div class="token">
-        <span class="token-label">color.line</span>
-        <input type="color" data-token="color.line" value="#e4e2d8">
-        <span class="token-value" data-token-value="color.line">#e4e2d8</span>
-      </div>
-
-      <div class="token">
-        <span class="token-label">radius.md</span>
-        <input type="range" data-token="radius.md" min="0" max="24" value="10">
-        <span class="token-value" data-token-value="radius.md">10px</span>
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="pill" id="reset">Reset</button>
-      <button class="pill primary" id="export">Export JSON</button>
-    </div>
-
-    <p class="section-label" style="margin-top: 24px; color: var(--ink-mute); font-size: 10px; line-height: 1.5; letter-spacing: 0; text-transform: none;">
-      Edits never leave the browser. Token changes apply via <code>postMessage</code> to the iframe; the preview site swaps CSS variables in place. No rebuild, no server.
-    </p>
-
   </aside>
 
   <div class="preview">
     <div class="preview-bar">
-      <span class="url-pill" id="url-pill">/demo-blog/</span>
+      <button class="icon-btn" id="toggle-btn" aria-label="Toggle sidebar" title="Toggle sidebar">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+      </button>
+      <div class="crumb" id="crumb">
+        <span class="crumb-site" id="crumb-site">/demo-blog</span><span class="crumb-path" id="crumb-path">/</span>
+      </div>
+      <a class="icon-btn" id="open-tab" href="#" target="_blank" rel="noopener" aria-label="Open in new tab" title="Open in new tab">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3H3v10h10v-3M9 3h4v4M13 3 8 8"/></svg>
+      </a>
     </div>
-    <iframe id="frame" src="../demo-blog/" title="Live preview"></iframe>
+    <div class="preview-frame-wrap">
+      <iframe id="frame" src="../demo-blog/" title="Live preview"></iframe>
+      <div class="frame-loading show" id="loading">
+        <div class="frame-loading-inner">
+          <span class="spinner"></span>
+          <span id="loading-text">Loading…</span>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -416,80 +538,253 @@ body {
 
 <script>
 (() => {
+  // ===== State ============================================================
   const state = {
-    adapter: 'astro',
-    shape: 'blog',
+    site: 'astro',        // astro | next | mosaic | ssolu
+    shape: 'blog',        // single | blog | full
     route: '/',
-    theme: 'light',
+    theme: 'system',
     tokens: {},
   };
-
-  const SHAPE_ROUTES = {
-    single: [
-      { path: '/', label: '/' },
-    ],
-    blog: [
-      { path: '/', label: '/' },
-      { path: '/about/', label: '/about' },
-      { path: '/blog/', label: '/blog' },
-      { path: '/blog/hello/', label: '/blog/hello' },
-    ],
-    full: [
-      { path: '/', label: '/' },
-      { path: '/about/', label: '/about' },
-      { path: '/services/', label: '/services' },
-      { path: '/team/', label: '/team' },
-      { path: '/blog/', label: '/blog' },
-      { path: '/blog/hello/', label: '/blog/hello' },
-      { path: '/contact/', label: '/contact' },
-    ],
+  const TOKEN_DEFAULTS = {
+    'color.bg':         '#F5F2EA',
+    'color.bg-elev':    '#ffffff',
+    'color.bg-sunk':    '#EFEBDF',
+    'color.line':       '#E0DCC9',
+    'color.ink':        '#2A2A24',
+    'color.ink-soft':   '#4A4A40',
+    'color.ink-mute':   '#7B776C',
+    'color.accent':     '#7B86D6',
+    'color.accent-soft':'#ECEEF9',
+    'color.accent-ink': '#4853A8',
+    'radius.md':        '8',
   };
 
-  const SHAPE_META = {
-    single: '1 page',
-    blog:   '3 pages + journal',
-    full:   '12+ pages',
-  };
+  const SHAPE_META = { single: '1 page', blog: '3 pages + journal', full: '12+ pages' };
 
+  // ===== DOM ==============================================================
+  const app = document.getElementById('app');
+  const sidebar = document.getElementById('sidebar');
   const frame = document.getElementById('frame');
-  const urlPill = document.getElementById('url-pill');
-  const routesEl = document.getElementById('routes');
+  const crumbSite = document.getElementById('crumb-site');
+  const crumbPath = document.getElementById('crumb-path');
+  const treeEl = document.getElementById('tree');
+  const treeMeta = document.getElementById('tree-meta');
   const shapeMeta = document.getElementById('shape-meta');
+  const loading = document.getElementById('loading');
+  const loadingText = document.getElementById('loading-text');
   const toast = document.getElementById('toast');
+  const shapeSection = document.getElementById('shape-section');
+  const filesSection = document.getElementById('files-section');
+  const tokensSection = document.getElementById('tokens-section');
+  const openTab = document.getElementById('open-tab');
 
+  // ===== Site / URL resolution ===========================================
   function variantSlug() {
-    const adapter = state.adapter === 'next' ? '-next' : '';
+    const adapter = state.site === 'next' ? '-next' : '';
     return 'demo-' + state.shape + adapter;
   }
+  function isDemo() { return state.site === 'astro' || state.site === 'next'; }
+  function isSameOrigin() { return state.site !== 'ssolu'; } // all subdomain demos + mosaic landing are same origin
   function frameUrl() {
+    if (state.site === 'mosaic') return '../';
+    if (state.site === 'ssolu') return 'https://ssolu.dev/';
     return '../' + variantSlug() + state.route;
   }
+  function crumbBits() {
+    if (state.site === 'mosaic') return ['mosaic.ssolu.dev', state.route];
+    if (state.site === 'ssolu')  return ['ssolu.dev',        state.route];
+    return ['/' + variantSlug(), state.route];
+  }
 
-  function renderRoutes() {
-    const routes = SHAPE_ROUTES[state.shape] || [];
-    if (!routes.find((r) => r.path === state.route)) {
-      state.route = '/';
-    }
-    routesEl.innerHTML = '';
-    routes.forEach((r) => {
-      const b = document.createElement('button');
-      b.className = 'route' + (state.route === r.path ? ' active' : '');
-      b.textContent = r.label;
-      b.dataset.path = r.path;
-      b.addEventListener('click', () => {
-        state.route = r.path;
-        renderRoutes();
-        loadFrame();
-      });
-      routesEl.appendChild(b);
+  // ===== Theme + tokens ===================================================
+  function emitTheme() {
+    if (!isSameOrigin()) return;
+    postToFrame({ type: 'mosaic-theme', theme: state.theme });
+  }
+  function emitTokens() {
+    if (!isSameOrigin()) return;
+    const payload = {};
+    Object.keys(state.tokens).forEach((k) => {
+      payload[k] = (k === 'radius.md') ? (state.tokens[k] + 'px') : state.tokens[k];
     });
+    postToFrame({ type: 'mosaic-tokens', tokens: payload });
+  }
+  function postToFrame(msg) {
+    try { frame.contentWindow && frame.contentWindow.postMessage(msg, '*'); } catch (_) {}
   }
 
+  // ===== Loading shim =====================================================
+  let loadStart = 0;
+  function showLoading(label) {
+    loadingText.textContent = label || 'Loading…';
+    loading.classList.add('show');
+    loadStart = Date.now();
+  }
+  function hideLoading() {
+    // keep visible at least 220ms so it's not a flash
+    const elapsed = Date.now() - loadStart;
+    const wait = Math.max(0, 220 - elapsed);
+    setTimeout(() => loading.classList.remove('show'), wait);
+  }
+
+  // ===== Frame load + tree fetch =========================================
   function loadFrame() {
-    urlPill.textContent = '/' + variantSlug() + state.route;
-    frame.src = frameUrl();
+    showLoading(isSameOrigin() ? 'Loading…' : 'Opening external site…');
+    const url = frameUrl();
+    if (openTab) openTab.href = url;
+    frame.src = url;
+    updateCrumb();
+  }
+  function updateCrumb() {
+    const [site, path] = crumbBits();
+    crumbSite.textContent = site;
+    crumbPath.textContent = path === '/' ? '/' : path;
   }
 
+  frame.addEventListener('load', () => {
+    hideLoading();
+    emitTheme();
+    emitTokens();
+    refreshTree();
+  });
+
+  // ===== File tree ========================================================
+  function readTreeFromFrame() {
+    if (!isSameOrigin()) return null;
+    try {
+      const doc = frame.contentDocument;
+      if (!doc) return null;
+      const el = doc.getElementById('mosaic-tree');
+      if (!el) return null;
+      return JSON.parse(el.textContent || 'null');
+    } catch (_) { return null; }
+  }
+
+  // Group flat entries into a directory tree.
+  function buildDirTree(entries) {
+    const root = { name: '', kind: 'dir', children: {}, files: [] };
+    entries.forEach((e) => {
+      const parts = e.path.split('/');
+      let node = root;
+      for (let i = 0; i < parts.length - 1; i++) {
+        const part = parts[i];
+        node.children[part] = node.children[part] || { name: part, kind: 'dir', children: {}, files: [] };
+        node = node.children[part];
+      }
+      node.files.push({ name: parts[parts.length - 1], full: e.path, url: e.url });
+    });
+    return root;
+  }
+
+  // Map a content-relative path → route URL.
+  // Mosaic convention: `pages/<rest>.json` or `pages/<rest>/index.json` → route `/<rest>` or `/`.
+  function routeForPath(path) {
+    if (!path) return null;
+    let p = path;
+    if (!p.startsWith('pages/')) return null;
+    p = p.slice('pages/'.length);
+    p = p.replace(/\/index\.json$/, '/');
+    p = p.replace(/\.json$/, '');
+    if (p === '' || p === '/') return '/';
+    return '/' + p;
+  }
+
+  function renderTree(payload) {
+    treeEl.innerHTML = '';
+    if (!payload) {
+      const e = document.createElement('div');
+      e.className = 'tree-empty';
+      e.textContent = isSameOrigin()
+        ? 'No tree exposed by this page.'
+        : 'Tree unavailable across origins.';
+      treeEl.appendChild(e);
+      treeMeta.textContent = '';
+      return;
+    }
+    const tree = buildDirTree(payload.entries || []);
+    treeMeta.textContent = (payload.entries || []).length + ' files';
+    const active = (payload.activePath || '').trim();
+
+    function renderDir(node, depth, parentEl) {
+      const dirNames = Object.keys(node.children).sort();
+      dirNames.forEach((name) => {
+        const child = node.children[name];
+        const row = document.createElement('div');
+        row.className = 'tree-node dir';
+        row.style.setProperty('--indent', (8 + depth * 14) + 'px');
+        row.innerHTML = '<span class="twist">▾</span><span class="name">' + escapeHtml(name) + '/</span>';
+        parentEl.appendChild(row);
+        const childrenEl = document.createElement('div');
+        childrenEl.className = 'tree-children';
+        parentEl.appendChild(childrenEl);
+        row.addEventListener('click', (e) => {
+          e.stopPropagation();
+          childrenEl.classList.toggle('collapsed');
+          row.querySelector('.twist').textContent = childrenEl.classList.contains('collapsed') ? '▸' : '▾';
+        });
+        renderDir(child, depth + 1, childrenEl);
+      });
+      // files
+      node.files.sort((a, b) => a.name.localeCompare(b.name));
+      node.files.forEach((f) => {
+        const row = document.createElement('div');
+        const route = routeForPath(f.full) || f.url;
+        const routable = !!route;
+        row.className = 'tree-node file' + (routable ? ' routable' : '') + (f.full === active ? ' active' : '');
+        row.style.setProperty('--indent', (8 + depth * 14) + 'px');
+        row.innerHTML = '<span class="twist"></span><span class="icon">📄</span><span class="name">' + escapeHtml(f.name) + '</span>';
+        if (routable) {
+          row.title = 'Open ' + route;
+          row.addEventListener('click', () => {
+            state.route = route;
+            loadFrame();
+            // mark active locally
+            treeEl.querySelectorAll('.tree-node.active').forEach((n) => n.classList.remove('active'));
+            row.classList.add('active');
+          });
+        } else {
+          row.title = f.full + ' (non-routable record)';
+        }
+        parentEl.appendChild(row);
+      });
+    }
+
+    renderDir(tree, 0, treeEl);
+  }
+
+  function refreshTree() {
+    if (!isDemo() && state.site !== 'mosaic') {
+      renderTree(null);
+      return;
+    }
+    // wait one tick so iframe DOM is ready
+    setTimeout(() => renderTree(readTreeFromFrame()), 0);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ===== Visibility rules: which sections apply to which site ============
+  function applySiteVisibility() {
+    if (isDemo()) {
+      shapeSection.style.display = '';
+      filesSection.style.display = '';
+      tokensSection.style.display = '';
+    } else if (state.site === 'mosaic') {
+      shapeSection.style.display = 'none';
+      filesSection.style.display = '';        // mosaic landing IS same origin
+      tokensSection.style.display = 'none';   // landing has its own brand, tokens not wired
+    } else {
+      // cross-origin (ssolu)
+      shapeSection.style.display = 'none';
+      filesSection.style.display = 'none';
+      tokensSection.style.display = 'none';
+    }
+  }
+
+  // ===== Pill row binding =================================================
   document.querySelectorAll('.pill-row').forEach((row) => {
     const group = row.dataset.group;
     row.querySelectorAll('.pill').forEach((btn) => {
@@ -497,77 +792,72 @@ body {
         row.querySelectorAll('.pill').forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
         state[group] = btn.dataset.value;
-        if (group === 'shape') {
-          shapeMeta.textContent = SHAPE_META[state.shape];
-          renderRoutes();
+        if (group === 'site') {
+          state.route = '/';
+          applySiteVisibility();
           loadFrame();
-        } else if (group === 'adapter') {
+        } else if (group === 'shape') {
+          shapeMeta.textContent = SHAPE_META[state.shape];
+          state.route = '/';
           loadFrame();
         } else if (group === 'theme') {
-          postToFrame({ type: 'mosaic-theme', theme: state.theme });
+          emitTheme();
         }
       });
     });
   });
 
-  function postToFrame(msg) {
-    try {
-      frame.contentWindow && frame.contentWindow.postMessage(msg, '*');
-    } catch (_) {}
+  // ===== Sidebar collapse =================================================
+  const collapseBtn = document.getElementById('collapse-btn');
+  const toggleBtn = document.getElementById('toggle-btn');
+  function setCollapsed(v) {
+    if (v) app.classList.add('collapsed');
+    else app.classList.remove('collapsed');
+    collapseBtn.setAttribute('aria-label', v ? 'Expand sidebar' : 'Collapse sidebar');
+    collapseBtn.title = v ? 'Expand sidebar' : 'Collapse sidebar';
   }
+  collapseBtn.addEventListener('click', () => setCollapsed(!app.classList.contains('collapsed')));
+  toggleBtn.addEventListener('click', () => setCollapsed(!app.classList.contains('collapsed')));
 
-  function updateTokenValueDisplay(key, raw) {
-    const el = document.querySelector('[data-token-value="' + key + '"]');
-    if (el) el.textContent = key === 'radius.md' ? raw + 'px' : raw;
+  // ===== Tokens binding ===================================================
+  function updateTokenValueDisplay(key) {
+    const el = document.querySelector('[data-tv="' + key + '"]');
+    if (!el) return;
+    el.textContent = (key === 'radius.md') ? (state.tokens[key] + 'px') : state.tokens[key];
   }
-
-  function emitTokens() {
-    postToFrame({ type: 'mosaic-tokens', tokens: state.tokens });
-  }
-
   document.querySelectorAll('[data-token]').forEach((input) => {
     const key = input.dataset.token;
-    state.tokens[key] = key === 'radius.md' ? input.value + 'px' : input.value;
+    state.tokens[key] = input.value;
     input.addEventListener('input', () => {
-      const raw = input.value;
-      state.tokens[key] = key === 'radius.md' ? raw + 'px' : raw;
-      updateTokenValueDisplay(key, raw);
+      state.tokens[key] = input.value;
+      updateTokenValueDisplay(key);
       emitTokens();
     });
   });
 
-  frame.addEventListener('load', () => {
-    postToFrame({ type: 'mosaic-theme', theme: state.theme });
-    emitTokens();
-  });
-
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 1800);
-  }
-
+  // ===== Reset / Export ===================================================
   document.getElementById('reset').addEventListener('click', () => {
-    document.querySelectorAll('[data-token]').forEach((input) => {
-      input.value = input.defaultValue;
-      const key = input.dataset.token;
-      state.tokens[key] = key === 'radius.md' ? input.defaultValue + 'px' : input.defaultValue;
-      updateTokenValueDisplay(key, input.defaultValue);
+    Object.keys(TOKEN_DEFAULTS).forEach((k) => {
+      const input = document.querySelector('[data-token="' + k + '"]');
+      if (!input) return;
+      input.value = TOKEN_DEFAULTS[k];
+      state.tokens[k] = TOKEN_DEFAULTS[k];
+      updateTokenValueDisplay(k);
     });
-    state.theme = 'light';
+    state.theme = 'system';
     document.querySelectorAll('[data-group="theme"] .pill').forEach((b) => {
-      b.classList.toggle('active', b.dataset.value === 'light');
+      b.classList.toggle('active', b.dataset.value === 'system');
     });
-    postToFrame({ type: 'mosaic-theme', theme: 'light' });
+    emitTheme();
     emitTokens();
     showToast('Reset to defaults');
   });
-
   document.getElementById('export').addEventListener('click', () => {
-    const json = JSON.stringify({
-      '@type': 'TokenSet',
-      tokens: state.tokens,
-    }, null, 2);
+    const out = {};
+    Object.keys(state.tokens).forEach((k) => {
+      out[k] = (k === 'radius.md') ? (state.tokens[k] + 'px') : state.tokens[k];
+    });
+    const json = JSON.stringify({ '@type': 'TokenSet', tokens: out }, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -577,8 +867,18 @@ body {
     URL.revokeObjectURL(url);
     showToast('Downloaded tokens.json');
   });
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  }
 
-  renderRoutes();
+  // ===== Init =============================================================
+  applySiteVisibility();
+  updateCrumb();
+  // The iframe is already pointed at demo-blog/ via the HTML src attribute,
+  // so the initial frame.load handler will fire and trigger tree + theme.
+
 })();
 </script>
 
