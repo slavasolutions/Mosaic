@@ -250,7 +250,7 @@ function PageBody({ entry, currentPath, routedEntries }: BodyProps) {
   const isBlogIndex = currentPath === '/blog';
   const isPost = currentPath.startsWith('/blog/') && !isBlogIndex;
 
-  if (currentPath === '/') return <HomeBody data={data} entry={entry} />;
+  if (currentPath === '/') return <HomeBody data={data} entry={entry} routedEntries={routedEntries} />;
   if (isPost) return <PostBody entry={entry} />;
   if (isBlogIndex)
     return <BlogIndexBody data={data} entry={entry} routedEntries={routedEntries} />;
@@ -272,7 +272,15 @@ function HeroImg({ data }: { data: Record<string, unknown> }) {
   return null;
 }
 
-function HomeBody({ data, entry }: { data: Record<string, unknown>; entry: MosaicEntry }) {
+function HomeBody({
+  data,
+  entry,
+  routedEntries,
+}: {
+  data: Record<string, unknown>;
+  entry: MosaicEntry;
+  routedEntries: MosaicEntry[];
+}) {
   const title = String(data.title ?? '');
   const tagline = typeof data.tagline === 'string' ? data.tagline : null;
   const intro = typeof data.intro === 'string' ? data.intro : null;
@@ -284,40 +292,101 @@ function HomeBody({ data, entry }: { data: Record<string, unknown>; entry: Mosai
     : null;
   const bodyHtml = renderBody(entry.body, entry.bodyExt);
 
+  const hero = data.hero && typeof data.hero === 'object' ? (data.hero as Record<string, unknown>) : null;
+  const heroImage =
+    (hero && typeof hero.image === 'string' ? (hero.image as string) : null) ??
+    (typeof data.image === 'string' ? (data.image as string) : null);
+  const heroAlt =
+    (hero && typeof hero.alt === 'string' ? (hero.alt as string) : null) ??
+    (typeof data.imageAlt === 'string' ? (data.imageAlt as string) : '');
+
+  // Recent blog posts for the journal preview.
+  const homePosts = routedEntries
+    .filter((e) => typeof e.url === 'string' && e.url.startsWith('/blog/') && e.url !== '/blog')
+    .map((e) => {
+      const d = e.data as Record<string, unknown>;
+      const authorObj = d.author && typeof d.author === 'object' ? (d.author as Record<string, unknown>) : null;
+      return {
+        url: e.url as string,
+        title: typeof d.title === 'string' ? (d.title as string) : e.slug,
+        publishedAt: typeof d.publishedAt === 'string' ? (d.publishedAt as string) : undefined,
+        authorName: typeof authorObj?.name === 'string' ? (authorObj.name as string) : undefined,
+      };
+    })
+    .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+    .slice(0, 3);
+
   return (
     <section>
-      <h1 className="home-h1">{title}</h1>
-      {tagline && <p className="home-tagline">{tagline}</p>}
-      <HeroImg data={data} />
-      {intro && <p>{intro}</p>}
+      <div className="home-hero">
+        <div className="home-hero-text">
+          <h1 className="home-h1">{title}</h1>
+          {tagline && <p className="home-tagline">{tagline}</p>}
+          {intro && <p className="home-intro">{intro}</p>}
+          {homeLinks && (
+            <ul className="home-cards">
+              {homeLinks.map((link, i) => (
+                <li key={i}>
+                  <a
+                    className={`home-card-link${i === 0 ? ' primary' : ''}`}
+                    href={href(link.url ?? '/')}
+                  >
+                    {link.label ?? ''} →
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        {heroImage && (
+          <div className="home-hero-image">
+            <img src={heroImage} alt={heroAlt} loading="eager" />
+          </div>
+        )}
+      </div>
+
       {bodyHtml && (
         <div className="body-block" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
       )}
-      {homeLinks && (
-        <ul className="home-cards">
-          {homeLinks.map((link, i) => (
-            <li key={i}>
-              <a className="home-card-link" href={href(link.url ?? '/')}>
-                {link.label ?? ''} →
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+
       {featured && (
-        <ul className="featured-grid">
-          {featured.map((card, i) => (
-            <li key={i}>
-              <a className="featured-card" href={href(card.url ?? '/')}>
-                {card.image && <img src={card.image} alt="" loading="lazy" />}
-                <div className="featured-card-body">
-                  <h3>{card.title}</h3>
-                  {card.summary && <p>{card.summary}</p>}
-                </div>
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="home-section">
+          <p className="section-eyebrow">Selected work</p>
+          <h2 className="section-h2">What we do.</h2>
+          <ul className="featured-grid">
+            {featured.map((card, i) => (
+              <li key={i}>
+                <a className="featured-card" href={href(card.url ?? '/')}>
+                  {card.image && <img src={card.image} alt="" loading="lazy" />}
+                  <div className="featured-card-body">
+                    <h3>{card.title}</h3>
+                    {card.summary && <p>{card.summary}</p>}
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {homePosts.length > 0 && (
+        <div className="home-section">
+          <p className="section-eyebrow">Journal</p>
+          <h2 className="section-h2">Recent writing.</h2>
+          <ul className="journal-preview">
+            {homePosts.map((post) => (
+              <li key={post.url}>
+                <a href={href(post.url)}>
+                  <span className="jp-title">{post.title}</span>
+                  <span className="jp-meta">
+                    {post.publishedAt}
+                    {post.authorName ? ` · ${post.authorName}` : ''}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </section>
   );

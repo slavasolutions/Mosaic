@@ -22,9 +22,9 @@ const isHome = currentPath === '/';
 const isBlogIndex = currentPath === '/blog';
 const isPost = currentPath.startsWith('/blog/') && !isBlogIndex;
 
-// Surface posts for blog index + featured tiles.
+// Surface posts for blog index + home journal preview.
 let posts: Array<{ url: string; title: string; publishedAt?: string; authorName?: string }> = [];
-if (isBlogIndex) {
+if (isBlogIndex || isHome) {
   const all = await getCollection('pages');
   posts = all
     .filter((e) => {
@@ -43,6 +43,7 @@ if (isBlogIndex) {
     })
     .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
 }
+const homePosts = isHome ? posts.slice(0, 3) : [];
 
 const authorObj = data.author && typeof data.author === 'object' ? data.author : null;
 const authorDisplay = (authorObj && (authorObj as Record<string, unknown>).display) as
@@ -65,36 +66,67 @@ const heroImg = data.hero && typeof data.hero === 'object' ? data.hero : null;
 <Layout title={`${data.title ?? entry.id}${data.title ? ' — ' : ''}${data.title ? '' : ''}`} currentPath={currentPath} entry={entry}>
   {isHome && (
     <section>
-      <h1 class="home-h1">{data.title}</h1>
-      {data.tagline && <p class="home-tagline">{data.tagline}</p>}
-      {heroImg && heroImg.image && (
-        <img class="hero-img" src={heroImg.image} alt={heroImg.alt ?? ''} loading="lazy" />
-      )}
-      {data.intro && <p>{data.intro}</p>}
+      <div class="home-hero">
+        <div class="home-hero-text">
+          <h1 class="home-h1">{data.title}</h1>
+          {data.tagline && <p class="home-tagline">{data.tagline}</p>}
+          {data.intro && <p class="home-intro">{data.intro}</p>}
+          {hasHomeLinks && (
+            <ul class="home-cards">
+              {data.homeLinks.map((link: any, i: number) => (
+                <li>
+                  <a class={`home-card-link${i === 0 ? ' primary' : ''}`} href={href(link.url)}>{link.label} →</a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        {heroImg && heroImg.image && (
+          <div class="home-hero-image">
+            <img src={heroImg.image} alt={heroImg.alt ?? ''} loading="eager" />
+          </div>
+        )}
+      </div>
+
       {entry.body && <div class="body-block" set:html={renderBody(entry.body, (entry.data as any).bodyExt)}></div>}
-      {hasHomeLinks && (
-        <ul class="home-cards">
-          {data.homeLinks.map((link: any) => (
-            <li>
-              <a class="home-card-link" href={href(link.url)}>{link.label} →</a>
-            </li>
-          ))}
-        </ul>
-      )}
+
       {hasFeatured && (
-        <ul class="featured-grid">
-          {data.featuredWork.map((card: any) => (
-            <li>
-              <a class="featured-card" href={href(card.url)}>
-                {card.image && <img src={card.image} alt="" loading="lazy" />}
-                <div class="featured-card-body">
-                  <h3>{card.title}</h3>
-                  {card.summary && <p>{card.summary}</p>}
-                </div>
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div class="home-section">
+          <p class="section-eyebrow">Selected work</p>
+          <h2 class="section-h2">What we do.</h2>
+          <ul class="featured-grid">
+            {data.featuredWork.map((card: any) => (
+              <li>
+                <a class="featured-card" href={href(card.url)}>
+                  {card.image && <img src={card.image} alt="" loading="lazy" />}
+                  <div class="featured-card-body">
+                    <h3>{card.title}</h3>
+                    {card.summary && <p>{card.summary}</p>}
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {homePosts.length > 0 && (
+        <div class="home-section">
+          <p class="section-eyebrow">Journal</p>
+          <h2 class="section-h2">Recent writing.</h2>
+          <ul class="journal-preview">
+            {homePosts.map((post) => (
+              <li>
+                <a href={href(post.url)}>
+                  <span class="jp-title">{post.title}</span>
+                  <span class="jp-meta">
+                    {post.publishedAt}{post.authorName ? ` · ${post.authorName}` : ''}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </section>
   )}
