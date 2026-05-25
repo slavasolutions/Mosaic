@@ -13,6 +13,6 @@
   "dependencies": {
     "@ssolu/mosaic-astro": "*",
     "@ssolu/mosaic-core": "*",
-    "astro": "^6.3.5"
+    "astro": "^6.3.7"
   }
 }
