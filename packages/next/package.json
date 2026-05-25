@@ -65,13 +65,13 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^25.9.0",
+    "@types/node": "^25.9.1",
     "@types/react": "^18.3.12",
     "next": "^15.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^6.0.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.7"
   },
   "engines": {
     "node": ">=20"

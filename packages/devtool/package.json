@@ -48,11 +48,11 @@
     "url": "https://github.com/slavasolutions/mosaic/issues"
   },
   "devDependencies": {
-    "@types/node": "^25.9.0",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^25.9.1",
     "esbuild": "^0.25.0",
     "jsdom": "^25.0.0",
-    "@types/jsdom": "^21.1.7",
     "typescript": "^6.0.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.7"
   }
 }
